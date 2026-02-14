@@ -614,16 +614,291 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
     bottom: 44px;
   }
 }
+
+/* ================================================================
+   史诗级开场视觉升级
+   ================================================================ */
+
+/* --- 底层：移动的星空 --- */
+#start-screen .stars-layer{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;
+}
+#start-screen .stars-layer::before,
+#start-screen .stars-layer::after{
+  content:'';position:absolute;width:200%;height:200%;left:-50%;top:-50%;
+  animation:starsDrift 60s linear infinite;
+}
+#start-screen .stars-layer::before{
+  background:
+    radial-gradient(1px 1px at 5% 8%, rgba(255,255,255,0.7) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 12% 22%, rgba(201,169,110,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 18% 45%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 25% 13%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 32% 67%, rgba(201,169,110,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 38% 82%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 44% 5%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 50% 35%, rgba(201,169,110,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 55% 55%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.7) 50%, transparent 50%),
+    radial-gradient(1px 1px at 65% 18%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 70% 42%, rgba(201,169,110,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 75% 72%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 80% 3%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 85% 58%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 90% 28%, rgba(201,169,110,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 95% 80%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 3% 52%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 8% 95%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 15% 70%, rgba(201,169,110,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 22% 38%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 28% 88%, rgba(255,255,255,0.7) 50%, transparent 50%),
+    radial-gradient(1px 1px at 35% 15%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 42% 60%, rgba(201,169,110,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 48% 78%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 53% 10%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 58% 48%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 63% 85%, rgba(201,169,110,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 68% 25%, rgba(255,255,255,0.7) 50%, transparent 50%),
+    radial-gradient(1px 1px at 73% 62%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 78% 40%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 83% 75%, rgba(201,169,110,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 88% 12%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 93% 50%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 97% 33%, rgba(255,255,255,0.4) 50%, transparent 50%);
+  background-size:100% 100%;
+}
+#start-screen .stars-layer::after{
+  background:
+    radial-gradient(1px 1px at 2% 30%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 7% 65%, rgba(201,169,110,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 13% 10%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 20% 85%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 27% 48%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 33% 20%, rgba(201,169,110,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 40% 73%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 47% 92%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 52% 40%, rgba(255,255,255,0.7) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 57% 15%, rgba(201,169,110,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 62% 58%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 67% 78%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 72% 33%, rgba(201,169,110,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 77% 88%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 82% 52%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 87% 8%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 92% 68%, rgba(201,169,110,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 96% 42%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 4% 77%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 10% 55%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 16% 35%, rgba(201,169,110,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 23% 5%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 30% 62%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 36% 95%, rgba(255,255,255,0.7) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 43% 25%, rgba(201,169,110,0.4) 50%, transparent 50%),
+    radial-gradient(1px 1px at 49% 50%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 54% 83%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1.5px 1.5px at 59% 70%, rgba(201,169,110,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 64% 2%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 69% 45%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 74% 18%, rgba(255,255,255,0.4) 50%, transparent 50%),
+    radial-gradient(1.2px 1.2px at 79% 60%, rgba(201,169,110,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 84% 38%, rgba(255,255,255,0.5) 50%, transparent 50%),
+    radial-gradient(1px 1px at 89% 90%, rgba(255,255,255,0.6) 50%, transparent 50%),
+    radial-gradient(1px 1px at 94% 22%, rgba(255,255,255,0.5) 50%, transparent 50%);
+  background-size:100% 100%;
+  animation-delay:-30s;
+}
+@keyframes starsDrift{
+  0%{transform:translateY(0);}
+  100%{transform:translateY(50%);}
+}
+
+/* --- 中层：远山剪影 --- */
+#start-screen .mountains-layer{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;
+}
+.mountain-far,.mountain-mid,.mountain-near{
+  position:absolute;bottom:0;width:120%;left:-10%;
+}
+.mountain-far{
+  height:22%;
+  background:linear-gradient(180deg, transparent 0%, #0a0b14 100%);
+  clip-path:polygon(0% 100%, 0% 65%, 5% 55%, 12% 40%, 18% 50%, 25% 30%, 32% 45%, 38% 25%, 44% 38%, 50% 20%, 56% 35%, 62% 22%, 68% 40%, 75% 28%, 82% 42%, 88% 32%, 94% 48%, 100% 38%, 100% 100%);
+  opacity:0.5;
+  animation:mountainDriftLeft 80s linear infinite alternate;
+}
+.mountain-mid{
+  height:18%;
+  background:linear-gradient(180deg, transparent 0%, #0d0e1a 100%);
+  clip-path:polygon(0% 100%, 0% 70%, 8% 50%, 15% 60%, 22% 35%, 30% 55%, 37% 30%, 43% 48%, 50% 25%, 58% 42%, 65% 30%, 72% 50%, 80% 35%, 87% 55%, 95% 40%, 100% 58%, 100% 100%);
+  opacity:0.65;
+  animation:mountainDriftRight 70s linear infinite alternate;
+}
+.mountain-near{
+  height:12%;
+  background:linear-gradient(180deg, #10111d 0%, #0d0e1a 100%);
+  clip-path:polygon(0% 100%, 0% 60%, 6% 45%, 14% 55%, 22% 30%, 30% 50%, 40% 28%, 48% 45%, 55% 32%, 64% 50%, 72% 35%, 80% 55%, 90% 38%, 100% 50%, 100% 100%);
+  opacity:0.8;
+}
+@keyframes mountainDriftLeft{
+  0%{transform:translateX(0);}
+  100%{transform:translateX(-3%);}
+}
+@keyframes mountainDriftRight{
+  0%{transform:translateX(0);}
+  100%{transform:translateX(2%);}
+}
+
+/* --- 上层：飘动云雾 --- */
+#start-screen .clouds-layer{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:2;
+}
+.cloud{position:absolute;border-radius:50%;filter:blur(60px);opacity:0.12;}
+.cloud-1{
+  width:500px;height:200px;top:10%;left:-10%;
+  background:radial-gradient(ellipse, rgba(201,169,110,0.25) 0%, transparent 70%);
+  animation:cloudDrift1 40s ease-in-out infinite alternate;
+}
+.cloud-2{
+  width:400px;height:180px;top:35%;right:-15%;
+  background:radial-gradient(ellipse, rgba(41,128,185,0.2) 0%, transparent 70%);
+  animation:cloudDrift2 35s ease-in-out infinite alternate;
+}
+.cloud-3{
+  width:600px;height:150px;bottom:20%;left:20%;
+  background:radial-gradient(ellipse, rgba(201,169,110,0.15) 0%, rgba(180,130,70,0.08) 40%, transparent 70%);
+  animation:cloudDrift3 50s ease-in-out infinite alternate;
+}
+@keyframes cloudDrift1{0%{transform:translateX(0) translateY(0);}100%{transform:translateX(15vw) translateY(-20px);}}
+@keyframes cloudDrift2{0%{transform:translateX(0) translateY(0);}100%{transform:translateX(-12vw) translateY(15px);}}
+@keyframes cloudDrift3{0%{transform:translateX(0);}100%{transform:translateX(-10vw);}}
+
+/* --- 火星/余烬粒子 --- */
+.start-particle.ember{
+  background:rgba(220,120,40,0.7);
+  border-radius:50%;
+  box-shadow:0 0 4px rgba(220,120,40,0.4);
+}
+
+/* --- 标题升级 --- */
+.title-area h1{
+  font-size:4.2em !important;
+  font-weight:bold;
+  position:relative;
+  z-index:5;
+}
+/* 金色冲击波 */
+.title-shockwave{
+  position:absolute;top:50%;left:50%;
+  width:0;height:0;border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle, rgba(201,169,110,0.5) 0%, rgba(201,169,110,0.1) 40%, transparent 70%);
+  pointer-events:none;z-index:4;
+  opacity:0;
+}
+.title-shockwave.active{
+  animation:shockwaveExpand 0.8s ease-out forwards;
+}
+@keyframes shockwaveExpand{
+  0%{width:0;height:0;opacity:0.8;}
+  100%{width:600px;height:600px;opacity:0;}
+}
+
+/* 金色横线（标题下方） */
+.title-gold-line{
+  width:0;height:2px;margin:12px auto 0;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transition:width 0.8s ease-out;
+  z-index:5;position:relative;
+}
+.title-gold-line.expand{width:200px;}
+
+/* --- 诗句光线扫过效果 --- */
+.poem-line{position:relative;overflow:hidden;}
+.poem-line::after{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent 0%,rgba(201,169,110,0.25) 50%,transparent 100%);
+  pointer-events:none;opacity:0;
+}
+.poem-line.visible::after{
+  animation:lineSweep 0.6s 0.15s ease-out forwards;
+}
+@keyframes lineSweep{
+  0%{left:-100%;opacity:1;}
+  100%{left:100%;opacity:0;}
+}
+
+/* --- "天命在手"出现时画面微震 --- */
+@keyframes subtleShake{
+  0%,100%{transform:translateY(0) translateX(0);}
+  15%{transform:translateY(-2px) translateX(1px);}
+  30%{transform:translateY(1px) translateX(-2px);}
+  45%{transform:translateY(-1px) translateX(1px);}
+  60%{transform:translateY(1px) translateX(-1px);}
+  75%{transform:translateY(-1px) translateX(0);}
+}
+#start-screen.mandate-shake{animation:subtleShake 0.4s ease-out;}
+
+/* --- 静音按钮 --- */
+.mute-btn{
+  position:relative;z-index:10;
+  width:36px;height:36px;
+  background:transparent;border:1px solid rgba(201,169,110,0.3);border-radius:50%;
+  color:var(--gold);font-size:1.1em;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;line-height:1;padding:0;
+  font-family:inherit;
+}
+.mute-btn:hover{background:rgba(201,169,110,0.1);border-color:var(--gold);}
+.mute-btn:active{transform:scale(0.9);}
+#start-mute-btn{position:absolute;top:16px;right:16px;z-index:20;}
+
+/* --- 让 title-area / poem / btn 保持在所有层之上 --- */
+.title-area,.poem,.start-btn,#start-particles{position:relative;z-index:5;}
+
+@media (max-width: 768px) {
+  .title-area h1{font-size:2.8em !important;}
+  .title-shockwave.active{animation-name:shockwaveExpandMobile;}
+  @keyframes shockwaveExpandMobile{0%{width:0;height:0;opacity:0.8;}100%{width:350px;height:350px;opacity:0;}}
+  .title-gold-line.expand{width:140px;}
+  .cloud{filter:blur(40px);}
+  .cloud-1{width:300px;height:120px;}
+  .cloud-2{width:250px;height:100px;}
+  .cloud-3{width:350px;height:100px;}
+  #start-mute-btn{top:10px;right:10px;}
+}
+@media (max-width: 380px) {
+  .title-area h1{font-size:2.2em !important;}
+}
 </style>
 </head>
 <body>
 
 <!-- ========== 开始画面 ========== -->
 <div id="start-screen">
+  <!-- 底层：星空 -->
+  <div class="stars-layer"></div>
+  <!-- 中层：远山剪影 -->
+  <div class="mountains-layer">
+    <div class="mountain-far"></div>
+    <div class="mountain-mid"></div>
+    <div class="mountain-near"></div>
+  </div>
+  <!-- 上层：飘动云雾 -->
+  <div class="clouds-layer">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+  </div>
+  <!-- 粒子 -->
   <div class="start-particles" id="start-particles"></div>
+  <!-- 静音按钮 -->
+  <button class="mute-btn" id="start-mute-btn" title="音效开关">&#x1f50a;</button>
+  <!-- 冲击波 -->
+  <div class="title-shockwave" id="title-shockwave"></div>
   <div class="title-area">
     <h1 id="main-title">枢纽</h1>
     <div class="subtitle" id="main-subtitle">天 下 之 道</div>
+    <div class="title-gold-line" id="title-gold-line"></div>
     <div class="author">—— 基于施展《枢纽：3000年的中国》 ——</div>
   </div>
   <div class="poem" id="start-poem">
@@ -720,6 +995,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
     <button class="bottom-btn" onclick="saveGame()">存档</button>
     <button class="bottom-btn" onclick="loadGame()">读档</button>
     <button class="bottom-btn" onclick="showHelp()">指南</button>
+    <button class="mute-btn" id="game-mute-btn" title="音效开关">&#x1f50a;</button>
     <button class="mobile-toggle-btn" id="btn-toggle-history" onclick="toggleHistoryPanel()" style="display:none;">史卷</button>
   </div>
 </div>
@@ -739,6 +1015,344 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 </div>
 
 <script>
+// ==================== Web Audio API 音效系统 ====================
+
+const SFX = {
+  ctx: null,
+  muted: false,
+  ambientGain: null,
+  ambientOscs: [],
+  _initialized: false,
+
+  init() {
+    if (this._initialized) return;
+    try {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      this._initialized = true;
+      // Restore mute preference
+      if (localStorage.getItem('pivot_muted') === '1') {
+        this.muted = true;
+        this._updateMuteButtons();
+      }
+    } catch(e) {
+      console.warn('Web Audio API not available:', e);
+    }
+  },
+
+  _updateMuteButtons() {
+    const icon = this.muted ? '\u{1F507}' : '\u{1F50A}';
+    document.querySelectorAll('.mute-btn').forEach(btn => { btn.textContent = icon; });
+  },
+
+  toggleMute() {
+    this.muted = !this.muted;
+    localStorage.setItem('pivot_muted', this.muted ? '1' : '0');
+    this._updateMuteButtons();
+    if (this.muted) {
+      this.stopAmbient();
+    }
+  },
+
+  // --- 开场环境音 ---
+  ambient() {
+    if (!this.ctx || this.muted) return;
+    if (this.ambientOscs.length > 0) return; // already playing
+    const ctx = this.ctx;
+    const masterGain = ctx.createGain();
+    masterGain.gain.setValueAtTime(0, ctx.currentTime);
+    masterGain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 2);
+    masterGain.connect(ctx.destination);
+    this.ambientGain = masterGain;
+
+    // Low pad: two detuned oscillators through a low-pass filter
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(200, ctx.currentTime);
+    filter.Q.setValueAtTime(1, ctx.currentTime);
+    filter.connect(masterGain);
+
+    const freqs = [55, 55.5]; // slightly detuned A1
+    freqs.forEach(freq => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.5, ctx.currentTime);
+      osc.connect(g);
+      g.connect(filter);
+      osc.start();
+      this.ambientOscs.push(osc);
+    });
+
+    // Add a subtle second harmonic
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'triangle';
+    osc2.frequency.setValueAtTime(110, ctx.currentTime);
+    const g2 = ctx.createGain();
+    g2.gain.setValueAtTime(0.15, ctx.currentTime);
+    osc2.connect(g2);
+    g2.connect(filter);
+    osc2.start();
+    this.ambientOscs.push(osc2);
+  },
+
+  fadeOutAmbient(duration) {
+    if (!this.ambientGain || !this.ctx) return;
+    const ctx = this.ctx;
+    this.ambientGain.gain.linearRampToValueAtTime(0, ctx.currentTime + (duration || 1.5));
+    const oscs = this.ambientOscs;
+    setTimeout(() => {
+      oscs.forEach(o => { try { o.stop(); } catch(e){} });
+    }, (duration || 1.5) * 1000 + 100);
+    this.ambientOscs = [];
+    this.ambientGain = null;
+  },
+
+  stopAmbient() {
+    if (this.ambientOscs.length > 0) {
+      this.ambientOscs.forEach(o => { try { o.stop(); } catch(e){} });
+      this.ambientOscs = [];
+      this.ambientGain = null;
+    }
+  },
+
+  // --- 按钮点击音 ---
+  click() {
+    if (!this.ctx || this.muted) return;
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(150, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.08);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.12);
+  },
+
+  // --- 选择确认音 ---
+  choiceConfirm() {
+    if (!this.ctx || this.muted) return;
+    const ctx = this.ctx;
+    // Fundamental
+    const osc1 = ctx.createOscillator();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(220, ctx.currentTime);
+    const gain1 = ctx.createGain();
+    gain1.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc1.connect(gain1);
+    gain1.connect(ctx.destination);
+    osc1.start();
+    osc1.stop(ctx.currentTime + 0.35);
+
+    // Octave harmonic
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(440, ctx.currentTime);
+    const gain2 = ctx.createGain();
+    gain2.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+    osc2.connect(gain2);
+    gain2.connect(ctx.destination);
+    osc2.start();
+    osc2.stop(ctx.currentTime + 0.3);
+  },
+
+  // --- 正面效果音 ---
+  positiveChime() {
+    if (!this.ctx || this.muted) return;
+    const ctx = this.ctx;
+    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
+      gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + i * 0.1 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.15);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + i * 0.1);
+      osc.stop(ctx.currentTime + i * 0.1 + 0.2);
+
+      // Subtle harmonic
+      const h = ctx.createOscillator();
+      h.type = 'sine';
+      h.frequency.setValueAtTime(freq * 2, ctx.currentTime);
+      const hg = ctx.createGain();
+      hg.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
+      hg.gain.linearRampToValueAtTime(0.04, ctx.currentTime + i * 0.1 + 0.02);
+      hg.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.12);
+      h.connect(hg);
+      hg.connect(ctx.destination);
+      h.start(ctx.currentTime + i * 0.1);
+      h.stop(ctx.currentTime + i * 0.1 + 0.15);
+    });
+  },
+
+  // --- 负面效果音 ---
+  negativeThud() {
+    if (!this.ctx || this.muted) return;
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(200, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.3);
+
+    // WaveShaper distortion
+    const shaper = ctx.createWaveShaper();
+    const curve = new Float32Array(256);
+    for (let i = 0; i < 256; i++) {
+      const x = (i / 128) - 1;
+      curve[i] = (Math.PI + 3) * x / (Math.PI + 3 * Math.abs(x));
+    }
+    shaper.curve = curve;
+    shaper.oversample = '2x';
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(300, ctx.currentTime);
+
+    osc.connect(shaper);
+    shaper.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.4);
+  },
+
+  // --- 时代过渡音（锣声） ---
+  eraGong() {
+    if (!this.ctx || this.muted) return;
+    const ctx = this.ctx;
+    // Low fundamental
+    const osc1 = ctx.createOscillator();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(65, ctx.currentTime);
+    const g1 = ctx.createGain();
+    g1.gain.setValueAtTime(0.2, ctx.currentTime);
+    g1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3);
+    osc1.connect(g1);
+    g1.connect(ctx.destination);
+    osc1.start();
+    osc1.stop(ctx.currentTime + 3.2);
+
+    // High harmonic shimmer
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(520, ctx.currentTime);
+    osc2.frequency.exponentialRampToValueAtTime(490, ctx.currentTime + 2);
+    const g2 = ctx.createGain();
+    g2.gain.setValueAtTime(0.06, ctx.currentTime);
+    g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2);
+    osc2.connect(g2);
+    g2.connect(ctx.destination);
+    osc2.start();
+    osc2.stop(ctx.currentTime + 2.2);
+
+    // Mid-tone body
+    const osc3 = ctx.createOscillator();
+    osc3.type = 'triangle';
+    osc3.frequency.setValueAtTime(130, ctx.currentTime);
+    const g3 = ctx.createGain();
+    g3.gain.setValueAtTime(0.12, ctx.currentTime);
+    g3.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.5);
+    osc3.connect(g3);
+    g3.connect(ctx.destination);
+    osc3.start();
+    osc3.stop(ctx.currentTime + 2.7);
+
+    // Noise burst for attack
+    const bufSize = ctx.sampleRate * 0.05;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
+    const noise = ctx.createBufferSource();
+    noise.buffer = buf;
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(0.15, ctx.currentTime);
+    ng.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    const nf = ctx.createBiquadFilter();
+    nf.type = 'bandpass';
+    nf.frequency.setValueAtTime(200, ctx.currentTime);
+    nf.Q.setValueAtTime(2, ctx.currentTime);
+    noise.connect(nf);
+    nf.connect(ng);
+    ng.connect(ctx.destination);
+    noise.start();
+  },
+
+  // --- 屏幕震动音 ---
+  warRumble() {
+    if (!this.ctx || this.muted) return;
+    const ctx = this.ctx;
+    const bufSize = ctx.sampleRate * 0.5;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+    const noise = ctx.createBufferSource();
+    noise.buffer = buf;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(120, ctx.currentTime);
+    filter.Q.setValueAtTime(5, ctx.currentTime);
+
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    noise.start();
+    noise.stop(ctx.currentTime + 0.55);
+  },
+
+  // --- 成就音 ---
+  achieveChime() {
+    if (!this.ctx || this.muted) return;
+    const ctx = this.ctx;
+    // Rising arpeggio: C5, E5, G5, C6
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.08);
+      gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + i * 0.08 + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.3);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + i * 0.08);
+      osc.stop(ctx.currentTime + i * 0.08 + 0.35);
+    });
+    // Shimmer high harmonic
+    const shimmer = ctx.createOscillator();
+    shimmer.type = 'sine';
+    shimmer.frequency.setValueAtTime(2093, ctx.currentTime + 0.3);
+    const sg = ctx.createGain();
+    sg.gain.setValueAtTime(0, ctx.currentTime + 0.3);
+    sg.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 0.32);
+    sg.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    shimmer.connect(sg);
+    sg.connect(ctx.destination);
+    shimmer.start(ctx.currentTime + 0.3);
+    shimmer.stop(ctx.currentTime + 0.55);
+  }
+};
+
 // ==================== 游戏数据 ====================
 
 const REGION_META = {
@@ -1242,6 +1856,7 @@ function showEvent() {
 function makeChoice(idx) {
   if (G._choosing) return;
   G._choosing = true;
+  SFX.choiceConfirm();
 
   const ev = EVENTS[G.era][G.eventIdx];
   const choice = ev.choices[idx];
@@ -1307,9 +1922,17 @@ function makeChoice(idx) {
   const groupKeys = Object.keys(regionGroups);
   groupKeys.forEach((rk, gi) => {
     setTimeout(() => {
+      let hasPos = false, hasNeg = false;
       regionGroups[rk].forEach(ti => {
-        if (tags[ti]) tags[ti].classList.add('revealed');
+        if (tags[ti]) {
+          tags[ti].classList.add('revealed');
+          if (tags[ti].classList.contains('positive')) hasPos = true;
+          if (tags[ti].classList.contains('negative')) hasNeg = true;
+        }
       });
+      // Play appropriate sound for this group
+      if (hasNeg) SFX.negativeThud();
+      else if (hasPos) SFX.positiveChime();
       pulseMapNode(rk);
     }, 400 * (gi + 1));
   });
@@ -1381,6 +2004,7 @@ function screenEffect(ev, choice, effectTags) {
 
   if (isWar || isDisaster) {
     mainArea.classList.add('shake');
+    SFX.warRumble();
     if (negCount >= 3) mainArea.classList.add('flash-red');
   } else if (isGlory || bigPos > 0) {
     mainArea.classList.add('flash-gold');
@@ -1525,6 +2149,7 @@ function nextEra() {
   preview.textContent = G.era < 4 ? `下一纪：${ERA_NAMES[G.era+1]||''}` : ''; preview.style.opacity = '0';
 
   trans.classList.add('active');
+  SFX.eraGong();
   addLog(`═══ 进入${ERA_NAMES[G.era]} ═══`);
 
   // Phase 1: Summary (0.5s)
@@ -1614,11 +2239,13 @@ function selectRegion(k) {
 }
 
 function saveGame() {
+  SFX.click();
   localStorage.setItem('pivot_save', JSON.stringify(G));
   addLog('📜 存档成功');
 }
 
 function loadGame() {
+  SFX.click();
   const data = localStorage.getItem('pivot_save');
   if (data) {
     // Clear all overlay active states first
@@ -1642,6 +2269,7 @@ function loadGame() {
 }
 
 function showHelp() {
+  SFX.click();
   alert('【枢纽：天下之道】\n\n'
     + '你将经历中国3000年历史的四个纪元。\n'
     + '每个事件有三种选择，影响七大空间的发展。\n\n'
@@ -1691,6 +2319,7 @@ function checkAchievements() {
 }
 
 function showAchievementNotif(ach) {
+  SFX.achieveChime();
   const container = document.getElementById('achievement-container');
   const notif = document.createElement('div');
   notif.className = 'achievement-notif';
@@ -1713,10 +2342,10 @@ function renderAll() {
 
 // Opening screen animation
 function initStartScreen() {
-  // Generate particles
+  // Generate particles: 50 gold particles + 8 ember particles
   const particleContainer = document.getElementById('start-particles');
   if (particleContainer) {
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < 50; i++) {
       const p = document.createElement('div');
       p.className = 'start-particle';
       p.style.left = Math.random() * 100 + '%';
@@ -1729,9 +2358,24 @@ function initStartScreen() {
       p.style.height = p.style.width;
       particleContainer.appendChild(p);
     }
+    // Ember particles (larger, orange-red, slow rise)
+    for (let i = 0; i < 8; i++) {
+      const p = document.createElement('div');
+      p.className = 'start-particle ember';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.top = (60 + Math.random() * 40) + '%';
+      p.style.setProperty('--dx', (Math.random() * 40 - 20) + 'px');
+      p.style.setProperty('--dy', -(80 + Math.random() * 60) + 'px');
+      p.style.animationDuration = (12 + Math.random() * 10) + 's';
+      p.style.animationDelay = (Math.random() * 8) + 's';
+      const size = (3 + Math.random() * 2) + 'px';
+      p.style.width = size;
+      p.style.height = size;
+      particleContainer.appendChild(p);
+    }
   }
 
-  // Title animation
+  // Title animation with shockwave
   const mainTitle = document.getElementById('main-title');
   const mainSubtitle = document.getElementById('main-subtitle');
   if (mainTitle) {
@@ -1739,12 +2383,22 @@ function initStartScreen() {
     mainTitle.style.letterSpacing = '40px';
     setTimeout(() => {
       mainTitle.classList.add('animate-in');
+      // Trigger shockwave when title appears
+      setTimeout(() => {
+        const sw = document.getElementById('title-shockwave');
+        if (sw) sw.classList.add('active');
+      }, 600);
     }, 200);
   }
   if (mainSubtitle) {
     mainSubtitle.style.opacity = '0';
     setTimeout(() => {
       mainSubtitle.classList.add('animate-in');
+      // Trigger gold line after subtitle appears
+      setTimeout(() => {
+        const gl = document.getElementById('title-gold-line');
+        if (gl) gl.classList.add('expand');
+      }, 400);
     }, 1200);
   }
 
@@ -1752,9 +2406,17 @@ function initStartScreen() {
   const poemLines = document.querySelectorAll('.poem-line');
   poemLines.forEach((line, i) => {
     const delay = 1800 + i * 700;
-    // Last line (gold) has extra delay
+    // Last line (gold) has extra delay + mandate shake
     const extra = line.classList.contains('gold-line') ? 500 : 0;
-    setTimeout(() => line.classList.add('visible'), delay + extra);
+    setTimeout(() => {
+      line.classList.add('visible');
+      // "天命在手" shake
+      if (line.classList.contains('gold-line')) {
+        const screen = document.getElementById('start-screen');
+        screen.classList.add('mandate-shake');
+        setTimeout(() => screen.classList.remove('mandate-shake'), 500);
+      }
+    }, delay + extra);
   });
 
   // Show start button after poems
@@ -1774,13 +2436,46 @@ function initStartScreen() {
   const contBtn = document.getElementById('continue-btn');
   if (contBtn) {
     contBtn.addEventListener('click', function() {
+      SFX.click();
       if (this._customAction) { this._customAction(); }
       else { nextTurn(); }
     });
   }
+
+  // Bind mute buttons
+  document.querySelectorAll('.mute-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Init audio context on first interaction
+      if (!SFX._initialized) SFX.init();
+      SFX.toggleMute();
+    });
+  });
+
+  // Restore mute state from localStorage on load
+  if (localStorage.getItem('pivot_muted') === '1') {
+    SFX.muted = true;
+    document.querySelectorAll('.mute-btn').forEach(btn => { btn.textContent = '\u{1F507}'; });
+  }
+
+  // Start ambient sound on first user interaction with the start screen
+  const startScreen = document.getElementById('start-screen');
+  const _startAmbient = () => {
+    if (!SFX._initialized) SFX.init();
+    SFX.ambient();
+    startScreen.removeEventListener('click', _startAmbient);
+    startScreen.removeEventListener('touchstart', _startAmbient);
+  };
+  startScreen.addEventListener('click', _startAmbient);
+  startScreen.addEventListener('touchstart', _startAmbient, {passive:true});
 }
 
 function startGame() {
+  // Init audio on first user interaction and play effects
+  if (!SFX._initialized) SFX.init();
+  SFX.click();
+  SFX.fadeOutAmbient(1.5);
+
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('game').classList.add('active');
   initRegions();
