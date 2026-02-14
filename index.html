@@ -161,10 +161,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
   background:#000;
 }
 #era-transition.active{display:flex;}
-.era-trans-content{text-align:center;}
-.era-trans-content h2{font-size:2.5em;color:var(--gold);letter-spacing:8px;margin-bottom:12px;opacity:0;animation:fadeUp 1s 0.5s forwards;}
-.era-trans-content p{font-size:1.1em;color:#8a7a5a;letter-spacing:3px;opacity:0;animation:fadeUp 1s 1s forwards;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+/* era-trans styles moved to enhanced section below */
 
 /* 结局画面 */
 #ending-screen{
@@ -184,6 +181,80 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:rgba(201,169,110,0.2);border-radius:2px;}
+
+/* ========== 天命值 ========== */
+.mandate-score{display:flex;align-items:center;gap:6px;color:var(--gold);font-size:0.95em;letter-spacing:2px;}
+.mandate-score .ms-label{color:#8a7a5a;font-size:0.85em;}
+.mandate-score .ms-val{font-size:1.15em;min-width:32px;text-align:center;transition:color 0.3s;}
+.mandate-score.pulse-up .ms-val{animation:pulseGreen 0.6s;}
+.mandate-score.pulse-down .ms-val{animation:pulseRed 0.6s;}
+@keyframes pulseGreen{0%,100%{color:var(--gold);text-shadow:none;}50%{color:#6bba6b;text-shadow:0 0 12px rgba(107,186,107,0.6);}}
+@keyframes pulseRed{0%,100%{color:var(--gold);text-shadow:none;}50%{color:#c56b6b;text-shadow:0 0 12px rgba(197,107,107,0.6);}}
+
+/* ========== 效果逐帧揭示 ========== */
+.effect-tag{opacity:0;transform:translateY(8px);transition:opacity 0.35s,transform 0.35s;}
+.effect-tag.revealed{opacity:1;transform:translateY(0);}
+.continue-btn.hidden{opacity:0;pointer-events:none;}
+
+/* ========== 连锁反应飘字 ========== */
+#chain-notifications{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:12;display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:none;}
+.chain-notif{font-size:0.82em;color:var(--bright-gold);background:rgba(0,0,0,0.75);padding:4px 14px;border-radius:12px;border:1px solid rgba(201,169,110,0.3);opacity:0;animation:chainFloat 2.5s forwards;white-space:nowrap;}
+@keyframes chainFloat{0%{opacity:0;transform:translateY(10px);}15%{opacity:1;transform:translateY(0);}75%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-12px);}}
+.connection-line.chain-active{stroke:var(--bright-gold)!important;stroke-width:3!important;stroke-dasharray:none!important;opacity:1;animation:lineFlash 1.2s;}
+@keyframes lineFlash{0%,100%{opacity:0.3;}50%{opacity:1;}}
+
+/* ========== 选项风险色带 ========== */
+.choice-btn{position:relative;padding-left:24px;overflow:hidden;}
+.choice-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;}
+.choice-btn.risk-low::before{background:#4a7c59;}
+.choice-btn.risk-medium::before{background:#b8860b;}
+.choice-btn.risk-high::before{background:#8b2500;}
+
+/* ========== 屏幕特效 ========== */
+@keyframes screenShake{0%,100%{transform:translate(0);}10%{transform:translate(-4px,2px);}20%{transform:translate(3px,-3px);}30%{transform:translate(-3px,4px);}40%{transform:translate(4px,-2px);}50%{transform:translate(-2px,3px);}60%{transform:translate(3px,-1px);}70%{transform:translate(-3px,2px);}80%{transform:translate(2px,-3px);}90%{transform:translate(-1px,1px);}}
+#main-area.shake{animation:screenShake 0.5s;}
+#main-area.flash-gold::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(201,169,110,0.25) 0%,transparent 70%);pointer-events:none;animation:flashFade 0.8s forwards;}
+#main-area.flash-red::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(180,40,40,0.2) 0%,transparent 70%);pointer-events:none;animation:flashFade 0.8s forwards;}
+@keyframes flashFade{0%{opacity:1;}100%{opacity:0;}}
+
+/* ========== 势力排行榜 ========== */
+#power-ranking{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;}
+.rank-item{display:flex;align-items:center;gap:3px;font-size:0.78em;color:#999;white-space:nowrap;}
+.rank-item .rank-dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+.rank-item .rank-val{color:var(--gold);font-size:0.85em;min-width:16px;text-align:right;}
+.rank-item.rank-1{color:var(--bright-gold);font-size:0.88em;}
+.rank-item.rank-1 .rank-val{font-weight:bold;}
+#hegemony-notif{position:fixed;top:60px;left:50%;transform:translateX(-50%);z-index:150;background:linear-gradient(135deg,rgba(30,25,15,0.95),rgba(20,18,12,0.95));border:2px solid var(--gold);border-radius:8px;padding:12px 28px;color:var(--bright-gold);font-size:1.1em;letter-spacing:3px;box-shadow:0 0 30px rgba(201,169,110,0.3);opacity:0;pointer-events:none;animation:hegemonyPop 3.5s forwards;}
+@keyframes hegemonyPop{0%{opacity:0;transform:translateX(-50%) scale(0.8);}10%{opacity:1;transform:translateX(-50%) scale(1.05);}20%{transform:translateX(-50%) scale(1);}80%{opacity:1;}100%{opacity:0;}}
+
+/* ========== 时代过渡升级 ========== */
+.era-trans-content{text-align:center;max-width:520px;}
+.era-trans-summary{color:#8a7a5a;font-size:0.9em;line-height:1.8;margin-bottom:20px;opacity:0;}
+.era-trans-content h2{font-size:2.5em;color:var(--gold);letter-spacing:20px;margin-bottom:12px;opacity:0;}
+.era-trans-line{width:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:12px auto;transition:width 0.8s;}
+.era-trans-content p{font-size:1.1em;color:#8a7a5a;letter-spacing:3px;opacity:0;}
+.era-trans-preview{color:#6a5a3a;font-size:0.85em;margin-top:16px;opacity:0;letter-spacing:2px;}
+
+/* ========== 属性浮动数字 ========== */
+.stat-row{position:relative;}
+.stat-delta{position:absolute;right:-28px;top:-2px;font-size:0.75em;font-weight:bold;opacity:0;animation:floatDelta 1.2s forwards;pointer-events:none;}
+.stat-delta.pos{color:#6bba6b;}
+.stat-delta.neg{color:#c56b6b;}
+@keyframes floatDelta{0%{opacity:0;transform:translateY(4px);}20%{opacity:1;transform:translateY(0);}80%{opacity:1;transform:translateY(-8px);}100%{opacity:0;transform:translateY(-14px);}}
+
+/* ========== 事件卡分阶段入场 ========== */
+.event-era-tag,.event-title,.event-desc,.event-quote,#ev-choices .choice-btn{opacity:0;transform:translateY(10px);transition:opacity 0.4s,transform 0.4s;}
+.event-era-tag.visible,.event-title.visible,.event-desc.visible,.event-quote.visible,#ev-choices .choice-btn.visible{opacity:1;transform:translateY(0);}
+
+/* ========== 成就系统 ========== */
+#achievement-container{position:fixed;top:60px;right:16px;z-index:160;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.achievement-notif{background:linear-gradient(135deg,rgba(30,25,10,0.95),rgba(20,15,5,0.95));border:1px solid var(--gold);border-radius:6px;padding:10px 18px;color:var(--bright-gold);font-size:0.9em;letter-spacing:2px;box-shadow:0 0 20px rgba(201,169,110,0.25);opacity:0;transform:translateX(40px);animation:achieveSlide 3.5s forwards;}
+.achievement-notif .ach-icon{font-size:1.2em;margin-right:6px;}
+@keyframes achieveSlide{0%{opacity:0;transform:translateX(40px);}10%{opacity:1;transform:translateX(0);}80%{opacity:1;transform:translateX(0);}100%{opacity:0;transform:translateX(20px);}}
+
+/* ========== 地图节点脉冲 ========== */
+.node-circle.pulse{animation:nodePulse 0.6s;}
+@keyframes nodePulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.6);}}
 </style>
 </head>
 <body>
@@ -207,8 +278,11 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 <!-- ========== 时代过渡 ========== -->
 <div id="era-transition">
   <div class="era-trans-content">
+    <div class="era-trans-summary" id="era-trans-summary"></div>
     <h2 id="era-trans-title"></h2>
+    <div class="era-trans-line" id="era-trans-line"></div>
     <p id="era-trans-desc"></p>
+    <div class="era-trans-preview" id="era-trans-preview"></div>
   </div>
 </div>
 
@@ -217,6 +291,10 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
   <div id="top-bar">
     <div class="era-badge" id="era-display">第一纪 · 封建社会</div>
     <div class="turn-info">第 <span id="turn-num">1</span> 回合</div>
+    <div class="mandate-score" id="mandate-display">
+      <span class="ms-label">天命</span>
+      <span class="ms-val" id="mandate-val">0</span>
+    </div>
     <div class="resources">
       <div class="res-item">国力 <span id="res-power">50</span></div>
       <div class="res-item">民心 <span id="res-morale">50</span></div>
@@ -230,6 +308,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
   </div>
 
   <div id="main-area">
+    <div id="chain-notifications"></div>
     <svg id="map-svg" viewBox="0 0 600 450">
       <!-- 连接线 -->
       <line class="connection-line" x1="300" y1="150" x2="160" y2="180"/>
@@ -263,7 +342,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
       <div id="result-card" class="fade-in">
         <div class="result-text" id="res-text"></div>
         <div class="effect-tags" id="res-effects"></div>
-        <button class="continue-btn" onclick="nextTurn()">继 续</button>
+        <button class="continue-btn hidden" id="continue-btn" onclick="nextTurn()">继 续</button>
       </div>
     </div>
   </div>
@@ -274,11 +353,15 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
   </div>
 
   <div id="bottom-bar">
+    <div id="power-ranking"></div>
     <button class="bottom-btn" onclick="saveGame()">存档</button>
     <button class="bottom-btn" onclick="loadGame()">读档</button>
     <button class="bottom-btn" onclick="showHelp()">指南</button>
   </div>
 </div>
+
+<div id="achievement-container"></div>
+<div id="hegemony-notif" style="display:none;"></div>
 
 <!-- ========== 结局画面 ========== -->
 <div id="ending-screen">
@@ -518,8 +601,23 @@ let G = {
   totalMorale: 50,
   totalCulture: 50,
   log: [],
-  choices: []
+  choices: [],
+  mandateScore: 0,
+  eraStartSnapshot: null,
+  unlockedAchievements: []
 };
+
+// ==================== 成就定义 ====================
+const ACHIEVEMENTS = [
+  {id:'peak',name:'登峰造极',icon:'🏔️',desc:'任一区域属性达到10',check:()=>Object.values(G.regions).some(r=>r.prosperity>=10||r.military>=10||r.culture>=10||r.trade>=10)},
+  {id:'ironEmpire',name:'铁血帝国',icon:'⚔️',desc:'总武力超过50',check:()=>Object.values(G.regions).reduce((s,r)=>s+r.military,0)>50},
+  {id:'silkRoad',name:'丝路繁华',icon:'🐪',desc:'总商贸超过50',check:()=>Object.values(G.regions).reduce((s,r)=>s+r.trade,0)>50},
+  {id:'harmony',name:'天下大同',icon:'☯️',desc:'七区域实力均衡（方差<4）',check:()=>{const v=Object.values(G.regions).map(r=>r.prosperity+r.military+r.culture+r.trade);const a=v.reduce((s,x)=>s+x,0)/v.length;return v.reduce((s,x)=>s+Math.pow(x-a,2),0)/v.length<4;}},
+  {id:'cultural',name:'文运昌盛',icon:'📜',desc:'总文化超过50',check:()=>Object.values(G.regions).reduce((s,r)=>s+r.culture,0)>50},
+  {id:'prosperous',name:'国富民强',icon:'🏛️',desc:'总繁荣超过55',check:()=>Object.values(G.regions).reduce((s,r)=>s+r.prosperity,0)>55},
+  {id:'mandate80',name:'天命所归',icon:'👑',desc:'天命值超过180',check:()=>G.mandateScore>180},
+  {id:'explorer',name:'万邦来朝',icon:'🌏',desc:'所有区域商贸≥5',check:()=>Object.values(G.regions).every(r=>r.trade>=5)}
+];
 
 function initRegions() {
   G.regions = {};
@@ -571,7 +669,6 @@ function renderMap() {
 function renderTopBar() {
   document.getElementById('era-display').textContent = ERA_NAMES[G.era];
   document.getElementById('turn-num').textContent = G.turn;
-  // 计算总值
   let p=0,m=0,c=0;
   for (let k in G.regions) {
     const r = G.regions[k];
@@ -581,6 +678,45 @@ function renderTopBar() {
   document.getElementById('res-power').textContent = p;
   document.getElementById('res-morale').textContent = m;
   document.getElementById('res-culture').textContent = c;
+}
+
+function calculateMandateScore() {
+  let totalScore = 0;
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    totalScore += r.prosperity + r.military + r.culture + r.trade;
+  }
+  const vals = Object.values(G.regions).map(r => r.prosperity + r.military + r.culture + r.trade);
+  const avg = vals.reduce((a,b) => a+b, 0) / vals.length;
+  const variance = vals.reduce((a,v) => a + Math.pow(v-avg, 2), 0) / vals.length;
+  totalScore += Math.max(0, Math.round(30 - variance));
+  return totalScore;
+}
+
+function animateMandateScore(newScore) {
+  const el = document.getElementById('mandate-val');
+  const container = document.getElementById('mandate-display');
+  const oldScore = G.mandateScore;
+  if (newScore === oldScore) return;
+  const diff = newScore - oldScore;
+  const cls = diff > 0 ? 'pulse-up' : 'pulse-down';
+  container.classList.remove('pulse-up','pulse-down');
+  void container.offsetWidth;
+  container.classList.add(cls);
+  const steps = 20;
+  const stepVal = diff / steps;
+  let current = oldScore;
+  let step = 0;
+  const timer = setInterval(() => {
+    step++;
+    current += stepVal;
+    el.textContent = Math.round(current);
+    if (step >= steps) {
+      clearInterval(timer);
+      el.textContent = newScore;
+      G.mandateScore = newScore;
+    }
+  }, 30);
 }
 
 function addLog(text) {
@@ -595,10 +731,22 @@ function addLog(text) {
 
 // ==================== 事件系统 ====================
 
+function assessRisk(choice) {
+  let negCount = 0, negSum = 0;
+  for (let region in choice.effects) {
+    const eff = choice.effects[region];
+    for (let v of [eff.p,eff.m,eff.c,eff.t]) {
+      if (v && v < 0) { negCount++; negSum += Math.abs(v); }
+    }
+  }
+  if (negSum >= 4 || negCount >= 3) return 'high';
+  if (negSum >= 2 || negCount >= 2) return 'medium';
+  return 'low';
+}
+
 function showEvent() {
   const events = EVENTS[G.era];
   if (!events || G.eventIdx >= events.length) {
-    // 纪元结束
     if (G.era < 4) {
       nextEra();
     } else {
@@ -608,47 +756,80 @@ function showEvent() {
   }
 
   const ev = events[G.eventIdx];
-  document.getElementById('ev-era').textContent = ev.isTransformation ? '⚡ 历史转折点' : ERA_NAMES[G.era];
-  document.getElementById('ev-title').textContent = ev.title;
-  document.getElementById('ev-desc').textContent = ev.description;
-  document.getElementById('ev-quote').textContent = ev.quote;
+  const eraTag = document.getElementById('ev-era');
+  const titleEl = document.getElementById('ev-title');
+  const descEl = document.getElementById('ev-desc');
+  const quoteEl = document.getElementById('ev-quote');
+
+  eraTag.textContent = ev.isTransformation ? '⚡ 历史转折点' : ERA_NAMES[G.era];
+  titleEl.textContent = ev.title;
+  descEl.textContent = ev.description;
+  quoteEl.textContent = ev.quote;
+
+  // Reset visibility
+  [eraTag,titleEl,descEl,quoteEl].forEach(el => el.classList.remove('visible'));
 
   let choicesHtml = '';
   ev.choices.forEach((ch, i) => {
-    choicesHtml += `<button class="choice-btn" onclick="makeChoice(${i})"><span class="choice-num">${['甲','乙','丙'][i]}</span>${ch.text}</button>`;
+    const risk = assessRisk(ch);
+    const riskLabel = risk === 'high' ? ' ⚡' : '';
+    choicesHtml += `<button class="choice-btn risk-${risk}" onclick="makeChoice(${i})"><span class="choice-num">${['甲','乙','丙'][i]}</span>${ch.text}${riskLabel}</button>`;
   });
   document.getElementById('ev-choices').innerHTML = choicesHtml;
 
   document.getElementById('event-overlay').classList.add('active');
+
+  // Staggered reveal
+  setTimeout(() => eraTag.classList.add('visible'), 100);
+  setTimeout(() => titleEl.classList.add('visible'), 300);
+  setTimeout(() => descEl.classList.add('visible'), 700);
+  setTimeout(() => quoteEl.classList.add('visible'), 1100);
+  const btns = document.querySelectorAll('#ev-choices .choice-btn');
+  btns.forEach((btn, i) => {
+    setTimeout(() => btn.classList.add('visible'), 1400 + i * 200);
+  });
 }
 
 function makeChoice(idx) {
   const ev = EVENTS[G.era][G.eventIdx];
   const choice = ev.choices[idx];
 
-  // 应用效果
+  // Snapshot stats before change
+  const beforeStats = {};
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    beforeStats[k] = {prosperity:r.prosperity, military:r.military, culture:r.culture, trade:r.trade};
+  }
+
+  // Apply effects
   const effectTags = [];
+  const affectedRegions = new Set();
   for (let region in choice.effects) {
     const eff = choice.effects[region];
     const r = G.regions[region];
     if (!r) continue;
-    if (eff.p) { r.prosperity = clamp(r.prosperity + eff.p, 0, 10); effectTags.push({region:REGION_META[region].name, stat:'兴', val:eff.p}); }
-    if (eff.m) { r.military = clamp(r.military + eff.m, 0, 10); effectTags.push({region:REGION_META[region].name, stat:'武', val:eff.m}); }
-    if (eff.c) { r.culture = clamp(r.culture + eff.c, 0, 10); effectTags.push({region:REGION_META[region].name, stat:'文', val:eff.c}); }
-    if (eff.t) { r.trade = clamp(r.trade + eff.t, 0, 10); effectTags.push({region:REGION_META[region].name, stat:'商', val:eff.t}); }
+    affectedRegions.add(region);
+    if (eff.p) { r.prosperity = clamp(r.prosperity + eff.p, 0, 10); effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'兴', val:eff.p}); }
+    if (eff.m) { r.military = clamp(r.military + eff.m, 0, 10); effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'武', val:eff.m}); }
+    if (eff.c) { r.culture = clamp(r.culture + eff.c, 0, 10); effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'文', val:eff.c}); }
+    if (eff.t) { r.trade = clamp(r.trade + eff.t, 0, 10); effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'商', val:eff.t}); }
   }
 
-  // 连锁反应
-  applyChainReactions();
+  // Chain reactions
+  const chains = applyChainReactions();
 
-  // 记录
+  // Screen effect
+  screenEffect(ev, choice, effectTags);
+
+  // Record
   G.choices.push({era:G.era, event:ev.id, choice:idx});
   addLog(`${ev.title} → ${choice.text.slice(0,12)}…`);
 
-  // 显示结果
+  // Show result overlay
   document.getElementById('event-overlay').classList.remove('active');
   document.getElementById('res-text').textContent = choice.consequence;
 
+  // Build effect tags (hidden initially)
   let tagsHtml = '';
   effectTags.forEach(t => {
     const cls = t.val > 0 ? 'positive' : 'negative';
@@ -656,33 +837,189 @@ function makeChoice(idx) {
     tagsHtml += `<span class="effect-tag ${cls}">${t.region} ${t.stat}${sign}${t.val}</span>`;
   });
   document.getElementById('res-effects').innerHTML = tagsHtml;
+
+  // Hide continue button
+  const contBtn = document.getElementById('continue-btn');
+  contBtn.classList.add('hidden');
+
   document.getElementById('result-overlay').classList.add('active');
 
-  // 如果是终局事件
+  // Sequential reveal of effect tags + map pulse
+  const tags = document.querySelectorAll('#res-effects .effect-tag');
+  let revealIdx = 0;
+  const regionGroups = {};
+  effectTags.forEach((t, i) => {
+    if (!regionGroups[t.regionKey]) regionGroups[t.regionKey] = [];
+    regionGroups[t.regionKey].push(i);
+  });
+  const groupKeys = Object.keys(regionGroups);
+  groupKeys.forEach((rk, gi) => {
+    setTimeout(() => {
+      regionGroups[rk].forEach(ti => {
+        if (tags[ti]) tags[ti].classList.add('revealed');
+      });
+      pulseMapNode(rk);
+    }, 400 * (gi + 1));
+  });
+
+  // Show continue after all revealed
+  const totalRevealTime = 400 * (groupKeys.length + 1) + 300;
+  setTimeout(() => {
+    // Show chain notifications after effects
+    if (chains.length > 0) {
+      showChainNotifications(chains);
+    }
+  }, totalRevealTime);
+
+  const chainTime = chains.length > 0 ? chains.length * 500 + 800 : 0;
+  setTimeout(() => {
+    contBtn.classList.remove('hidden');
+  }, totalRevealTime + chainTime);
+
+  // Finale handling
   if (ev.isFinale && choice.ending) {
-    document.querySelector('.continue-btn').onclick = () => showEnding(choice.ending);
+    contBtn.onclick = () => showEnding(choice.ending);
+  } else {
+    contBtn.onclick = () => nextTurn();
   }
 
   renderMap();
-  renderRegionList();
   renderTopBar();
+
+  // Show stat deltas on region list
+  showStatDeltas(beforeStats);
+  renderRegionList();
+
+  // Update mandate score
+  const newMandate = calculateMandateScore();
+  animateMandateScore(newMandate);
+
+  // Update power ranking
+  renderPowerRanking();
+
+  // Check achievements
+  checkAchievements();
+}
+
+function pulseMapNode(regionKey) {
+  const nodes = document.querySelectorAll('.region-node');
+  const keys = Object.keys(REGION_META);
+  const idx = keys.indexOf(regionKey);
+  if (idx >= 0 && nodes[idx]) {
+    const circle = nodes[idx].querySelector('.node-circle');
+    if (circle) {
+      circle.classList.remove('pulse');
+      void circle.offsetWidth;
+      circle.classList.add('pulse');
+    }
+  }
+}
+
+function screenEffect(ev, choice, effectTags) {
+  const mainArea = document.getElementById('main-area');
+  const title = ev.title;
+  const negCount = effectTags.filter(t => t.val < 0).length;
+  const bigPos = effectTags.filter(t => t.val >= 3).length;
+  const isWar = /战|乱|侵|伐|叛|寇|兵/.test(title);
+  const isDisaster = /祸|灾|亡|破|毁/.test(title);
+  const isGlory = /盛世|繁华|昌|通|兴邦|变法|开放/.test(title) || ev.isTransformation;
+
+  mainArea.classList.remove('shake','flash-gold','flash-red');
+  void mainArea.offsetWidth;
+
+  if (isWar || isDisaster) {
+    mainArea.classList.add('shake');
+    if (negCount >= 3) mainArea.classList.add('flash-red');
+  } else if (isGlory || bigPos > 0) {
+    mainArea.classList.add('flash-gold');
+  } else if (negCount >= 3) {
+    mainArea.classList.add('flash-red');
+  }
+
+  setTimeout(() => {
+    mainArea.classList.remove('shake','flash-gold','flash-red');
+  }, 1000);
+}
+
+function showStatDeltas(beforeStats) {
+  // Will be rendered after renderRegionList via floating numbers
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.region-card');
+    const keys = Object.keys(REGION_META);
+    keys.forEach((k, ki) => {
+      if (!cards[ki]) return;
+      const b = beforeStats[k], a = G.regions[k];
+      const statMap = [
+        {key:'prosperity', before:b.prosperity, after:a.prosperity},
+        {key:'military', before:b.military, after:a.military},
+        {key:'culture', before:b.culture, after:a.culture},
+        {key:'trade', before:b.trade, after:a.trade}
+      ];
+      const rows = cards[ki].querySelectorAll('.stat-row');
+      statMap.forEach((s, si) => {
+        const diff = s.after - s.before;
+        if (diff !== 0 && rows[si]) {
+          const delta = document.createElement('span');
+          delta.className = `stat-delta ${diff > 0 ? 'pos' : 'neg'}`;
+          delta.textContent = (diff > 0 ? '+' : '') + diff;
+          rows[si].appendChild(delta);
+          setTimeout(() => delta.remove(), 1300);
+        }
+      });
+    });
+  }, 50);
 }
 
 function applyChainReactions() {
-  // 中原强 → 草原也会因贸易受益（但军事上会联合对抗）
+  const chains = [];
   const zp = G.regions.zhongyuan.prosperity;
   if (zp > 7) {
     G.regions.caoyuan.military = clamp(G.regions.caoyuan.military + 1, 0, 10);
     G.regions.guodu.trade = clamp(G.regions.guodu.trade + 1, 0, 10);
+    chains.push({from:'zhongyuan',to:'caoyuan',text:'中原繁荣 → 草原武力+1'});
+    chains.push({from:'zhongyuan',to:'guodu',text:'中原繁荣 → 过渡商贸+1'});
   }
-  // 草原强 → 过渡地带动荡
   if (G.regions.caoyuan.military > 8) {
     G.regions.guodu.prosperity = clamp(G.regions.guodu.prosperity - 1, 0, 10);
+    chains.push({from:'caoyuan',to:'guodu',text:'草原强盛 → 过渡地带动荡-1'});
   }
-  // 海洋贸易 → 带动西南和中原
   if (G.regions.haiyang.trade > 7) {
     G.regions.xinan.trade = clamp(G.regions.xinan.trade + 1, 0, 10);
+    chains.push({from:'haiyang',to:'xinan',text:'海洋通商 → 西南商贸+1'});
   }
+  return chains;
+}
+
+function showChainNotifications(chains) {
+  const container = document.getElementById('chain-notifications');
+  container.innerHTML = '';
+  chains.forEach((ch, i) => {
+    setTimeout(() => {
+      const notif = document.createElement('div');
+      notif.className = 'chain-notif';
+      notif.textContent = '⚡ ' + ch.text;
+      container.appendChild(notif);
+      highlightConnection(ch.from, ch.to);
+      pulseMapNode(ch.to);
+      setTimeout(() => notif.remove(), 2600);
+    }, i * 500);
+  });
+}
+
+function highlightConnection(fromKey, toKey) {
+  const fromM = REGION_META[fromKey], toM = REGION_META[toKey];
+  if (!fromM || !toM) return;
+  const lines = document.querySelectorAll('.connection-line');
+  lines.forEach(line => {
+    const x1=+line.getAttribute('x1'),y1=+line.getAttribute('y1');
+    const x2=+line.getAttribute('x2'),y2=+line.getAttribute('y2');
+    const matchA = (Math.abs(x1-fromM.x)<5 && Math.abs(y1-fromM.y)<5 && Math.abs(x2-toM.x)<5 && Math.abs(y2-toM.y)<5);
+    const matchB = (Math.abs(x2-fromM.x)<5 && Math.abs(y2-fromM.y)<5 && Math.abs(x1-toM.x)<5 && Math.abs(y1-toM.y)<5);
+    if (matchA || matchB) {
+      line.classList.add('chain-active');
+      setTimeout(() => line.classList.remove('chain-active'), 1200);
+    }
+  });
 }
 
 function nextTurn() {
@@ -693,22 +1030,66 @@ function nextTurn() {
 }
 
 function nextEra() {
+  // Compute era summary before advancing
+  let summaryText = '';
+  if (G.eraStartSnapshot) {
+    const deltas = [];
+    for (let k in G.regions) {
+      const now = G.regions[k];
+      const was = G.eraStartSnapshot[k];
+      if (!was) continue;
+      const totalNow = now.prosperity + now.military + now.culture + now.trade;
+      const totalWas = was.prosperity + was.military + was.culture + was.trade;
+      const diff = totalNow - totalWas;
+      if (diff !== 0) deltas.push(`${REGION_META[k].name} ${diff>0?'+':''}${diff}`);
+    }
+    if (deltas.length > 0) summaryText = '本纪变化：' + deltas.join('  ');
+  }
+
   G.era++;
   G.eventIdx = 0;
 
-  // 显示时代过渡
-  document.getElementById('era-trans-title').textContent = ERA_NAMES[G.era];
-  document.getElementById('era-trans-desc').textContent = ERA_DESCS[G.era];
-  const trans = document.getElementById('era-transition');
-  trans.classList.add('active');
+  // Snapshot for next era
+  G.eraStartSnapshot = {};
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    G.eraStartSnapshot[k] = {prosperity:r.prosperity, military:r.military, culture:r.culture, trade:r.trade};
+  }
 
+  const trans = document.getElementById('era-transition');
+  const summary = document.getElementById('era-trans-summary');
+  const title = document.getElementById('era-trans-title');
+  const line = document.getElementById('era-trans-line');
+  const desc = document.getElementById('era-trans-desc');
+  const preview = document.getElementById('era-trans-preview');
+
+  // Reset
+  summary.style.opacity = '0'; summary.textContent = summaryText;
+  title.textContent = ERA_NAMES[G.era]; title.style.opacity = '0'; title.style.letterSpacing = '20px';
+  line.style.width = '0';
+  desc.textContent = ERA_DESCS[G.era]; desc.style.opacity = '0';
+  preview.textContent = G.era < 4 ? `下一纪：${ERA_NAMES[G.era+1]||''}` : ''; preview.style.opacity = '0';
+
+  trans.classList.add('active');
   addLog(`═══ 进入${ERA_NAMES[G.era]} ═══`);
 
+  // Phase 1: Summary (0.5s)
+  setTimeout(() => { summary.style.transition = 'opacity 0.8s'; summary.style.opacity = '1'; }, 500);
+  // Phase 2: Title with letter-spacing collapse (1.5s)
+  setTimeout(() => { title.style.transition = 'opacity 1s, letter-spacing 1.2s'; title.style.opacity = '1'; title.style.letterSpacing = '8px'; }, 1500);
+  // Phase 3: Line expand (2.8s)
+  setTimeout(() => { line.style.width = '200px'; }, 2800);
+  // Phase 4: Description (3.5s)
+  setTimeout(() => { desc.style.transition = 'opacity 0.8s'; desc.style.opacity = '1'; }, 3500);
+  // Phase 5: Preview (4.2s)
+  setTimeout(() => { preview.style.transition = 'opacity 0.6s'; preview.style.opacity = '1'; }, 4200);
+  // Phase 6: Close (5.5s)
   setTimeout(() => {
     trans.classList.remove('active');
     renderTopBar();
+    renderPowerRanking();
     showEvent();
-  }, 3000);
+  }, 5500);
 }
 
 function showEnding(endingKey) {
@@ -801,10 +1182,62 @@ function showHelp() {
     + '—— 基于施展《枢纽：3000年的中国》');
 }
 
+function renderPowerRanking() {
+  const ranked = Object.keys(REGION_META).map(k => {
+    const r = G.regions[k];
+    return {key:k, name:REGION_META[k].name, color:REGION_META[k].color, total:r.prosperity+r.military+r.culture+r.trade};
+  }).sort((a,b) => b.total - a.total);
+
+  let html = '';
+  ranked.forEach((item, i) => {
+    const crown = i === 0 ? '👑 ' : '';
+    html += `<div class="rank-item ${i===0?'rank-1':''}"><span class="rank-dot" style="background:${item.color}"></span>${crown}${item.name} <span class="rank-val">${item.total}</span></div>`;
+  });
+  document.getElementById('power-ranking').innerHTML = html;
+
+  // Hegemony check
+  if (ranked.length >= 2 && ranked[0].total > ranked[1].total * 1.5) {
+    showHegemonyNotif(ranked[0].name);
+  }
+}
+
+function showHegemonyNotif(name) {
+  const el = document.getElementById('hegemony-notif');
+  el.textContent = `👑 ${name} 称霸天下！`;
+  el.style.display = 'block';
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = 'hegemonyPop 3.5s forwards';
+  setTimeout(() => { el.style.display = 'none'; }, 3600);
+}
+
+function checkAchievements() {
+  ACHIEVEMENTS.forEach(ach => {
+    if (G.unlockedAchievements.includes(ach.id)) return;
+    if (ach.check()) {
+      G.unlockedAchievements.push(ach.id);
+      showAchievementNotif(ach);
+    }
+  });
+}
+
+function showAchievementNotif(ach) {
+  const container = document.getElementById('achievement-container');
+  const notif = document.createElement('div');
+  notif.className = 'achievement-notif';
+  notif.innerHTML = `<span class="ach-icon">${ach.icon}</span>${ach.name}`;
+  container.appendChild(notif);
+  setTimeout(() => notif.remove(), 3600);
+}
+
 function renderAll() {
   renderMap();
   renderRegionList();
   renderTopBar();
+  renderPowerRanking();
+  const newMandate = calculateMandateScore();
+  document.getElementById('mandate-val').textContent = newMandate;
+  G.mandateScore = newMandate;
 }
 
 // ==================== 启动 ====================
@@ -818,6 +1251,14 @@ function startGame() {
   G.eventIdx = 0;
   G.log = [];
   G.choices = [];
+  G.mandateScore = 0;
+  G.unlockedAchievements = [];
+  // Snapshot for era 1
+  G.eraStartSnapshot = {};
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    G.eraStartSnapshot[k] = {prosperity:r.prosperity, military:r.military, culture:r.culture, trade:r.trade};
+  }
   renderAll();
   addLog('天命初开，经略天下');
 
