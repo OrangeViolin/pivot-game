@@ -199,27 +199,34 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 @keyframes transformPulse{0%,100%{box-shadow:0 0 4px rgba(241,196,15,0.2);}50%{box-shadow:0 0 16px rgba(241,196,15,0.5);}}
 @keyframes finalePulse{0%,100%{box-shadow:0 0 6px rgba(241,196,15,0.3);}50%{box-shadow:0 0 20px rgba(241,196,15,0.6),0 0 40px rgba(201,169,110,0.2);}}
 
-.event-progress-bar{height:4px;background:linear-gradient(90deg,var(--gold),var(--bright-gold));border-radius:2px;transition:width 0.5s ease;margin-bottom:14px;box-shadow:0 0 6px rgba(201,169,110,0.25);}
-.event-progress-text{font-size:0.7em;color:rgba(201,169,110,0.5);letter-spacing:1px;text-align:right;margin-bottom:4px;}
-.event-era-tag{font-size:0.78em;color:var(--gold);letter-spacing:2px;opacity:0.7;margin-bottom:4px;}
-.event-title{font-size:2em;color:var(--bright-gold);margin-bottom:14px;letter-spacing:3px;padding-bottom:10px;border-bottom:1px solid rgba(201,169,110,0.2);line-height:1.3;font-weight:bold;}
-.event-desc{font-size:0.95em;color:#bbb;line-height:2.0;margin-bottom:14px;}
-.event-quote{font-size:0.85em;color:#8a8a7a;font-style:italic;margin-bottom:20px;padding:10px 16px;border-left:2px solid rgba(201,169,110,0.3);position:relative;background:rgba(201,169,110,0.03);border-radius:0 6px 6px 0;}
-.event-quote::before{content:'\201C';position:absolute;top:-8px;left:4px;font-size:2em;color:rgba(201,169,110,0.25);font-style:normal;line-height:1;}
-.event-quote::after{content:'\201D';font-size:1.5em;color:rgba(201,169,110,0.25);font-style:normal;vertical-align:-0.2em;margin-left:4px;}
+.event-progress-bar{height:4px;background:linear-gradient(90deg,var(--gold),var(--bright-gold));border-radius:2px;transition:width 0.5s ease;margin-bottom:10px;box-shadow:0 0 6px rgba(201,169,110,0.25);}
+.event-title{font-size:2.2em;color:var(--bright-gold);margin-bottom:8px;letter-spacing:4px;line-height:1.3;font-weight:bold;text-align:center;}
+.event-desc{font-size:0.92em;color:#aaa;line-height:1.6;margin-bottom:10px;text-align:center;}
+.event-expand-btn{font-size:0.75em;color:rgba(201,169,110,0.5);text-align:center;cursor:pointer;padding:4px 0 10px;letter-spacing:1px;transition:color 0.2s;}
+.event-expand-btn:hover{color:var(--gold);}
+.event-detail-panel{background:rgba(201,169,110,0.03);border-radius:6px;padding:12px;margin-bottom:10px;animation:fadeInUp 0.3s ease;}
 .choice-btn{
-  display:block;width:100%;padding:14px 18px;margin-bottom:8px;font-family:inherit;
-  font-size:0.92em;cursor:pointer;background:rgba(201,169,110,0.04);
-  color:#ccc;border:1px solid rgba(201,169,110,0.15);border-radius:6px;
-  text-align:left;transition:all 0.25s;line-height:1.5;
+  display:block;width:100%;padding:14px 16px 10px;margin-bottom:10px;font-family:inherit;
+  font-size:0.95em;cursor:pointer;background:rgba(201,169,110,0.04);
+  color:#ddd;border:1px solid rgba(201,169,110,0.18);border-radius:8px;
+  text-align:left;transition:all 0.2s cubic-bezier(.4,0,.2,1);line-height:1.4;
+  position:relative;overflow:hidden;
 }
-.choice-btn:hover{
-  background:rgba(201,169,110,0.1);border-color:var(--gold);color:var(--gold);
-  transform:translateX(4px) scale(1.01);
-  box-shadow:0 4px 20px rgba(201,169,110,0.15);
+.choice-btn:hover,.choice-btn:active{
+  background:rgba(201,169,110,0.12);border-color:var(--gold);color:#fff;
+  transform:translateX(6px);box-shadow:0 2px 16px rgba(201,169,110,0.2);
 }
-.choice-btn.risk-high:hover{box-shadow:0 4px 20px rgba(139,37,0,0.3);}
-.choice-btn .choice-num{color:var(--gold);margin-right:8px;font-weight:bold;}
+.choice-btn.risk-high{border-left:3px solid rgba(139,37,0,0.6);}
+.choice-btn.risk-medium{border-left:3px solid rgba(184,134,11,0.5);}
+.choice-btn.risk-low{border-left:3px solid rgba(74,124,89,0.5);}
+.choice-btn .choice-label{font-weight:bold;color:var(--bright-gold);font-size:1.05em;display:block;margin-bottom:4px;}
+.choice-btn .choice-effects{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+.choice-btn .ce-region{font-size:0.8em;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.06);display:inline-flex;align-items:center;gap:3px;}
+.choice-btn .ce-arrow{font-weight:bold;font-size:0.9em;}
+.ce-arrow.up{color:#6bba6b;}.ce-arrow.down{color:#c56b6b;}
+.choice-btn .choice-risk{font-size:0.72em;color:#888;position:absolute;top:8px;right:10px;letter-spacing:1px;}
+.auto-advance-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--gold);border-radius:2px;animation:autoAdvance 2.5s linear forwards;}
+@keyframes autoAdvance{from{width:0}to{width:100%}}
 
 /* Crisis panel border glows by type */
 #crisis-panel.crisis-war{border-left-color:rgba(231,76,60,0.4);}
@@ -458,8 +465,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 @keyframes floatDelta{0%{opacity:0;transform:translateY(4px);}20%{opacity:1;transform:translateY(0);}80%{opacity:1;transform:translateY(-8px);}100%{opacity:0;transform:translateY(-14px);}}
 
 /* ========== 事件卡分阶段入场 ========== */
-#crisis-content .event-era-tag,#crisis-content .event-title,#crisis-content .event-desc,#crisis-content .event-quote,#crisis-content .choice-btn{opacity:0;transform:translateY(10px);transition:opacity 0.4s,transform 0.4s;}
-#crisis-content .event-era-tag.visible,#crisis-content .event-title.visible,#crisis-content .event-desc.visible,#crisis-content .event-quote.visible,#crisis-content .choice-btn.visible{opacity:1;transform:translateY(0);}
+#crisis-content .event-title,#crisis-content .event-desc,#crisis-content .choice-btn{opacity:0;transform:translateY(8px);transition:opacity 0.3s,transform 0.3s;}
+#crisis-content .event-title.visible,#crisis-content .event-desc.visible,#crisis-content .choice-btn.visible{opacity:1;transform:translateY(0);}
 
 /* ========== 成就系统 ========== */
 #achievement-container{position:fixed;top:60px;right:16px;z-index:160;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
@@ -2773,57 +2780,54 @@ function showEvent() {
   const totalEvents = events.length;
   const currentNum = G.eventIdx + 1;
 
-  // Build HTML into crisis panel
+  // Build HTML — minimal text, maximum visual
   let html = '';
-  html += `<div class="event-progress-text">第 ${currentNum}/${totalEvents} 事</div>`;
   html += `<div class="event-progress-bar" style="width:${currentNum/totalEvents*100}%"></div>`;
 
-  // Animated event icon based on crisis type
+  // Animated event icon
   html += _buildEventIcon(crisis.type);
 
-  html += `<div class="crisis-tag ${crisis.cls}">${crisis.label}</div>`;
-  html += `<div class="event-era-tag" id="ev-era">${ev.isTransformation ? '\u26A1 历史转折点' : ERA_NAMES[G.era]}</div>`;
+  // Title is the HERO — big and bold
   html += `<div class="event-title dramatic" id="ev-title">${ev.title}</div>`;
-  // Shorten description display: truncate if too long
-  const shortDesc = ev.description.length > 60 ? ev.description.slice(0, 58) + '……' : ev.description;
+
+  // One-line context only — no wall of text
+  const shortDesc = ev.description.length > 45 ? ev.description.slice(0, 43) + '…' : ev.description;
   html += `<div class="event-desc" id="ev-desc">${shortDesc}</div>`;
-  // Event background from 施展's analysis — collapsed by default
+
+  // Expandable detail (quote + background + advisor) — hidden by default
   const bg = (typeof EVENT_BACKGROUND !== 'undefined') ? EVENT_BACKGROUND[ev.id] : '';
-  if (bg) {
-    html += `<div class="event-bg-toggle" id="ev-bg-toggle" onclick="toggleEventBg()"><span class="toggle-arrow">▶</span> 📖 深度解读</div>`;
-    html += `<div class="event-background collapsed" id="ev-bg">${bg}</div>`;
-  }
-  html += `<div class="event-quote" id="ev-quote">${ev.quote}</div>`;
+  html += `<div class="event-expand-btn" onclick="toggleEventDetail()" id="ev-expand">📜 了解更多</div>`;
+  html += `<div class="event-detail-panel" id="ev-detail" style="display:none;">`;
+  html += `<div style="color:#999;font-size:0.85em;line-height:1.7;margin-bottom:8px;">${ev.description}</div>`;
+  if (ev.quote) html += `<div style="color:#8a7a5a;font-style:italic;font-size:0.82em;margin-bottom:8px;padding-left:10px;border-left:2px solid rgba(201,169,110,0.2);">${ev.quote}</div>`;
+  if (bg) html += `<div style="color:#a89868;font-size:0.82em;line-height:1.6;margin-top:8px;padding:8px 12px;background:rgba(201,169,110,0.04);border-radius:4px;">📖 ${bg}</div>`;
+  html += `</div>`;
 
-  // Advisor section — compact icon mode
-  html += buildAdvisorCompactHtml(ev.id);
-
-  // Get advisor recommendations for choice buttons
-  const advisorRecs = getAdvisorRecsForEvent(ev.id);
-
-  // Choices
+  // Visual choice cards — no exam numbering
   html += '<div id="ev-choices">';
   ev.choices.forEach((ch, i) => {
     const risk = assessRisk(ch);
-    const riskLabel = risk === 'high' ? ' \u26A1' : '';
-    let previewParts = [];
+    const riskLabels = {low:'稳健',medium:'有险',high:'⚡高险'};
+    // Build visual effect arrows per region
+    let effectsHtml = '';
     for (let region in ch.effects) {
       const eff = ch.effects[region];
       const rn = REGION_META[region] ? REGION_META[region].name : region;
-      let parts = [];
-      const statNames = {p:'\u5174',m:'\u6B66',c:'\u6587',t:'\u5546'};
-      for (let sk in statNames) {
-        if (eff[sk] && eff[sk] !== 0) {
-          const cls = eff[sk] > 0 ? 'cp-pos' : 'cp-neg';
-          const sign = eff[sk] > 0 ? '+' : '';
-          parts.push('<span class="'+cls+'">'+statNames[sk]+sign+eff[sk]+'</span>');
-        }
-      }
-      if (parts.length > 0) previewParts.push('<span class="cp-region">'+rn+'</span> '+parts.join(' '));
+      let arrows = '';
+      const sum = (eff.p||0) + (eff.m||0) + (eff.c||0) + (eff.t||0);
+      const count = Math.min(Math.abs(sum), 4);
+      const dir = sum >= 0 ? 'up' : 'down';
+      const arrow = sum >= 0 ? '▲' : '▼';
+      for (let a = 0; a < Math.max(count, 1); a++) arrows += arrow;
+      effectsHtml += `<span class="ce-region"><span style="color:${REGION_META[region]?REGION_META[region].color:'#aaa'}">${rn}</span> <span class="ce-arrow ${dir}">${arrows}</span></span>`;
     }
-    const previewHtml = previewParts.length > 0 ? '<div class="choice-preview">'+previewParts.join(' | ')+'</div>' : '';
-    const recIcons = advisorRecs[i] ? '<span class="choice-advisor-icon">' + advisorRecs[i].join('') + '</span>' : '';
-    html += '<button class="choice-btn risk-'+risk+'" onclick="makeChoice('+i+',event)"><span class="choice-num">'+['\u7532','\u4E59','\u4E19'][i]+'</span>'+ch.text+riskLabel+recIcons+previewHtml+'</button>';
+    // Short choice label (first 12 chars or natural break)
+    const labelText = ch.text.length > 14 ? ch.text.slice(0, 12) + '…' : ch.text;
+    html += `<button class="choice-btn risk-${risk}" onclick="makeChoice(${i},event)" data-choice="${i}">`;
+    html += `<span class="choice-label">${labelText}</span>`;
+    html += `<div class="choice-effects">${effectsHtml}</div>`;
+    html += `<span class="choice-risk">${riskLabels[risk]}</span>`;
+    html += `</button>`;
   });
   html += '</div>';
 
@@ -2832,23 +2836,14 @@ function showEvent() {
   // Update timeline
   renderTimeline();
 
-  // Staggered reveal
-  const pace = ev.isTransformation ? 1.5 : 1.0;
-  const eraTag = content.querySelector('.event-era-tag');
+  // FAST reveal — game feel, not reading
   const titleEl = content.querySelector('.event-title');
   const descEl = content.querySelector('.event-desc');
-  const quoteEl = content.querySelector('.event-quote');
-  const crisisTag = content.querySelector('.crisis-tag');
-  const bgToggle = content.querySelector('.event-bg-toggle');
-  if (crisisTag) { crisisTag.style.opacity='0'; crisisTag.style.transition='opacity 0.4s'; setTimeout(()=>{crisisTag.style.opacity='1';}, 50); }
-  setTimeout(() => eraTag && eraTag.classList.add('visible'), 100 * pace);
-  setTimeout(() => titleEl && titleEl.classList.add('visible'), 300 * pace);
-  setTimeout(() => descEl && descEl.classList.add('visible'), 600 * pace);
-  if (bgToggle) { bgToggle.style.opacity='0'; bgToggle.style.transition='opacity 0.4s'; setTimeout(()=>{bgToggle.style.opacity='1';}, 750 * pace); }
-  setTimeout(() => quoteEl && quoteEl.classList.add('visible'), 850 * pace);
+  setTimeout(() => titleEl && titleEl.classList.add('visible'), 100);
+  setTimeout(() => descEl && descEl.classList.add('visible'), 250);
   const btns = content.querySelectorAll('.choice-btn');
   btns.forEach((btn, i) => {
-    setTimeout(() => btn.classList.add('visible'), (1050 + i * 180) * pace);
+    setTimeout(() => btn.classList.add('visible'), 400 + i * 120);
   });
 
   // Highlight affected regions on map
@@ -2921,12 +2916,12 @@ function makeChoice(idx, evt) {
 
   // Show "天命运转" resolution moment
   const content = document.getElementById('crisis-content');
-  content.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;opacity:0;animation:fadeInUp 0.4s forwards;"><div style="font-size:2.5em;margin-bottom:16px;animation:mandateSpin 1.2s ease-in-out;">☯</div><div style="color:var(--gold);font-size:1.1em;letter-spacing:6px;">天 命 运 转</div><div style="color:#666;font-size:0.8em;margin-top:8px;">抉择已出，因果将显……</div></div>';
+  content.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;min-height:100px;"><div style="font-size:2em;animation:mandateSpin 0.6s ease-in-out;">☯</div></div>';
 
   const ev = EVENTS[G.era][G.eventIdx];
   const choice = ev.choices[idx];
-  // Delay the actual result display
-  setTimeout(() => { _executeChoice(idx, ev, choice); }, 1200);
+  // Fast result display
+  setTimeout(() => { _executeChoice(idx, ev, choice); }, 600);
 }
 
 function _executeChoice(idx, ev, choice) {
@@ -2979,12 +2974,9 @@ function _executeChoice(idx, ev, choice) {
   const conseq = choice.consequence || '';
   const shortConsequence = conseq.length > 50 ? conseq.slice(0, 48) + '……' : conseq;
 
-  let html = '<div class="result-section">';
-  html += '<div class="result-event-title">' + ev.title + '</div>';
-  html += '<div class="result-chosen">' + ['\u7532','\u4E59','\u4E19'][idx] + ' \u00B7 ' + choice.text + '</div>';
-  html += '<div class="result-divider"></div>';
-  html += '<div class="result-verdict">' + verdict + '</div>';
-  html += '<div class="result-text">' + shortConsequence + '</div>';
+  let html = '<div class="result-section" style="text-align:center;">';
+  html += '<div class="result-verdict" style="font-size:1.6em;color:var(--bright-gold);letter-spacing:4px;margin:16px 0 8px;text-shadow:0 0 20px rgba(201,169,110,0.3);">' + verdict + '</div>';
+  html += '<div style="color:#888;font-size:0.85em;margin-bottom:16px;">' + ev.title + '</div>';
 
   // Big animated stat change cards
   html += '<div class="result-stat-cards" id="res-stat-cards">';
@@ -2999,7 +2991,7 @@ function _executeChoice(idx, ev, choice) {
   });
   html += '</div>';
 
-  // Effect tags (hidden initially) — keep for sound/cascade logic
+  // Effect tags (hidden) — keep for sound/cascade logic
   html += '<div class="effect-tags" id="res-effects" style="display:none;">';
   effectTags.forEach(t => {
     const cls = t.val > 0 ? 'positive' : 'negative';
@@ -3007,22 +2999,37 @@ function _executeChoice(idx, ev, choice) {
     html += '<span class="effect-tag ' + cls + '">' + t.region + ' ' + t.stat + sign + t.val + '</span>';
   });
   html += '</div>';
-  html += '<button class="continue-btn hidden" id="continue-btn">\u7EE7 \u7EED</button>';
+
+  // Auto-advance bar + tap to skip
+  html += '<div style="position:relative;margin-top:20px;cursor:pointer;" id="continue-area" title="点击跳过">';
+  html += '<div class="auto-advance-bar"></div>';
+  html += '<div style="color:rgba(201,169,110,0.4);font-size:0.75em;text-align:center;padding:8px 0;letter-spacing:2px;">点击任意处继续</div>';
+  html += '</div>';
   html += '</div>';
   content.innerHTML = html;
   content.scrollTop = 0;
 
-  // Bind continue button
-  const contBtn = document.getElementById('continue-btn');
-  if (ev.isFinale && choice.ending) {
-    contBtn._customAction = () => showEnding(choice.ending);
-  } else {
-    contBtn._customAction = null;
-  }
-  contBtn.addEventListener('click', function() {
+  // Auto-advance: timer + tap to skip
+  const isFinaleChoice = ev.isFinale && choice.ending;
+  const advanceFn = isFinaleChoice ? () => showEnding(choice.ending) : () => nextTurn();
+  let _advanced = false;
+  function doAdvance() {
+    if (_advanced) return;
+    _advanced = true;
     SFX.click();
-    if (this._customAction) { this._customAction(); }
-    else { nextTurn(); }
+    advanceFn();
+  }
+  // Auto-advance after 2.5s
+  const _autoTimer = setTimeout(doAdvance, 2500);
+  // Tap anywhere on result to skip
+  const contArea = document.getElementById('continue-area');
+  if (contArea) contArea.addEventListener('click', () => { clearTimeout(_autoTimer); doAdvance(); });
+  // Also tap on the whole result section
+  content.addEventListener('click', function _resultTap(e) {
+    if (e.target.closest('.choice-btn')) return; // Don't intercept choice clicks
+    clearTimeout(_autoTimer);
+    content.removeEventListener('click', _resultTap);
+    doAdvance();
   });
 
   // Sequential reveal of effect tags + map pulse
@@ -3828,6 +3835,19 @@ function toggleEventBg() {
     bg.classList.remove('expanded');
     bg.classList.add('collapsed');
     toggle.classList.remove('expanded');
+  }
+}
+
+function toggleEventDetail() {
+  const panel = document.getElementById('ev-detail');
+  const btn = document.getElementById('ev-expand');
+  if (!panel) return;
+  if (panel.style.display === 'none') {
+    panel.style.display = 'block';
+    if (btn) btn.textContent = '📜 收起';
+  } else {
+    panel.style.display = 'none';
+    if (btn) btn.textContent = '📜 了解更多';
   }
 }
 
