@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>枢纽：天下之道</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+@font-face{font-family:'GF';src:local('STKaiti'),local('KaiTi'),local('楷体'),local('serif');}
+:root{
+  --ink:#1a1a2e;--paper:#f0ebe3;--gold:#c9a96e;--bright-gold:#dbb978;
+  --zhongyuan:#b8860b;--caoyuan:#4a7c59;--xiyu:#a0522d;
+  --gaoyuan:#4a6fa5;--xinan:#6b8e6b;--haiyang:#2980b9;--guodu:#8b7355;
+  --red:#8b2500;--shadow:rgba(0,0,0,0.4);
+}
+body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;overflow:hidden;height:100vh;user-select:none;}
+
+/* ========== 开始画面 ========== */
+#start-screen{
+  position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#0a0a15 0%,#1a1a30 40%,#0d1520 100%);
+}
+#start-screen::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 30% 40%,rgba(201,169,110,0.08) 0%,transparent 50%),
+             radial-gradient(circle at 70% 60%,rgba(41,128,185,0.06) 0%,transparent 50%);
+}
+.title-area{position:relative;text-align:center;margin-bottom:40px;}
+.title-area h1{font-size:3.2em;color:var(--gold);letter-spacing:12px;text-shadow:0 0 30px rgba(201,169,110,0.3);}
+.title-area .subtitle{color:#8a7a5a;font-size:1.1em;letter-spacing:6px;margin-top:8px;}
+.title-area .author{color:#5a5040;font-size:0.85em;margin-top:16px;letter-spacing:3px;}
+.poem{color:#6a6050;font-size:0.95em;line-height:2.2;text-align:center;margin-bottom:40px;position:relative;}
+.start-btn{
+  padding:16px 60px;font-size:1.2em;font-family:inherit;cursor:pointer;
+  background:linear-gradient(135deg,rgba(201,169,110,0.2),rgba(201,169,110,0.1));
+  color:var(--gold);border:1px solid var(--gold);border-radius:4px;
+  letter-spacing:6px;transition:all 0.3s;position:relative;
+}
+.start-btn:hover{background:linear-gradient(135deg,rgba(201,169,110,0.3),rgba(201,169,110,0.15));box-shadow:0 0 30px rgba(201,169,110,0.2);}
+
+/* ========== 主游戏布局 ========== */
+#game{display:none;height:100vh;width:100vw;grid-template-columns:200px 1fr 220px;grid-template-rows:50px 1fr 48px;}
+#game.active{display:grid;}
+
+/* 顶部栏 */
+#top-bar{
+  grid-column:1/-1;background:linear-gradient(90deg,#0d0d1a,#1a1a30,#0d0d1a);
+  display:flex;align-items:center;justify-content:space-between;padding:0 20px;
+  border-bottom:1px solid rgba(201,169,110,0.3);font-size:0.9em;
+}
+.era-badge{color:var(--gold);font-size:1.05em;letter-spacing:3px;}
+.turn-info{color:#8a7a5a;}
+.resources{display:flex;gap:16px;}
+.res-item{display:flex;align-items:center;gap:4px;color:#aaa;font-size:0.85em;}
+.res-item span{color:var(--gold);}
+
+/* 左侧面板 */
+#left-panel{
+  background:linear-gradient(180deg,#12121f,#0d0d1a);border-right:1px solid rgba(201,169,110,0.2);
+  overflow-y:auto;padding:8px;
+}
+.panel-title{color:var(--gold);font-size:0.85em;text-align:center;padding:6px 0;border-bottom:1px solid rgba(201,169,110,0.15);margin-bottom:6px;letter-spacing:2px;}
+.region-card{
+  padding:8px 10px;margin-bottom:4px;border-radius:4px;cursor:pointer;
+  border:1px solid transparent;transition:all 0.2s;background:rgba(255,255,255,0.03);
+}
+.region-card:hover{border-color:rgba(201,169,110,0.3);background:rgba(201,169,110,0.05);}
+.region-card.selected{border-color:var(--gold);background:rgba(201,169,110,0.08);}
+.region-name{font-size:0.9em;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
+.region-dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.stat-bars{display:flex;flex-direction:column;gap:2px;}
+.stat-row{display:flex;align-items:center;gap:4px;font-size:0.7em;color:#888;}
+.stat-label{width:24px;text-align:right;}
+.stat-bar{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}
+.stat-fill{height:100%;border-radius:3px;transition:width 0.5s;}
+
+/* 中间主区域 */
+#main-area{background:#0f0f1f;position:relative;overflow:hidden;}
+
+/* SVG 地图 */
+#map-svg{width:100%;height:100%;}
+.region-node{cursor:pointer;transition:all 0.3s;}
+.region-node:hover .node-circle{filter:brightness(1.3);}
+.node-circle{transition:all 0.3s;}
+.node-label{fill:#ccc;font-family:'GF',serif;font-size:14px;text-anchor:middle;pointer-events:none;}
+.node-value{fill:#999;font-family:'GF',serif;font-size:11px;text-anchor:middle;pointer-events:none;}
+.connection-line{stroke:rgba(201,169,110,0.15);stroke-width:1.5;stroke-dasharray:4,4;}
+
+/* 事件卡片 */
+#event-overlay{
+  position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:10;
+}
+#event-overlay.active{display:flex;}
+#event-card{
+  background:linear-gradient(135deg,#1a1a2e,#151525);border:1px solid rgba(201,169,110,0.3);
+  border-radius:8px;padding:28px 32px;max-width:520px;width:90%;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+.event-era-tag{font-size:0.75em;color:var(--gold);letter-spacing:2px;opacity:0.7;margin-bottom:4px;}
+.event-title{font-size:1.4em;color:var(--bright-gold);margin-bottom:12px;letter-spacing:2px;}
+.event-desc{font-size:0.95em;color:#bbb;line-height:1.8;margin-bottom:12px;}
+.event-quote{font-size:0.85em;color:#7a7a6a;font-style:italic;margin-bottom:20px;padding-left:12px;border-left:2px solid rgba(201,169,110,0.3);}
+.choice-btn{
+  display:block;width:100%;padding:12px 16px;margin-bottom:8px;font-family:inherit;
+  font-size:0.9em;cursor:pointer;background:rgba(201,169,110,0.06);
+  color:#ccc;border:1px solid rgba(201,169,110,0.2);border-radius:4px;
+  text-align:left;transition:all 0.2s;line-height:1.5;
+}
+.choice-btn:hover{background:rgba(201,169,110,0.12);border-color:var(--gold);color:var(--gold);}
+.choice-btn .choice-num{color:var(--gold);margin-right:8px;}
+
+/* 结果弹窗 */
+#result-overlay{
+  position:absolute;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.6);backdrop-filter:blur(3px);z-index:11;
+}
+#result-overlay.active{display:flex;}
+#result-card{
+  background:linear-gradient(135deg,#1a1a2e,#151525);border:1px solid rgba(201,169,110,0.3);
+  border-radius:8px;padding:24px 28px;max-width:440px;width:85%;text-align:center;
+}
+.result-text{font-size:1em;color:#bbb;line-height:1.8;margin-bottom:16px;}
+.effect-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px;}
+.effect-tag{font-size:0.8em;padding:3px 10px;border-radius:12px;border:1px solid;}
+.effect-tag.positive{color:#6bba6b;border-color:rgba(107,186,107,0.3);background:rgba(107,186,107,0.08);}
+.effect-tag.negative{color:#c56b6b;border-color:rgba(197,107,107,0.3);background:rgba(197,107,107,0.08);}
+.continue-btn{
+  padding:10px 40px;font-family:inherit;font-size:1em;cursor:pointer;
+  background:rgba(201,169,110,0.1);color:var(--gold);border:1px solid var(--gold);
+  border-radius:4px;letter-spacing:3px;transition:all 0.2s;
+}
+.continue-btn:hover{background:rgba(201,169,110,0.2);}
+
+/* 右侧信息面板 */
+#right-panel{
+  background:linear-gradient(180deg,#12121f,#0d0d1a);border-left:1px solid rgba(201,169,110,0.2);
+  overflow-y:auto;padding:8px;
+}
+.history-log{font-size:0.78em;color:#777;line-height:1.6;}
+.log-entry{padding:4px 6px;border-bottom:1px solid rgba(255,255,255,0.05);margin-bottom:2px;}
+.log-entry .log-turn{color:var(--gold);margin-right:4px;}
+
+/* 底部栏 */
+#bottom-bar{
+  grid-column:1/-1;background:linear-gradient(90deg,#0d0d1a,#1a1a30,#0d0d1a);
+  display:flex;align-items:center;justify-content:center;gap:20px;
+  border-top:1px solid rgba(201,169,110,0.2);
+}
+.bottom-btn{
+  padding:6px 20px;font-family:inherit;font-size:0.85em;cursor:pointer;
+  background:transparent;color:#888;border:1px solid rgba(255,255,255,0.1);
+  border-radius:3px;transition:all 0.2s;letter-spacing:2px;
+}
+.bottom-btn:hover{color:var(--gold);border-color:rgba(201,169,110,0.3);}
+
+/* 时代过渡动画 */
+#era-transition{
+  position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+  background:#000;
+}
+#era-transition.active{display:flex;}
+.era-trans-content{text-align:center;}
+.era-trans-content h2{font-size:2.5em;color:var(--gold);letter-spacing:8px;margin-bottom:12px;opacity:0;animation:fadeUp 1s 0.5s forwards;}
+.era-trans-content p{font-size:1.1em;color:#8a7a5a;letter-spacing:3px;opacity:0;animation:fadeUp 1s 1s forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* 结局画面 */
+#ending-screen{
+  position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+  flex-direction:column;background:linear-gradient(180deg,#0a0a15,#1a1a30,#0d1520);
+}
+#ending-screen.active{display:flex;}
+#ending-screen h1{font-size:2.8em;color:var(--gold);letter-spacing:8px;margin-bottom:16px;}
+#ending-screen .ending-desc{color:#aaa;font-size:1.05em;line-height:2;text-align:center;max-width:500px;margin-bottom:32px;}
+#ending-screen .score{color:var(--gold);font-size:1.2em;margin-bottom:24px;}
+
+/* 过渡动画 */
+.fade-in{animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+
+/* 滚动条 */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(201,169,110,0.2);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- ========== 开始画面 ========== -->
+<div id="start-screen">
+  <div class="title-area">
+    <h1>枢纽</h1>
+    <div class="subtitle">天 下 之 道</div>
+    <div class="author">—— 基于施展《枢纽：3000年的中国》 ——</div>
+  </div>
+  <div class="poem">
+    中原、草原、西域、高原、海洋<br>
+    五大空间，彼此塑造，互为条件<br>
+    三千年兴衰轮转，一个永恒之问<br>
+    <strong style="color:var(--gold)">何谓中国？</strong>
+  </div>
+  <button class="start-btn" onclick="startGame()">开 始 经 略</button>
+</div>
+
+<!-- ========== 时代过渡 ========== -->
+<div id="era-transition">
+  <div class="era-trans-content">
+    <h2 id="era-trans-title"></h2>
+    <p id="era-trans-desc"></p>
+  </div>
+</div>
+
+<!-- ========== 主游戏 ========== -->
+<div id="game">
+  <div id="top-bar">
+    <div class="era-badge" id="era-display">第一纪 · 封建社会</div>
+    <div class="turn-info">第 <span id="turn-num">1</span> 回合</div>
+    <div class="resources">
+      <div class="res-item">国力 <span id="res-power">50</span></div>
+      <div class="res-item">民心 <span id="res-morale">50</span></div>
+      <div class="res-item">文运 <span id="res-culture">50</span></div>
+    </div>
+  </div>
+
+  <div id="left-panel">
+    <div class="panel-title">七 大 空 间</div>
+    <div id="region-list"></div>
+  </div>
+
+  <div id="main-area">
+    <svg id="map-svg" viewBox="0 0 600 450">
+      <!-- 连接线 -->
+      <line class="connection-line" x1="300" y1="150" x2="160" y2="180"/>
+      <line class="connection-line" x1="300" y1="150" x2="440" y2="160"/>
+      <line class="connection-line" x1="300" y1="150" x2="300" y2="280"/>
+      <line class="connection-line" x1="160" y1="180" x2="100" y2="300"/>
+      <line class="connection-line" x1="440" y1="160" x2="500" y2="280"/>
+      <line class="connection-line" x1="300" y1="280" x2="160" y2="180"/>
+      <line class="connection-line" x1="300" y1="280" x2="440" y2="160"/>
+      <line class="connection-line" x1="300" y1="280" x2="200" y2="380"/>
+      <line class="connection-line" x1="300" y1="280" x2="400" y2="380"/>
+      <line class="connection-line" x1="100" y1="300" x2="200" y2="380"/>
+      <line class="connection-line" x1="500" y1="280" x2="400" y2="380"/>
+      <!-- 区域节点由 JS 生成 -->
+      <g id="map-nodes"></g>
+    </svg>
+
+    <!-- 事件覆盖层 -->
+    <div id="event-overlay">
+      <div id="event-card" class="fade-in">
+        <div class="event-era-tag" id="ev-era"></div>
+        <div class="event-title" id="ev-title"></div>
+        <div class="event-desc" id="ev-desc"></div>
+        <div class="event-quote" id="ev-quote"></div>
+        <div id="ev-choices"></div>
+      </div>
+    </div>
+
+    <!-- 结果覆盖层 -->
+    <div id="result-overlay">
+      <div id="result-card" class="fade-in">
+        <div class="result-text" id="res-text"></div>
+        <div class="effect-tags" id="res-effects"></div>
+        <button class="continue-btn" onclick="nextTurn()">继 续</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="right-panel">
+    <div class="panel-title">历 史 长 卷</div>
+    <div class="history-log" id="history-log"></div>
+  </div>
+
+  <div id="bottom-bar">
+    <button class="bottom-btn" onclick="saveGame()">存档</button>
+    <button class="bottom-btn" onclick="loadGame()">读档</button>
+    <button class="bottom-btn" onclick="showHelp()">指南</button>
+  </div>
+</div>
+
+<!-- ========== 结局画面 ========== -->
+<div id="ending-screen">
+  <h1 id="ending-title"></h1>
+  <div class="ending-desc" id="ending-desc"></div>
+  <div class="score" id="ending-score"></div>
+  <button class="start-btn" onclick="location.reload()">再 续 天 命</button>
+</div>
+
+<script>
+// ==================== 游戏数据 ====================
+
+const REGION_META = {
+  zhongyuan: {name:'中原', color:'#b8860b', x:300, y:150, desc:'农耕心脏，文明根基'},
+  caoyuan:   {name:'草原', color:'#4a7c59', x:440, y:160, desc:'铁骑纵横，游牧雄风'},
+  xiyu:      {name:'西域', color:'#a0522d', x:160, y:180, desc:'丝路枢纽，万邦交汇'},
+  guodu:     {name:'过渡地带', color:'#8b7355', x:300, y:280, desc:'农牧交融，文明熔炉'},
+  gaoyuan:   {name:'高原', color:'#4a6fa5', x:500, y:280, desc:'雪域圣境，精神高地'},
+  xinan:     {name:'西南', color:'#6b8e6b', x:200, y:380, desc:'密林万族，多元共生'},
+  haiyang:   {name:'海洋', color:'#2980b9', x:400, y:380, desc:'碧波万里，通达四海'}
+};
+
+const ERA_NAMES = ['','第一纪 · 封建社会','第二纪 · 豪族社会','第三纪 · 古代平民社会','第四纪 · 现代转型'];
+const ERA_DESCS = ['','周天子分封天下，礼乐教化，诸侯并立','大一统帝国崛起，豪族门阀把持朝政','科举取士，商业繁荣，却也暗藏内卷危机','三千年未有之大变局，何去何从？'];
+
+// ==================== 事件数据 ====================
+
+const EVENTS = {
+  1: [
+    {id:'e1_1',title:'武王伐纣',description:'殷商末年，纣王无道，酒池肉林。西伯侯之子姬发联合八百诸侯，牧野一战，商朝覆灭。天命更迭，新的秩序等待建立。',quote:'"天视自我民视，天听自我民听。" ——《尚书》',choices:[
+      {text:'大封诸侯，分享天下',effects:{zhongyuan:{p:2,m:-1,c:2,t:1},xinan:{p:1,m:0,c:1,t:0}},consequence:'诸侯遍布天下，周室威望远播，但军力分散。'},
+      {text:'集中兵力，巩固王畿',effects:{zhongyuan:{p:1,m:2,c:0,t:0},caoyuan:{p:0,m:0,c:0,t:-1}},consequence:'王畿固若金汤，但远方诸侯心生不满。'},
+      {text:'怀柔殷商遗民，以德服人',effects:{zhongyuan:{p:1,m:0,c:3,t:1},guodu:{p:1,m:0,c:1,t:0}},consequence:'殷商遗民归心，文化融合加速，但旧势力暗流涌动。'}
+    ]},
+    {id:'e1_2',title:'礼乐兴邦',description:'周公制礼作乐，"礼"定尊卑秩序，"乐"和人心情感。这套制度像无形的网，将天下万民编织进同一个文明体系。',quote:'"礼之用，和为贵。" ——《论语》',choices:[
+      {text:'严格推行礼制，教化万方',effects:{zhongyuan:{p:1,m:0,c:3,t:0},xiyu:{p:0,m:0,c:1,t:0}},consequence:'礼乐文明远播，中原文化认同增强。'},
+      {text:'因地制宜，各族自治',effects:{zhongyuan:{p:0,m:0,c:1,t:1},xinan:{p:1,m:0,c:1,t:1},gaoyuan:{p:1,m:0,c:0,t:0}},consequence:'各方安定，但文化凝聚力较弱。'},
+      {text:'重礼也重武，文武并举',effects:{zhongyuan:{p:0,m:2,c:2,t:0},caoyuan:{p:0,m:-1,c:0,t:0}},consequence:'既有文治又有武备，但国力消耗不小。'}
+    ]},
+    {id:'e1_3',title:'犬戎之祸',description:'西北草原上，犬戎部落日益强大。当中原沉浸在礼乐文明的优雅中时，铁骑的阴影正从草原蔓延而来。烽火戏诸侯的故事背后，是一场文明存亡的危机。',quote:'"戎狄豺狼，不可厌也。" ——《左传》',choices:[
+      {text:'全力抵御，修筑防线',effects:{zhongyuan:{p:-1,m:2,c:0,t:-1},caoyuan:{p:0,m:1,c:0,t:-1},guodu:{p:-1,m:1,c:0,t:0}},consequence:'防线稳固，但过渡地带成了长期战场。'},
+      {text:'东迁洛邑，避其锋芒',effects:{zhongyuan:{p:-2,m:-1,c:1,t:0},caoyuan:{p:1,m:1,c:0,t:1},xiyu:{p:0,m:0,c:0,t:1}},consequence:'周室东迁，威望大降，但保存了文明火种。诸侯开始各自为政。'},
+      {text:'和亲通商，化敌为友',effects:{zhongyuan:{p:0,m:0,c:1,t:2},caoyuan:{p:1,m:0,c:1,t:2},guodu:{p:1,m:0,c:1,t:1}},consequence:'草原与中原开始贸易往来，但边境安全隐患未除。'}
+    ]},
+    {id:'e1_4',title:'春秋争霸',description:'周室衰微，诸侯崛起。齐桓公、晋文公、楚庄王……各路英雄纷纷登场，打着"尊王攘夷"的旗号，行争霸之实。天下大势，分久必合？',quote:'"不鸣则已，一鸣惊人。" ——《史记》',choices:[
+      {text:'扶持霸主，维持秩序',effects:{zhongyuan:{p:1,m:1,c:0,t:1},caoyuan:{p:0,m:-1,c:0,t:0}},consequence:'霸主号令天下，秩序暂时恢复，但弱国苦不堪言。'},
+      {text:'各国变法图强，百花齐放',effects:{zhongyuan:{p:2,m:1,c:2,t:1},xinan:{p:1,m:0,c:1,t:0}},consequence:'各国竞相改革，技术文化井喷式发展。'},
+      {text:'推动会盟，和平共处',effects:{zhongyuan:{p:1,m:-1,c:2,t:2},xiyu:{p:0,m:0,c:0,t:1}},consequence:'短暂和平，贸易繁荣，但野心家们蠢蠢欲动。'}
+    ]},
+    {id:'e1_5',title:'百家争鸣',description:'乱世出思想。孔子周游列国传播仁义，老子骑青牛出函谷关留下道德经，墨子带领弟子行侠仗义，韩非子冷眼旁观写下法术势。一个文明的精神基因，正在此刻定型。',quote:'"道可道，非常道。" ——《道德经》',choices:[
+      {text:'独尊儒术，以礼治国',effects:{zhongyuan:{p:1,m:-1,c:3,t:0},guodu:{p:0,m:0,c:1,t:0}},consequence:'仁义道德深入人心，但法制建设滞后。'},
+      {text:'兼收并蓄，百家共存',effects:{zhongyuan:{p:0,m:0,c:2,t:1},xiyu:{p:0,m:0,c:1,t:1},gaoyuan:{p:0,m:0,c:1,t:0}},consequence:'思想自由，创新涌现，但缺乏统一的价值标准。'},
+      {text:'以法为本，强国利器',effects:{zhongyuan:{p:2,m:2,c:0,t:1},caoyuan:{p:0,m:-1,c:0,t:0}},consequence:'国力快速增强，但百姓生活在严刑峻法之下。'}
+    ]},
+    {id:'e1_6',title:'商鞅变法',description:'秦国偏居西陲，被中原诸国视为蛮夷。商鞅携一卷法书入秦，徙木立信，废井田、开阡陌、奖军功。秦国从此脱胎换骨，但变法者本人却难逃五马分尸的命运。',quote:'"治世不一道，便国不法古。" ——商鞅',choices:[
+      {text:'全面推行法治改革',effects:{zhongyuan:{p:3,m:3,c:-1,t:1},guodu:{p:1,m:1,c:0,t:0}},consequence:'国力暴增，虎狼之师成型，但文化遭受压制。'},
+      {text:'渐进改革，兼顾传统',effects:{zhongyuan:{p:2,m:1,c:1,t:1},xinan:{p:1,m:0,c:0,t:0}},consequence:'稳步发展，社会矛盾较小，但变革力度不足。'},
+      {text:'以德为先，法律为辅',effects:{zhongyuan:{p:1,m:0,c:2,t:1},caoyuan:{p:0,m:0,c:1,t:1}},consequence:'社会和谐，但在列国争霸中竞争力不足。'}
+    ]},
+    {id:'e1_7',title:'合纵连横',description:'战国末期，七雄并立。苏秦佩六国相印合纵抗秦，张仪以三寸不烂之舌连横破盟。外交博弈的背后，是统一与分裂的终极较量。',quote:'"远交近攻。" ——范雎',choices:[
+      {text:'合纵：联合弱国对抗强秦',effects:{zhongyuan:{p:0,m:-1,c:1,t:2},xiyu:{p:1,m:0,c:0,t:1},xinan:{p:1,m:0,c:0,t:1}},consequence:'各国暂时联合，但人心各异，联盟脆弱。'},
+      {text:'连横：结盟强国，各个击破',effects:{zhongyuan:{p:1,m:2,c:-1,t:0},caoyuan:{p:-1,m:0,c:0,t:0}},consequence:'弱国被逐一吞并，统一进程加速，但战火蔓延。'},
+      {text:'独善其身，发展经济',effects:{zhongyuan:{p:2,m:0,c:1,t:2},haiyang:{p:1,m:0,c:0,t:1}},consequence:'远离战火，经济繁荣，但终将面对统一大势的裹挟。'}
+    ]},
+    {id:'e1_8',title:'西域初通',description:'张骞凿空西域，一条横贯东西的贸易通道缓缓开启。来自远方的葡萄、汗血马和异域文明，冲击着中原人的认知边界。',quote:'"凿空西域，万里封侯。" ——《史记》',choices:[
+      {text:'大力经营西域，设置都护',effects:{xiyu:{p:2,m:1,c:1,t:2},zhongyuan:{p:0,m:-1,c:1,t:1},caoyuan:{p:0,m:-1,c:0,t:0}},consequence:'丝绸之路畅通，但军事开支激增。'},
+      {text:'以商通商，民间贸易为主',effects:{xiyu:{p:1,m:0,c:1,t:3},zhongyuan:{p:1,m:0,c:1,t:2}},consequence:'贸易繁荣，文化交流频繁，但缺乏政治控制力。'},
+      {text:'谨慎观望，不深入介入',effects:{zhongyuan:{p:1,m:1,c:0,t:0},xiyu:{p:0,m:0,c:0,t:1}},consequence:'省下军费发展内部，但错失了连通世界的窗口。'}
+    ]},
+    // 转型事件
+    {id:'e1_T',title:'【转型】天下一统',description:'六国已灭，秦王嬴政站在咸阳宫的最高处，俯瞰天下。书同文、车同轨、统一度量衡——一个前所未有的超大规模帝国即将诞生。但大一统之后，何去何从？',quote:'"六王毕，四海一。" ——杜牧《阿房宫赋》',isTransformation:true,choices:[
+      {text:'严刑峻法，铁腕统一',effects:{zhongyuan:{p:2,m:3,c:-2,t:1},caoyuan:{p:-1,m:-1,c:0,t:-1},xiyu:{p:0,m:0,c:-1,t:0}},consequence:'帝国强盛但高压，草原虎视眈眈。进入豪族社会时，法治传统强但民心不稳。'},
+      {text:'儒法并用，德刑兼施',effects:{zhongyuan:{p:2,m:1,c:2,t:1},guodu:{p:1,m:0,c:1,t:1},caoyuan:{p:0,m:0,c:1,t:0}},consequence:'文治武功兼备，各方平衡发展。进入豪族社会时起点最均衡。'},
+      {text:'郡国并行，缓步整合',effects:{zhongyuan:{p:1,m:0,c:1,t:2},xinan:{p:1,m:0,c:1,t:1},haiyang:{p:0,m:0,c:0,t:1}},consequence:'各地保留一定自主权，整合较慢但社会稳定。进入豪族社会时地方势力较强。'}
+    ]}
+  ],
+  2: [
+    {id:'e2_1',title:'独尊儒术',description:'汉武帝采纳董仲舒建议，"罢黜百家，独尊儒术"。儒学从诸子之一跃升为帝国意识形态，太学遍设天下。但这把双刃剑，也将催生一个新的特权阶层——经学世家。',quote:'"天人感应，君权神授。" ——董仲舒',choices:[
+      {text:'全面推行儒学教育',effects:{zhongyuan:{p:1,m:0,c:3,t:0},guodu:{p:0,m:0,c:1,t:0}},consequence:'文化统一，但思想渐趋僵化，经学世家开始垄断知识。'},
+      {text:'儒法兼用，实用为上',effects:{zhongyuan:{p:2,m:1,c:1,t:1},caoyuan:{p:0,m:-1,c:0,t:0}},consequence:'外儒内法，帝国高效运转，但两面性也埋下隐患。'},
+      {text:'保持思想多元',effects:{zhongyuan:{p:0,m:0,c:2,t:2},xiyu:{p:0,m:0,c:1,t:1},gaoyuan:{p:0,m:0,c:1,t:0}},consequence:'学术自由，各种思想交融，但缺乏主流价值观凝聚力。'}
+    ]},
+    {id:'e2_2',title:'匈奴南侵',description:'草原帝国与中原帝国的宿命对决。匈奴单于率十万铁骑南下，白登之围让汉高祖险些丧命。是屈辱和亲，还是倾国一战？这个选择将决定中原与草原的关系走向百年。',quote:'"但使龙城飞将在，不教胡马度阴山。" ——王昌龄',choices:[
+      {text:'主动出击，远征漠北',effects:{caoyuan:{p:-2,m:-2,c:0,t:-1},zhongyuan:{p:-1,m:2,c:0,t:0},guodu:{p:-1,m:1,c:0,t:0}},consequence:'卫青霍去病横扫漠北，匈奴远遁，但国力消耗巨大。'},
+      {text:'和亲通商，以柔克刚',effects:{caoyuan:{p:1,m:0,c:1,t:2},zhongyuan:{p:1,m:0,c:0,t:1},guodu:{p:1,m:0,c:1,t:1}},consequence:'边境和平，草原与中原开始融合，但面子上过不去。'},
+      {text:'修长城，守边防',effects:{guodu:{p:0,m:2,c:0,t:0},zhongyuan:{p:-1,m:1,c:0,t:0},caoyuan:{p:0,m:0,c:0,t:-1}},consequence:'防线稳固，但长城成了文明的分隔线，双方渐行渐远。'}
+    ]},
+    {id:'e2_3',title:'丝路繁华',description:'驼铃声穿越大漠，丝绸、瓷器换来了琉璃、香料和佛经。西域三十六国成为东西文明的交汇点，敦煌莫高窟的第一铲挖了下去。',quote:'"使者相望于道，商旅不绝于途。" ——《汉书》',choices:[
+      {text:'军事护商，设西域都护府',effects:{xiyu:{p:2,m:1,c:1,t:3},zhongyuan:{p:0,m:-1,c:1,t:2},caoyuan:{p:-1,m:0,c:0,t:0}},consequence:'丝路畅通无阻，但军费开支持续攀升。'},
+      {text:'重商轻军，自由贸易',effects:{xiyu:{p:1,m:0,c:2,t:3},zhongyuan:{p:1,m:0,c:1,t:2},gaoyuan:{p:0,m:0,c:1,t:1}},consequence:'商贸繁盛，各族文化交融，但盗匪横行缺乏保障。'},
+      {text:'选择性交往，控制风险',effects:{xiyu:{p:1,m:0,c:1,t:1},zhongyuan:{p:1,m:1,c:0,t:0}},consequence:'稳健经营，风险可控，但错失了大量贸易机会。'}
+    ]},
+    {id:'e2_4',title:'门阀崛起',description:'经学世家代代相传，四世三公的袁家、弘农杨氏、颍川荀氏……这些豪族掌握了土地、学问和入仕的通道。寒门子弟想要出头，难如登天。',quote:'"上品无寒门，下品无士族。" ——《晋书》',choices:[
+      {text:'扶持寒门，制衡豪族',effects:{zhongyuan:{p:1,m:0,c:1,t:0},guodu:{p:1,m:0,c:0,t:0}},consequence:'寒门有了上升通道，但豪族暗中抵制，朝政动荡。'},
+      {text:'与豪族合作，共治天下',effects:{zhongyuan:{p:2,m:1,c:0,t:1},xinan:{p:0,m:0,c:-1,t:0}},consequence:'政局稳定，但阶层固化，社会活力渐失。'},
+      {text:'以战功替代门第',effects:{zhongyuan:{p:0,m:2,c:-1,t:0},caoyuan:{p:0,m:1,c:0,t:0},guodu:{p:1,m:1,c:0,t:0}},consequence:'武人地位上升，边疆得到开拓，但文治传统受损。'}
+    ]},
+    {id:'e2_5',title:'佛教东传',description:'白马驮经，佛法东来。从西域到中原，寺院拔地而起，石窟里凿出了另一个世界。佛教带来了全新的宇宙观和人生哲学，也带来了与儒学的深刻碰撞。',quote:'"色即是空，空即是色。" ——《心经》',choices:[
+      {text:'大力弘扬佛法',effects:{gaoyuan:{p:1,m:0,c:2,t:1},zhongyuan:{p:0,m:-1,c:2,t:0},xiyu:{p:0,m:0,c:2,t:1}},consequence:'精神世界丰富，但大量人口出家，劳动力减少。'},
+      {text:'儒佛融合，取长补短',effects:{zhongyuan:{p:1,m:0,c:2,t:1},gaoyuan:{p:1,m:0,c:1,t:1},guodu:{p:0,m:0,c:1,t:0}},consequence:'文化兼容并蓄，产生了独特的中国佛教传统。'},
+      {text:'限制佛教，维护儒学正统',effects:{zhongyuan:{p:1,m:1,c:0,t:0},gaoyuan:{p:-1,m:0,c:-1,t:0}},consequence:'儒学地位巩固，但与高原地区的文化联系减弱。'}
+    ]},
+    {id:'e2_6',title:'大运河贯通',description:'隋炀帝以百万民夫之力，开凿出一条纵贯南北的大运河。运河将江南的粮食源源不断送往北方，南北经济命脉从此相连。代价是——民怨沸腾。',quote:'"尽道隋亡为此河，至今千里赖通波。" ——皮日休',choices:[
+      {text:'不惜代价，全线贯通',effects:{zhongyuan:{p:3,m:-1,c:0,t:3},haiyang:{p:1,m:0,c:0,t:1},xinan:{p:0,m:0,c:0,t:1}},consequence:'经济大动脉形成，但民力耗尽，隋朝二世而亡。'},
+      {text:'分段修建，减轻负担',effects:{zhongyuan:{p:2,m:0,c:0,t:2},haiyang:{p:0,m:0,c:0,t:1}},consequence:'运河缓慢成形，社会压力可控，但效果要几代人才能显现。'},
+      {text:'放弃大工程，发展海运',effects:{haiyang:{p:2,m:1,c:0,t:2},zhongyuan:{p:0,m:0,c:0,t:1}},consequence:'海运贸易兴起，但南北陆路联系不够紧密。'}
+    ]},
+    {id:'e2_7',title:'安史之乱',description:'渔阳鼙鼓动地来，安禄山起兵叛唐。盛唐气象一夜之间崩塌，天子仓皇西逃，杨贵妃马嵬坡下香消玉殒。这场叛乱不仅终结了大唐盛世，更将彻底改变中国的社会结构。',quote:'"国破山河在，城春草木深。" ——杜甫',choices:[
+      {text:'借回纥兵平叛',effects:{caoyuan:{p:1,m:1,c:0,t:1},zhongyuan:{p:-2,m:1,c:-1,t:0},guodu:{p:-1,m:0,c:0,t:0}},consequence:'叛乱平定，但草原势力深入中原，藩镇割据成为常态。'},
+      {text:'依靠内部力量平叛',effects:{zhongyuan:{p:-1,m:2,c:0,t:-1},caoyuan:{p:0,m:0,c:0,t:0}},consequence:'自力更生，但平叛缓慢，百姓苦难深重。'},
+      {text:'南迁中心，保存实力',effects:{zhongyuan:{p:-2,m:-1,c:0,t:0},haiyang:{p:2,m:0,c:1,t:2},xinan:{p:1,m:0,c:1,t:1}},consequence:'经济中心南移，海洋贸易崛起，但北方沦为战场。'}
+    ]},
+    {id:'e2_8',title:'科举初创',description:'隋唐之际，一种全新的人才选拔制度悄然诞生。不论出身，只要读书应考，寒门子弟也能鱼跃龙门。这是对持续数百年的门阀政治的釜底抽薪。',quote:'"朝为田舍郎，暮登天子堂。" ——汪洙',choices:[
+      {text:'全面推行科举，废除门荫',effects:{zhongyuan:{p:1,m:0,c:3,t:0},guodu:{p:1,m:0,c:1,t:0}},consequence:'社会流动性大增，寒门崛起，豪族势力瓦解。'},
+      {text:'科举与门荫并行',effects:{zhongyuan:{p:1,m:1,c:1,t:1},caoyuan:{p:0,m:0,c:0,t:0}},consequence:'渐进过渡，社会稳定，但改革不够彻底。'},
+      {text:'以军功和实务取才',effects:{zhongyuan:{p:1,m:2,c:0,t:1},caoyuan:{p:0,m:1,c:0,t:0},guodu:{p:1,m:1,c:0,t:0}},consequence:'实用人才涌现，但缺乏文化根基的官僚体系隐患重重。'}
+    ]},
+    {id:'e2_T',title:'【转型】唐宋之变',description:'豪族消亡，科举兴盛，印刷术让知识不再是少数人的特权。一个全新的平民社会正在崛起。与此同时，北方游牧帝国比以往任何时候都更加强大。这个转型将决定：中国是向内收缩，还是向外开放？',quote:'"先天下之忧而忧，后天下之乐而乐。" ——范仲淹',isTransformation:true,choices:[
+      {text:'重文轻武，发展经济和文化',effects:{zhongyuan:{p:3,m:-2,c:3,t:2},haiyang:{p:1,m:0,c:1,t:2},caoyuan:{p:0,m:1,c:0,t:0}},consequence:'经济文化达到巅峰，但军事孱弱。进入第三纪时富而不强。'},
+      {text:'文武并重，内外平衡',effects:{zhongyuan:{p:2,m:1,c:2,t:1},caoyuan:{p:0,m:0,c:1,t:1},guodu:{p:1,m:1,c:0,t:0}},consequence:'综合国力均衡发展。进入第三纪时起点最平衡。'},
+      {text:'积极开拓海洋，面向世界',effects:{haiyang:{p:3,m:1,c:1,t:3},zhongyuan:{p:1,m:0,c:1,t:1},xiyu:{p:0,m:0,c:0,t:1}},consequence:'海洋时代提前开启。进入第三纪时海洋维度领先。'}
+    ]}
+  ],
+  3: [
+    {id:'e3_1',title:'澶渊之盟',description:'宋辽对峙百年，契丹铁骑兵临城下。宋真宗在寇准的力劝下亲赴前线，最终以每年三十万岁币换来百年和平。是屈辱还是智慧？',quote:'"以地事秦，犹抱薪救火。" ——苏洵',choices:[
+      {text:'签订和约，花钱买和平',effects:{zhongyuan:{p:2,m:0,c:1,t:2},caoyuan:{p:1,m:0,c:1,t:2},guodu:{p:1,m:0,c:0,t:1}},consequence:'百年无大战，经济文化繁荣，但军备日益松弛。'},
+      {text:'拒绝和谈，决一死战',effects:{zhongyuan:{p:-2,m:2,c:0,t:-1},caoyuan:{p:-1,m:1,c:0,t:-1},guodu:{p:-2,m:1,c:0,t:0}},consequence:'战事惨烈，两败俱伤，但赢得了军事尊严。'},
+      {text:'联合西夏，三方制衡',effects:{zhongyuan:{p:0,m:1,c:0,t:1},xiyu:{p:1,m:0,c:0,t:1},caoyuan:{p:-1,m:0,c:0,t:0}},consequence:'多方博弈，局势复杂但可控。'}
+    ]},
+    {id:'e3_2',title:'王安石变法',description:'"天变不足畏，祖宗不足法，人言不足恤。"王安石的变法触动了整个官僚阶层的利益。青苗法、免役法、保甲法——这是一场超前于时代的系统性改革。',quote:'"天变不足畏，祖宗不足法。" ——王安石',choices:[
+      {text:'全面推行新法',effects:{zhongyuan:{p:3,m:1,c:-1,t:1},guodu:{p:1,m:1,c:0,t:0}},consequence:'国家财政大增，军力增强，但新旧党争撕裂朝廷。'},
+      {text:'选择性改革，稳步推进',effects:{zhongyuan:{p:2,m:0,c:1,t:1},xinan:{p:1,m:0,c:0,t:0}},consequence:'改革温和推进，社会矛盾较小，但效果打了折扣。'},
+      {text:'保守路线，维持现状',effects:{zhongyuan:{p:0,m:-1,c:2,t:0}},consequence:'士大夫阶层满意，但积弊越来越深，为后来的灾难埋下种子。'}
+    ]},
+    {id:'e3_3',title:'蒙古崛起',description:'草原深处，铁木真统一蒙古各部，号成吉思汗。一支前所未有的军事力量正在形成——从太平洋到多瑙河，蒙古铁骑将横扫一切。中原面临三千年来最大的外部冲击。',quote:'"长生天之下，皆为一统。" ——成吉思汗',choices:[
+      {text:'联蒙灭金，再图恢复',effects:{caoyuan:{p:1,m:2,c:0,t:0},zhongyuan:{p:-1,m:-1,c:0,t:0},guodu:{p:-2,m:-1,c:0,t:0}},consequence:'金国覆灭，但唇亡齿寒，中原直接暴露在蒙古铁骑下。'},
+      {text:'联金抗蒙，保持均势',effects:{zhongyuan:{p:0,m:1,c:0,t:0},caoyuan:{p:-1,m:0,c:0,t:-1},guodu:{p:0,m:1,c:0,t:0}},consequence:'北方暂时稳定，但两面受敌，压力巨大。'},
+      {text:'全力发展南方和海洋',effects:{haiyang:{p:2,m:1,c:1,t:2},xinan:{p:1,m:0,c:1,t:1},zhongyuan:{p:-1,m:0,c:0,t:0}},consequence:'南方成为文明重心，海上贸易蓬勃发展，但北方沦陷。'}
+    ]},
+    {id:'e3_4',title:'郑和下西洋',description:'永乐帝派郑和率两百余艘宝船、两万七千人的庞大舰队七下西洋。这是人类历史上最大的远洋航海壮举——比哥伦布早了近一个世纪。但之后，中国关上了面向海洋的大门。',quote:'"观夫海洋，洪涛接天，巨浪如山。" ——郑和',choices:[
+      {text:'继续航海，建立海上贸易网络',effects:{haiyang:{p:3,m:2,c:1,t:3},xinan:{p:1,m:0,c:0,t:1},zhongyuan:{p:-1,m:-1,c:0,t:1}},consequence:'海上帝国雏形初现，但内陆防御压力增大。'},
+      {text:'适度航海，内外兼顾',effects:{haiyang:{p:2,m:1,c:1,t:2},zhongyuan:{p:0,m:0,c:1,t:1}},consequence:'海洋事业稳步发展，不过度消耗国力。'},
+      {text:'停止航海，专注大陆',effects:{zhongyuan:{p:2,m:1,c:0,t:0},haiyang:{p:-2,m:-1,c:0,t:-2},caoyuan:{p:0,m:1,c:0,t:0}},consequence:'国力集中于大陆，但海上力量断崖式下降，历史机遇一去不返。'}
+    ]},
+    {id:'e3_5',title:'海禁与倭患',description:'沿海倭寇肆虐，朝廷下令海禁——"片板不许入海"。海禁本是防倭之策，却让沿海百万渔民商人断了生路，反而制造了更多的"倭寇"。',quote:'"封侯非我意，但愿海波平。" ——戚继光',choices:[
+      {text:'开放海禁，以商制倭',effects:{haiyang:{p:2,m:0,c:1,t:3},zhongyuan:{p:1,m:0,c:0,t:1}},consequence:'海上贸易恢复，倭患渐消，但走私和海盗问题并存。'},
+      {text:'军事剿倭，维持海禁',effects:{haiyang:{p:-1,m:2,c:0,t:-1},zhongyuan:{p:0,m:0,c:0,t:0}},consequence:'倭寇被打压，但海洋经济持续萎缩。'},
+      {text:'有限开放，设市舶司管控',effects:{haiyang:{p:1,m:1,c:0,t:2},zhongyuan:{p:1,m:0,c:0,t:1}},consequence:'管控下的贸易，秩序与利润兼得。'}
+    ]},
+    {id:'e3_6',title:'康乾盛世',description:'清朝入主中原，这个起自满洲的少数民族王朝，创造了中国历史上最广阔的疆域。康熙平三藩、收台湾、征噶尔丹；乾隆十全武功。盛世之下，却是超大规模人口的隐忧。',quote:'"滋生人丁，永不加赋。" ——康熙帝',choices:[
+      {text:'开疆拓土，经营边疆',effects:{xiyu:{p:2,m:1,c:1,t:1},gaoyuan:{p:1,m:0,c:1,t:1},caoyuan:{p:1,m:1,c:1,t:0},zhongyuan:{p:-1,m:-1,c:0,t:0}},consequence:'疆域极盛，多元一体，但财政压力巨大。'},
+      {text:'守内虚外，发展经济',effects:{zhongyuan:{p:3,m:0,c:1,t:1},haiyang:{p:1,m:0,c:0,t:1}},consequence:'经济繁荣，人口暴增，但边疆控制力减弱。'},
+      {text:'中学为体，开眼看世界',effects:{zhongyuan:{p:1,m:1,c:2,t:2},haiyang:{p:1,m:0,c:1,t:2},xiyu:{p:0,m:0,c:1,t:1}},consequence:'保持文化自信的同时吸收外来知识，为未来转型储备。'}
+    ]},
+    {id:'e3_7',title:'人口爆炸与内卷',description:'玉米、红薯等新大陆作物传入，人口从一亿暴增至四亿。大量剩余劳动力被困在有限的土地上，工资被压到极低——经济学家称之为"内卷化"。超大规模从优势变成了诅咒。',quote:'"人满之患，百倍于天灾。" ——洪亮吉',choices:[
+      {text:'鼓励移民边疆和海外',effects:{xinan:{p:1,m:0,c:0,t:1},haiyang:{p:1,m:0,c:0,t:2},caoyuan:{p:1,m:0,c:0,t:0},zhongyuan:{p:1,m:0,c:0,t:0}},consequence:'人口压力缓解，但边疆和海外开发需要大量投入。'},
+      {text:'发展手工业，吸收劳动力',effects:{zhongyuan:{p:2,m:0,c:0,t:2},haiyang:{p:0,m:0,c:0,t:1}},consequence:'手工业繁荣但始终未能突破为工业革命。'},
+      {text:'限制人口，维持均衡',effects:{zhongyuan:{p:0,m:0,c:1,t:0}},consequence:'政策难以执行，人口惯性不可阻挡。'}
+    ]},
+    {id:'e3_8',title:'鸦片战争',description:'1840年，英国军舰驶入虎门。船坚炮利面前，天朝上国的迷梦碎了一地。"三千年未有之大变局"——这不仅是一场军事失败，更是整个世界观的崩塌。',quote:'"师夷长技以制夷。" ——魏源',choices:[
+      {text:'奋起抵抗，全民动员',effects:{zhongyuan:{p:-2,m:2,c:0,t:-1},haiyang:{p:-1,m:1,c:0,t:-1}},consequence:'虽败犹荣，但现实差距太大，需要更深层的变革。'},
+      {text:'忍辱负重，先学后战',effects:{zhongyuan:{p:-1,m:0,c:1,t:1},haiyang:{p:0,m:0,c:1,t:2}},consequence:'开始睁眼看世界，引入西方技术，但变革之路漫长。'},
+      {text:'闭关锁国，拒绝变化',effects:{zhongyuan:{p:-1,m:-1,c:0,t:-2},haiyang:{p:-2,m:0,c:0,t:-2}},consequence:'固步自封，危机越陷越深，更大的灾难还在后面。'}
+    ]},
+    {id:'e3_T',title:'【转型】古今之变',description:'旧世界的大厦已经摇摇欲坠。科举废了，辫子剪了，皇帝退位了。三千年的帝制一朝终结。但新的中国应该是什么样子？没有人知道答案。这是最好的时代，也是最坏的时代。',quote:'"世界潮流，浩浩荡荡，顺之则昌，逆之则亡。" ——孙中山',isTransformation:true,choices:[
+      {text:'全面西化，彻底革新',effects:{zhongyuan:{p:1,m:1,c:-1,t:2},haiyang:{p:2,m:0,c:0,t:2},caoyuan:{p:0,m:0,c:-1,t:0}},consequence:'快速现代化，但传统文化断裂，社会撕裂严重。'},
+      {text:'中西结合，渐进转型',effects:{zhongyuan:{p:1,m:1,c:1,t:1},guodu:{p:1,m:0,c:1,t:1},xiyu:{p:0,m:0,c:0,t:1}},consequence:'稳健转型，但速度可能跟不上时代的急迫要求。'},
+      {text:'走自己的路，独立探索',effects:{zhongyuan:{p:2,m:2,c:2,t:0},caoyuan:{p:1,m:0,c:1,t:0},gaoyuan:{p:1,m:0,c:1,t:0}},consequence:'民族自信，但可能走弯路，付出更大代价。'}
+    ]}
+  ],
+  4: [
+    {id:'e4_1',title:'洋务运动',description:'"自强""求富"的口号响彻朝野。张之洞的汉阳铁厂炉火通明，李鸿章的北洋水师战舰列阵。中国的现代化第一步，踉踉跄跄但毕竟迈出去了。',quote:'"中学为体，西学为用。" ——张之洞',choices:[
+      {text:'大力引进西方技术',effects:{zhongyuan:{p:2,m:1,c:0,t:2},haiyang:{p:1,m:1,c:0,t:1}},consequence:'工业化起步，但只学技术不改制度，注定是修补。'},
+      {text:'技术与制度同步改革',effects:{zhongyuan:{p:1,m:1,c:1,t:1},haiyang:{p:0,m:0,c:1,t:1}},consequence:'更深层的变革开始，但阻力也成倍增加。'},
+      {text:'优先发展教育和人才',effects:{zhongyuan:{p:0,m:0,c:3,t:1},haiyang:{p:0,m:0,c:1,t:1}},consequence:'百年树人，留学生们将成为改变中国的种子。'}
+    ]},
+    {id:'e4_2',title:'辛亥革命',description:'武昌城头一声枪响，延续两千多年的帝制走到了终点。孙中山就任临时大总统，中华民国成立。然而推翻皇帝容易，建立新秩序难。',quote:'"革命尚未成功，同志仍须努力。" ——孙中山',choices:[
+      {text:'建立强有力的中央政府',effects:{zhongyuan:{p:1,m:2,c:0,t:0},caoyuan:{p:0,m:-1,c:0,t:0},xiyu:{p:0,m:-1,c:0,t:0}},consequence:'中央集权恢复，但边疆离心力增大。'},
+      {text:'联省自治，民主共和',effects:{zhongyuan:{p:0,m:-1,c:2,t:1},xinan:{p:1,m:0,c:1,t:1},haiyang:{p:1,m:0,c:0,t:1}},consequence:'民主实验开始，但军阀割据的阴影笼罩全国。'},
+      {text:'社会革命优先，改造基层',effects:{zhongyuan:{p:-1,m:0,c:1,t:0},guodu:{p:1,m:1,c:1,t:0},xinan:{p:1,m:0,c:1,t:0}},consequence:'基层组织开始重建，但上层建筑混乱不堪。'}
+    ]},
+    {id:'e4_3',title:'五四运动',description:'"外争主权，内除国贼！"巴黎和会的屈辱点燃了一代青年的怒火。德先生和赛先生成为新的信仰，白话文运动让知识走出象牙塔。中国的精神世界正在经历一场地震。',quote:'"民主与科学。" ——陈独秀',choices:[
+      {text:'全盘接受西方文化',effects:{zhongyuan:{p:0,m:0,c:2,t:2},haiyang:{p:1,m:0,c:1,t:1}},consequence:'思想解放，但传统文化遭受猛烈冲击。'},
+      {text:'批判继承，中西融合',effects:{zhongyuan:{p:1,m:0,c:3,t:1},gaoyuan:{p:0,m:0,c:1,t:0}},consequence:'文化自觉开始萌芽，但道路漫长。'},
+      {text:'以俄为师，走革命道路',effects:{zhongyuan:{p:0,m:1,c:1,t:0},caoyuan:{p:0,m:0,c:1,t:1},guodu:{p:1,m:1,c:0,t:0}},consequence:'一个全新的社会实验即将在中国大地上展开。'}
+    ]},
+    {id:'e4_4',title:'抗日战争',description:'卢沟桥事变，全面抗战爆发。这是中华民族最危险的时刻，也是各方力量空前团结的时刻。从中原到西南，从草原到海洋，一个民族在血与火中锻造出新的认同。',quote:'"地无分南北，人无分老幼，皆有守土抗战之责。" ——蒋介石',choices:[
+      {text:'正面战场为主，阵地防御',effects:{zhongyuan:{p:-2,m:1,c:1,t:0},xinan:{p:1,m:1,c:1,t:0}},consequence:'正面抗击，伤亡惨重，但牵制了大量日军。'},
+      {text:'正面+敌后双线作战',effects:{zhongyuan:{p:-1,m:2,c:1,t:0},guodu:{p:1,m:1,c:0,t:0},xinan:{p:1,m:0,c:1,t:0},caoyuan:{p:0,m:1,c:0,t:0}},consequence:'人民战争汪洋大海，全民族抗战格局形成。'},
+      {text:'以空间换时间，战略转移',effects:{xinan:{p:2,m:1,c:2,t:1},zhongyuan:{p:-3,m:-1,c:0,t:-1},haiyang:{p:-1,m:0,c:0,t:0}},consequence:'西南成为大后方，保存了抗战力量，但东部沦陷区百姓苦不堪言。'}
+    ]},
+    {id:'e4_5',title:'新中国成立',description:'1949年10月1日，天安门城楼上那一声"中国人民从此站起来了"，宣告一个新时代的开始。但新中国面临的挑战堆积如山：百废待兴、冷战对峙、如何整合这个超大规模的国家？',quote:'"中国人民从此站起来了。" ——毛泽东',choices:[
+      {text:'优先工业化，集中力量办大事',effects:{zhongyuan:{p:2,m:2,c:0,t:0},caoyuan:{p:1,m:1,c:0,t:0},xiyu:{p:1,m:0,c:0,t:0}},consequence:'重工业基础建立，但农业和消费品不足。'},
+      {text:'均衡发展，工农并重',effects:{zhongyuan:{p:1,m:1,c:1,t:1},xinan:{p:1,m:0,c:1,t:0},guodu:{p:1,m:0,c:0,t:0}},consequence:'发展较均衡，但速度较慢，国际环境不等人。'},
+      {text:'发展教育和科技，百年大计',effects:{zhongyuan:{p:0,m:0,c:3,t:1},gaoyuan:{p:0,m:0,c:1,t:0},haiyang:{p:0,m:0,c:1,t:1}},consequence:'人才储备丰厚，为未来腾飞打下根基。'}
+    ]},
+    {id:'e4_6',title:'改革开放',description:'1978年，一个历史性的转折。小岗村十八个红手印，深圳渔村变特区。中国重新打开了面向世界的大门，四亿劳动力即将成为全球经济的巨大变量。超大规模，从诅咒变为祝福。',quote:'"不管黑猫白猫，抓到老鼠就是好猫。" ——邓小平',choices:[
+      {text:'大胆开放，全面融入世界',effects:{haiyang:{p:3,m:0,c:0,t:3},zhongyuan:{p:2,m:0,c:0,t:2},xiyu:{p:0,m:0,c:0,t:1}},consequence:'经济起飞，沿海繁荣，但地区差距拉大。'},
+      {text:'渐进开放，摸着石头过河',effects:{haiyang:{p:2,m:0,c:0,t:2},zhongyuan:{p:2,m:1,c:1,t:1},guodu:{p:1,m:0,c:0,t:1}},consequence:'风险可控的发展，速度稍慢但更稳健。'},
+      {text:'自力更生为主，选择性开放',effects:{zhongyuan:{p:2,m:2,c:1,t:0},caoyuan:{p:1,m:0,c:0,t:0}},consequence:'独立性强，但可能错过全球化的最佳窗口。'}
+    ]},
+    {id:'e4_7',title:'加入WTO',description:'2001年，中国加入世界贸易组织。超大规模的劳动力与全球市场对接，"世界工厂"诞生。中国在全球产业链中找到了独特的位置——连接发达国家和发展中国家的枢纽。',quote:'"与国际接轨。"',choices:[
+      {text:'全面开放市场，深度参与全球化',effects:{haiyang:{p:2,m:0,c:0,t:3},zhongyuan:{p:2,m:0,c:-1,t:2},xiyu:{p:1,m:0,c:0,t:2}},consequence:'GDP飞速增长，但传统产业和文化受到冲击。'},
+      {text:'有选择地开放，保护关键产业',effects:{zhongyuan:{p:2,m:1,c:1,t:2},haiyang:{p:1,m:0,c:0,t:2}},consequence:'经济稳步增长，关键产业得到保护和培育。'},
+      {text:'以开放促改革，倒逼内部升级',effects:{zhongyuan:{p:1,m:0,c:2,t:2},haiyang:{p:1,m:0,c:1,t:2},xinan:{p:1,m:0,c:0,t:1}},consequence:'改革深化，各领域都在变，但阵痛也在所难免。'}
+    ]},
+    {id:'e4_8',title:'一带一路',description:'从古丝绸之路到21世纪海上丝绸之路，中国重新编织连接世界的网络。这不仅是贸易通道，更是一个超大规模国家试图重新定义自己与世界关系的宏大叙事。',quote:'"共商、共建、共享。"',choices:[
+      {text:'大力推进，构建全球网络',effects:{xiyu:{p:2,m:0,c:1,t:3},haiyang:{p:2,m:0,c:0,t:2},gaoyuan:{p:1,m:0,c:1,t:1},caoyuan:{p:1,m:0,c:0,t:1}},consequence:'全球影响力大增，枢纽地位初步确立，但投入巨大。'},
+      {text:'先近后远，稳扎稳打',effects:{xiyu:{p:1,m:0,c:1,t:2},caoyuan:{p:1,m:0,c:0,t:1},zhongyuan:{p:1,m:0,c:0,t:1}},consequence:'周边关系改善，区域枢纽逐步形成。'},
+      {text:'经济为主，文化为辅',effects:{xiyu:{p:1,m:0,c:0,t:2},haiyang:{p:1,m:0,c:0,t:2},zhongyuan:{p:1,m:0,c:0,t:1}},consequence:'务实推进，经济效益明显，但缺乏深层文化纽带。'}
+    ]},
+    // 终局
+    {id:'e4_T',title:'【终局】何谓中国？',description:'三千年跌宕起伏，从封建到平民，从闭关到开放。五大空间的互动塑造了一个独一无二的文明体系。现在，最终的问题摆在面前：中国将以什么姿态面对下一个三千年？',quote:'"周虽旧邦，其命维新。" ——《诗经》',isTransformation:true,isFinale:true,choices:[
+      {text:'天下枢纽：多元共生，连接海陆',effects:{zhongyuan:{p:2,m:1,c:2,t:2},caoyuan:{p:1,m:0,c:1,t:1},xiyu:{p:1,m:0,c:1,t:2},gaoyuan:{p:1,m:0,c:1,t:1},xinan:{p:1,m:0,c:1,t:1},haiyang:{p:2,m:0,c:1,t:2},guodu:{p:1,m:0,c:1,t:1}},consequence:'天下枢纽',ending:'pivot'},
+      {text:'中原帝国：以中原为本，辐射四方',effects:{zhongyuan:{p:3,m:2,c:2,t:1},caoyuan:{p:0,m:0,c:0,t:0},xiyu:{p:0,m:0,c:0,t:0}},consequence:'中原帝国',ending:'empire'},
+      {text:'海洋时代：拥抱大海，融入世界',effects:{haiyang:{p:3,m:2,c:1,t:3},zhongyuan:{p:1,m:0,c:0,t:1}},consequence:'海洋时代',ending:'ocean'}
+    ]}
+  ]
+};
+
+const ENDINGS = {
+  pivot: {title:'天下枢纽',desc:'你选择了多元共生之路。\n\n七大空间均衡发展，中原与草原握手言和，\n西域丝路再度繁华，海洋连通四海。\n\n中国不是某一个空间的独奏，\n而是所有空间的交响。\n\n正如施展所言：中国之所以成为枢纽，\n正因为它内在地就是一个体系。'},
+  empire:{title:'中原帝国',desc:'你选择了以中原为本的道路。\n\n中原强盛，文明辉煌，\n但草原依旧不驯，西域渐行渐远，\n海洋成了别人的天下。\n\n一个伟大的帝国，但不是枢纽。\n历史证明：单一中心无法承载"中国"的全部含义。'},
+  ocean: {title:'海洋时代',desc:'你选择了拥抱海洋的道路。\n\n沿海繁荣，贸易发达，\n与世界深度融合。\n但内陆被遗忘，草原与高原疏离，\n"中国"的概念收窄为一个沿海国家。\n\n或许繁荣，但失去了三千年积淀的深度。'},
+  balanced:{title:'守成之局',desc:'你没有做出极端选择。\n\n各方面都还过得去，但没有突破。\n中国依然是那个中国，\n不好不坏，不上不下。\n\n历史不会记住平庸的选择。'},
+  chaos:  {title:'天下大乱',desc:'你的选择导致了灾难。\n\n各空间分崩离析，\n中原衰败，草原入侵，\n海洋被封锁，西域断联。\n\n"中国"这个概念本身都岌岌可危。\n也许下一次，你会做出不同的选择。'}
+};
+
+// ==================== 游戏状态 ====================
+
+let G = {
+  era: 1,
+  turn: 0,
+  eventIdx: 0,
+  regions: {},
+  totalPower: 50,
+  totalMorale: 50,
+  totalCulture: 50,
+  log: [],
+  choices: []
+};
+
+function initRegions() {
+  G.regions = {};
+  for (let k in REGION_META) {
+    G.regions[k] = {prosperity:5,military:5,culture:5,trade:5};
+  }
+  G.regions.zhongyuan = {prosperity:8,military:6,culture:8,trade:5};
+  G.regions.caoyuan = {prosperity:4,military:8,culture:3,trade:4};
+  G.regions.xiyu = {prosperity:4,military:4,culture:5,trade:7};
+}
+
+// ==================== 渲染函数 ====================
+
+function renderRegionList() {
+  const el = document.getElementById('region-list');
+  let html = '';
+  for (let k in REGION_META) {
+    const m = REGION_META[k], r = G.regions[k];
+    const total = r.prosperity + r.military + r.culture + r.trade;
+    html += `<div class="region-card" onclick="selectRegion('${k}')">
+      <div class="region-name"><span class="region-dot" style="background:${m.color}"></span>${m.name}</div>
+      <div class="stat-bars">
+        <div class="stat-row"><span class="stat-label">兴</span><div class="stat-bar"><div class="stat-fill" style="width:${r.prosperity*10}%;background:${m.color}"></div></div></div>
+        <div class="stat-row"><span class="stat-label">武</span><div class="stat-bar"><div class="stat-fill" style="width:${r.military*10}%;background:${m.color}"></div></div></div>
+        <div class="stat-row"><span class="stat-label">文</span><div class="stat-bar"><div class="stat-fill" style="width:${r.culture*10}%;background:${m.color}"></div></div></div>
+        <div class="stat-row"><span class="stat-label">商</span><div class="stat-bar"><div class="stat-fill" style="width:${r.trade*10}%;background:${m.color}"></div></div></div>
+      </div>
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+function renderMap() {
+  const g = document.getElementById('map-nodes');
+  let html = '';
+  for (let k in REGION_META) {
+    const m = REGION_META[k], r = G.regions[k];
+    const total = r.prosperity + r.military + r.culture + r.trade;
+    const radius = Math.max(20, Math.min(40, 15 + total * 0.8));
+    html += `<g class="region-node" onclick="selectRegion('${k}')">
+      <circle class="node-circle" cx="${m.x}" cy="${m.y}" r="${radius}" fill="${m.color}" opacity="0.7" stroke="${m.color}" stroke-width="2"/>
+      <text class="node-label" x="${m.x}" y="${m.y-2}">${m.name}</text>
+      <text class="node-value" x="${m.x}" y="${m.y+14}">${total}</text>
+    </g>`;
+  }
+  g.innerHTML = html;
+}
+
+function renderTopBar() {
+  document.getElementById('era-display').textContent = ERA_NAMES[G.era];
+  document.getElementById('turn-num').textContent = G.turn;
+  // 计算总值
+  let p=0,m=0,c=0;
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    p += r.prosperity; m += r.military; c += r.culture;
+  }
+  G.totalPower = p; G.totalMorale = m; G.totalCulture = c;
+  document.getElementById('res-power').textContent = p;
+  document.getElementById('res-morale').textContent = m;
+  document.getElementById('res-culture').textContent = c;
+}
+
+function addLog(text) {
+  G.log.unshift({turn:G.turn, era:G.era, text});
+  const el = document.getElementById('history-log');
+  let html = '';
+  G.log.slice(0,50).forEach(l => {
+    html += `<div class="log-entry"><span class="log-turn">[${ERA_NAMES[l.era].slice(0,3)} ${l.turn}]</span>${l.text}</div>`;
+  });
+  el.innerHTML = html;
+}
+
+// ==================== 事件系统 ====================
+
+function showEvent() {
+  const events = EVENTS[G.era];
+  if (!events || G.eventIdx >= events.length) {
+    // 纪元结束
+    if (G.era < 4) {
+      nextEra();
+    } else {
+      showEnding();
+    }
+    return;
+  }
+
+  const ev = events[G.eventIdx];
+  document.getElementById('ev-era').textContent = ev.isTransformation ? '⚡ 历史转折点' : ERA_NAMES[G.era];
+  document.getElementById('ev-title').textContent = ev.title;
+  document.getElementById('ev-desc').textContent = ev.description;
+  document.getElementById('ev-quote').textContent = ev.quote;
+
+  let choicesHtml = '';
+  ev.choices.forEach((ch, i) => {
+    choicesHtml += `<button class="choice-btn" onclick="makeChoice(${i})"><span class="choice-num">${['甲','乙','丙'][i]}</span>${ch.text}</button>`;
+  });
+  document.getElementById('ev-choices').innerHTML = choicesHtml;
+
+  document.getElementById('event-overlay').classList.add('active');
+}
+
+function makeChoice(idx) {
+  const ev = EVENTS[G.era][G.eventIdx];
+  const choice = ev.choices[idx];
+
+  // 应用效果
+  const effectTags = [];
+  for (let region in choice.effects) {
+    const eff = choice.effects[region];
+    const r = G.regions[region];
+    if (!r) continue;
+    if (eff.p) { r.prosperity = clamp(r.prosperity + eff.p, 0, 10); effectTags.push({region:REGION_META[region].name, stat:'兴', val:eff.p}); }
+    if (eff.m) { r.military = clamp(r.military + eff.m, 0, 10); effectTags.push({region:REGION_META[region].name, stat:'武', val:eff.m}); }
+    if (eff.c) { r.culture = clamp(r.culture + eff.c, 0, 10); effectTags.push({region:REGION_META[region].name, stat:'文', val:eff.c}); }
+    if (eff.t) { r.trade = clamp(r.trade + eff.t, 0, 10); effectTags.push({region:REGION_META[region].name, stat:'商', val:eff.t}); }
+  }
+
+  // 连锁反应
+  applyChainReactions();
+
+  // 记录
+  G.choices.push({era:G.era, event:ev.id, choice:idx});
+  addLog(`${ev.title} → ${choice.text.slice(0,12)}…`);
+
+  // 显示结果
+  document.getElementById('event-overlay').classList.remove('active');
+  document.getElementById('res-text').textContent = choice.consequence;
+
+  let tagsHtml = '';
+  effectTags.forEach(t => {
+    const cls = t.val > 0 ? 'positive' : 'negative';
+    const sign = t.val > 0 ? '+' : '';
+    tagsHtml += `<span class="effect-tag ${cls}">${t.region} ${t.stat}${sign}${t.val}</span>`;
+  });
+  document.getElementById('res-effects').innerHTML = tagsHtml;
+  document.getElementById('result-overlay').classList.add('active');
+
+  // 如果是终局事件
+  if (ev.isFinale && choice.ending) {
+    document.querySelector('.continue-btn').onclick = () => showEnding(choice.ending);
+  }
+
+  renderMap();
+  renderRegionList();
+  renderTopBar();
+}
+
+function applyChainReactions() {
+  // 中原强 → 草原也会因贸易受益（但军事上会联合对抗）
+  const zp = G.regions.zhongyuan.prosperity;
+  if (zp > 7) {
+    G.regions.caoyuan.military = clamp(G.regions.caoyuan.military + 1, 0, 10);
+    G.regions.guodu.trade = clamp(G.regions.guodu.trade + 1, 0, 10);
+  }
+  // 草原强 → 过渡地带动荡
+  if (G.regions.caoyuan.military > 8) {
+    G.regions.guodu.prosperity = clamp(G.regions.guodu.prosperity - 1, 0, 10);
+  }
+  // 海洋贸易 → 带动西南和中原
+  if (G.regions.haiyang.trade > 7) {
+    G.regions.xinan.trade = clamp(G.regions.xinan.trade + 1, 0, 10);
+  }
+}
+
+function nextTurn() {
+  document.getElementById('result-overlay').classList.remove('active');
+  G.turn++;
+  G.eventIdx++;
+  showEvent();
+}
+
+function nextEra() {
+  G.era++;
+  G.eventIdx = 0;
+
+  // 显示时代过渡
+  document.getElementById('era-trans-title').textContent = ERA_NAMES[G.era];
+  document.getElementById('era-trans-desc').textContent = ERA_DESCS[G.era];
+  const trans = document.getElementById('era-transition');
+  trans.classList.add('active');
+
+  addLog(`═══ 进入${ERA_NAMES[G.era]} ═══`);
+
+  setTimeout(() => {
+    trans.classList.remove('active');
+    renderTopBar();
+    showEvent();
+  }, 3000);
+}
+
+function showEnding(endingKey) {
+  document.getElementById('result-overlay').classList.remove('active');
+  document.getElementById('event-overlay').classList.remove('active');
+
+  // 如果没有指定结局，根据状态判断
+  if (!endingKey) {
+    endingKey = calculateEnding();
+  }
+
+  const ending = ENDINGS[endingKey] || ENDINGS.balanced;
+  document.getElementById('ending-title').textContent = ending.title;
+  document.getElementById('ending-desc').textContent = ending.desc;
+
+  // 计算分数
+  let totalScore = 0;
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    totalScore += r.prosperity + r.military + r.culture + r.trade;
+  }
+  // 均衡度加分
+  const vals = Object.values(G.regions).map(r => r.prosperity + r.military + r.culture + r.trade);
+  const avg = vals.reduce((a,b) => a+b, 0) / vals.length;
+  const variance = vals.reduce((a,v) => a + Math.pow(v-avg, 2), 0) / vals.length;
+  const balanceBonus = Math.max(0, Math.round(30 - variance));
+  totalScore += balanceBonus;
+
+  document.getElementById('ending-score').textContent = `天命值：${totalScore}（均衡加成 +${balanceBonus}）`;
+
+  document.getElementById('game').classList.remove('active');
+  document.getElementById('ending-screen').classList.add('active');
+}
+
+function calculateEnding() {
+  const totals = {};
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    totals[k] = r.prosperity + r.military + r.culture + r.trade;
+  }
+  // 判断结局
+  const zhTotal = totals.zhongyuan;
+  const hyTotal = totals.haiyang;
+  const allTotal = Object.values(totals).reduce((a,b) => a+b, 0);
+  const avg = allTotal / 7;
+  const maxDev = Math.max(...Object.values(totals).map(v => Math.abs(v - avg)));
+
+  if (maxDev < 6 && allTotal > 140) return 'pivot';
+  if (zhTotal > 30 && zhTotal > hyTotal * 1.5) return 'empire';
+  if (hyTotal > 25 && hyTotal > zhTotal) return 'ocean';
+  if (allTotal < 100) return 'chaos';
+  return 'balanced';
+}
+
+// ==================== 工具函数 ====================
+
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+function selectRegion(k) {
+  document.querySelectorAll('.region-card').forEach(el => el.classList.remove('selected'));
+  // 高亮对应的卡片
+  const cards = document.querySelectorAll('.region-card');
+  const keys = Object.keys(REGION_META);
+  const idx = keys.indexOf(k);
+  if (idx >= 0 && cards[idx]) cards[idx].classList.add('selected');
+}
+
+function saveGame() {
+  localStorage.setItem('pivot_save', JSON.stringify(G));
+  addLog('📜 存档成功');
+}
+
+function loadGame() {
+  const data = localStorage.getItem('pivot_save');
+  if (data) {
+    G = JSON.parse(data);
+    renderAll();
+    addLog('📜 读档成功');
+    showEvent();
+  }
+}
+
+function showHelp() {
+  alert('【枢纽：天下之道】\n\n'
+    + '你将经历中国3000年历史的四个纪元。\n'
+    + '每个事件有三种选择，影响七大空间的发展。\n\n'
+    + '四项指标：兴(经济)、武(军事)、文(文化)、商(贸易)\n\n'
+    + '核心原则：没有任何一个空间能单独定义"中国"。\n'
+    + '多元共生、均衡发展才能达成最佳结局。\n\n'
+    + '—— 基于施展《枢纽：3000年的中国》');
+}
+
+function renderAll() {
+  renderMap();
+  renderRegionList();
+  renderTopBar();
+}
+
+// ==================== 启动 ====================
+
+function startGame() {
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('game').classList.add('active');
+  initRegions();
+  G.turn = 1;
+  G.era = 1;
+  G.eventIdx = 0;
+  G.log = [];
+  G.choices = [];
+  renderAll();
+  addLog('天命初开，经略天下');
+
+  setTimeout(() => showEvent(), 500);
+}
+</script>
+</body>
+</html>
