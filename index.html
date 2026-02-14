@@ -199,7 +199,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 @keyframes transformPulse{0%,100%{box-shadow:0 0 4px rgba(241,196,15,0.2);}50%{box-shadow:0 0 16px rgba(241,196,15,0.5);}}
 @keyframes finalePulse{0%,100%{box-shadow:0 0 6px rgba(241,196,15,0.3);}50%{box-shadow:0 0 20px rgba(241,196,15,0.6),0 0 40px rgba(201,169,110,0.2);}}
 
-.event-progress-bar{height:3px;background:var(--gold);border-radius:2px;transition:width 0.5s ease;margin-bottom:12px;}
+.event-progress-bar{height:4px;background:linear-gradient(90deg,var(--gold),var(--bright-gold));border-radius:2px;transition:width 0.5s ease;margin-bottom:14px;box-shadow:0 0 6px rgba(201,169,110,0.25);}
 .event-progress-text{font-size:0.7em;color:rgba(201,169,110,0.5);letter-spacing:1px;text-align:right;margin-bottom:4px;}
 .event-era-tag{font-size:0.78em;color:var(--gold);letter-spacing:2px;opacity:0.7;margin-bottom:4px;}
 .event-title{font-size:2em;color:var(--bright-gold);margin-bottom:14px;letter-spacing:3px;padding-bottom:10px;border-bottom:1px solid rgba(201,169,110,0.2);line-height:1.3;font-weight:bold;}
@@ -535,11 +535,16 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   #crisis-panel::before { display: none; }
   #crisis-content { padding: 16px 14px 12px; }
   .event-title { font-size: 1.4em; letter-spacing: 1px; }
-  .event-desc { font-size: 0.88em; line-height: 1.75; }
-  .event-quote { font-size: 0.82em; padding-left: 10px; }
-  .choice-btn { padding: 14px 16px 14px 24px; font-size: 0.9em; min-height: 48px; }
+  .event-desc { font-size: 0.95em; line-height: 1.8; }
+  .event-quote { font-size: 0.88em; padding-left: 10px; }
+  .choice-btn { padding: 16px 16px 16px 24px; font-size: 0.95em; min-height: 54px; margin-bottom: 10px; }
   .choice-btn:active { background: rgba(201,169,110,0.18); border-color: var(--gold); }
-  .continue-btn { padding: 14px 44px; font-size: 1em; min-height: 48px; }
+  .continue-btn { padding: 16px 44px; font-size: 1.05em; min-height: 52px; }
+  .event-progress-bar { height: 5px; margin-bottom: 16px; }
+  .event-icon-scene { height: 60px; margin-bottom: 8px; }
+  .result-stat-card { min-width: 50px; padding: 6px 8px; }
+  .result-stat-card .rsc-val { font-size: 1.3em; }
+  .event-bg-toggle { padding: 6px 0; }
 
   #bottom-bar { height: 44px; gap: 6px; padding: 0 8px; overflow-x: auto; justify-content: flex-start; }
   #power-ranking { display: none; }
@@ -1144,6 +1149,244 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   #start-screen .light-beams::before{width:100px;}
   #start-screen .light-beams::after{width:70px;}
 }
+
+/* ========== Crisis Type Animated Icons ========== */
+.event-icon-scene{
+  width:100%;height:80px;display:flex;align-items:center;justify-content:center;
+  margin-bottom:12px;position:relative;overflow:hidden;
+}
+/* War: crossed swords with sparks */
+.event-icon-scene.icon-war::before,
+.event-icon-scene.icon-war::after{
+  content:'';position:absolute;width:4px;height:48px;
+  background:linear-gradient(180deg,#e74c3c,#ffd700);border-radius:2px;
+  transform-origin:center bottom;
+}
+.event-icon-scene.icon-war::before{transform:rotate(-30deg);left:calc(50% - 14px);animation:swordClashL 1.2s ease-in-out infinite;}
+.event-icon-scene.icon-war::after{transform:rotate(30deg);left:calc(50% + 10px);animation:swordClashR 1.2s ease-in-out infinite;}
+@keyframes swordClashL{0%,100%{transform:rotate(-40deg);}50%{transform:rotate(-15deg);}}
+@keyframes swordClashR{0%,100%{transform:rotate(40deg);}50%{transform:rotate(15deg);}}
+.event-icon-scene.icon-war .spark{
+  position:absolute;width:6px;height:6px;background:#ffd700;border-radius:50%;
+  top:20px;left:50%;opacity:0;
+}
+.event-icon-scene.icon-war .spark:nth-child(1){animation:sparkBurst 1.2s 0.45s ease-out infinite;}
+.event-icon-scene.icon-war .spark:nth-child(2){animation:sparkBurst 1.2s 0.55s ease-out infinite;--sx:-12px;--sy:-8px;}
+.event-icon-scene.icon-war .spark:nth-child(3){animation:sparkBurst 1.2s 0.5s ease-out infinite;--sx:10px;--sy:-14px;}
+@keyframes sparkBurst{
+  0%{opacity:0;transform:translate(0,0) scale(1);}
+  20%{opacity:1;}
+  100%{opacity:0;transform:translate(var(--sx,8px),var(--sy,-18px)) scale(0.2);}
+}
+
+/* Trade: flowing coin/silk */
+.event-icon-scene.icon-trade .coin{
+  width:28px;height:28px;border-radius:50%;border:3px solid #dbb978;
+  position:relative;display:flex;align-items:center;justify-content:center;
+  color:#dbb978;font-size:0.85em;font-weight:bold;
+  animation:coinFloat 2s ease-in-out infinite;
+}
+.event-icon-scene.icon-trade .coin::after{content:'通';font-family:inherit;}
+.event-icon-scene.icon-trade .silk{
+  position:absolute;width:60px;height:2px;
+  background:linear-gradient(90deg,transparent,#dbb978,transparent);
+  animation:silkFlow 2s linear infinite;
+}
+.event-icon-scene.icon-trade .silk:nth-child(2){top:28px;animation-delay:0.4s;opacity:0.6;}
+.event-icon-scene.icon-trade .silk:nth-child(3){top:52px;animation-delay:0.8s;opacity:0.4;}
+@keyframes coinFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+@keyframes silkFlow{0%{transform:translateX(-40px);opacity:0;}50%{opacity:1;}100%{transform:translateX(40px);opacity:0;}}
+
+/* Culture: brush stroke */
+.event-icon-scene.icon-culture .brush{
+  width:4px;height:36px;background:linear-gradient(180deg,#4a3020,#2a1a10);
+  border-radius:2px;position:relative;
+  animation:brushWrite 2s ease-in-out infinite;
+  transform-origin:bottom center;
+}
+.event-icon-scene.icon-culture .brush::after{
+  content:'';position:absolute;bottom:-6px;left:-4px;
+  width:12px;height:8px;background:#333;border-radius:0 0 6px 6px;
+}
+.event-icon-scene.icon-culture .ink-trail{
+  position:absolute;bottom:10px;left:50%;width:0;height:3px;
+  background:linear-gradient(90deg,rgba(155,89,182,0.8),transparent);
+  animation:inkStroke 2s ease-out infinite;transform-origin:left;
+}
+@keyframes brushWrite{0%,100%{transform:translateX(-20px) rotate(-5deg);}50%{transform:translateX(20px) rotate(5deg);}}
+@keyframes inkStroke{0%{width:0;left:calc(50% - 20px);opacity:0.8;}50%{width:50px;opacity:0.6;}100%{width:60px;opacity:0;}}
+
+/* Governance: seal/stamp dropping */
+.event-icon-scene.icon-gov .seal{
+  width:36px;height:36px;border:3px solid #dbb978;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  color:#dbb978;font-size:0.9em;font-weight:bold;
+  animation:sealDrop 2s ease-in-out infinite;
+  box-shadow:0 0 12px rgba(219,185,120,0.3);
+}
+.event-icon-scene.icon-gov .seal::after{content:'令';font-family:inherit;}
+.event-icon-scene.icon-gov .stamp-ring{
+  position:absolute;width:44px;height:44px;border:2px solid rgba(219,185,120,0.4);
+  border-radius:50%;opacity:0;
+  animation:stampRing 2s 0.3s ease-out infinite;
+}
+@keyframes sealDrop{0%{transform:translateY(-16px) scale(0.9);opacity:0.5;}30%{transform:translateY(2px) scale(1.05);}50%{transform:translateY(0) scale(1);}100%{transform:translateY(0) scale(1);}}
+@keyframes stampRing{0%{transform:scale(0.8);opacity:0.6;}100%{transform:scale(1.8);opacity:0;}}
+
+/* Transform: lightning crack */
+.event-icon-scene.icon-transform .bolt{
+  width:0;height:0;position:relative;
+}
+.event-icon-scene.icon-transform .bolt::before{
+  content:'';position:absolute;left:-8px;top:-24px;
+  width:16px;height:48px;
+  background:linear-gradient(180deg,#f1c40f,#ff8c00);
+  clip-path:polygon(40% 0%,55% 0%,45% 38%,65% 38%,30% 100%,42% 50%,25% 50%);
+  animation:boltFlash 1.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 8px rgba(241,196,15,0.8));
+}
+.event-icon-scene.icon-transform .bolt-glow{
+  position:absolute;width:60px;height:60px;border-radius:50%;
+  background:radial-gradient(circle,rgba(241,196,15,0.2),transparent 70%);
+  animation:boltGlow 1.5s ease-in-out infinite;
+}
+@keyframes boltFlash{0%,100%{opacity:0.4;transform:scale(0.95);}50%{opacity:1;transform:scale(1.1);}}
+@keyframes boltGlow{0%,100%{opacity:0.3;transform:scale(0.8);}50%{opacity:0.8;transform:scale(1.2);}}
+
+/* Finale: crown icon */
+.event-icon-scene.icon-finale .crown{
+  font-size:2.8em;
+  animation:crownRise 2s ease-in-out infinite;
+  filter:drop-shadow(0 0 16px rgba(241,196,15,0.6));
+}
+@keyframes crownRise{0%,100%{transform:translateY(0) scale(1);filter:drop-shadow(0 0 12px rgba(241,196,15,0.4));}50%{transform:translateY(-6px) scale(1.1);filter:drop-shadow(0 0 24px rgba(241,196,15,0.8));}}
+
+/* ========== Collapsible Event Background Toggle ========== */
+.event-bg-toggle{
+  display:flex;align-items:center;gap:6px;cursor:pointer;
+  color:var(--gold);font-size:0.82em;letter-spacing:1px;
+  padding:8px 0;opacity:0.7;transition:opacity 0.2s;user-select:none;
+}
+.event-bg-toggle:hover{opacity:1;}
+.event-bg-toggle .toggle-arrow{
+  display:inline-block;transition:transform 0.3s;font-size:0.8em;
+}
+.event-bg-toggle.expanded .toggle-arrow{transform:rotate(90deg);}
+.event-background.collapsed{
+  max-height:0;overflow:hidden;opacity:0;margin:0;padding:0;
+  transition:max-height 0.4s ease,opacity 0.3s,margin 0.3s,padding 0.3s;
+}
+.event-background.expanded{
+  max-height:500px;opacity:1;margin:4px 0 10px;padding:10px 14px;
+  transition:max-height 0.5s ease,opacity 0.4s,margin 0.3s,padding 0.3s;
+}
+
+/* ========== Enhanced Choice Button Hover ========== */
+.choice-btn{
+  transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+}
+.choice-btn:hover{
+  transform:translateX(6px) scale(1.02);
+  box-shadow:0 4px 24px rgba(201,169,110,0.2),inset 0 0 20px rgba(201,169,110,0.03);
+}
+.choice-btn::after{
+  content:'';position:absolute;inset:0;border-radius:6px;
+  box-shadow:0 0 0 0 rgba(201,169,110,0);
+  transition:box-shadow 0.3s;
+}
+.choice-btn:hover::after{
+  box-shadow:0 0 16px rgba(201,169,110,0.15);
+}
+
+/* ========== Result Screen Large Stat Numbers ========== */
+.result-stat-big{
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:1.6em;font-weight:bold;margin:0 4px;
+  animation:statNumPop 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  opacity:0;
+}
+.result-stat-big.positive{color:#6bba6b;text-shadow:0 0 12px rgba(107,186,107,0.4);}
+.result-stat-big.negative{color:#c56b6b;text-shadow:0 0 12px rgba(197,107,107,0.4);}
+@keyframes statNumPop{
+  0%{opacity:0;transform:scale(0.3) translateY(10px);}
+  60%{opacity:1;transform:scale(1.2) translateY(-2px);}
+  100%{opacity:1;transform:scale(1) translateY(0);}
+}
+.result-verdict{
+  font-size:1.15em;color:var(--bright-gold);text-align:center;
+  margin-bottom:12px;letter-spacing:2px;
+  text-shadow:0 0 16px rgba(201,169,110,0.4);
+  animation:verdictFade 0.6s ease forwards;
+}
+@keyframes verdictFade{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+
+/* Visual stat change cards in results */
+.result-stat-cards{
+  display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0 16px;
+}
+.result-stat-card{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:8px 12px;border-radius:8px;min-width:60px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+  animation:statCardIn 0.5s ease forwards;opacity:0;
+}
+.result-stat-card .rsc-region{font-size:0.7em;color:#888;letter-spacing:1px;}
+.result-stat-card .rsc-stat{font-size:0.75em;color:#aaa;}
+.result-stat-card .rsc-val{font-size:1.5em;font-weight:bold;}
+.result-stat-card .rsc-val.pos{color:#6bba6b;text-shadow:0 0 8px rgba(107,186,107,0.3);}
+.result-stat-card .rsc-val.neg{color:#c56b6b;text-shadow:0 0 8px rgba(197,107,107,0.3);}
+@keyframes statCardIn{
+  0%{opacity:0;transform:translateY(12px) scale(0.9);}
+  100%{opacity:1;transform:translateY(0) scale(1);}
+}
+
+/* ========== Section Dividers ========== */
+.section-divider{
+  width:40%;height:1px;margin:10px auto;
+  background:linear-gradient(90deg,transparent,rgba(201,169,110,0.3),transparent);
+}
+.section-divider.wide{width:70%;}
+
+/* ========== Enhanced Quote Section ========== */
+.event-quote{
+  position:relative;
+  background:rgba(201,169,110,0.04);
+  border-radius:0 8px 8px 0;
+}
+.event-quote::before{
+  content:'\201C';position:absolute;top:-12px;left:6px;
+  font-size:2.5em;color:rgba(201,169,110,0.3);font-style:normal;line-height:1;
+}
+.event-quote::after{
+  content:'\201D';font-size:1.8em;color:rgba(201,169,110,0.3);
+  font-style:normal;vertical-align:-0.3em;margin-left:6px;
+}
+
+/* ========== Advisor Compact Mode ========== */
+.advisor-section-compact{margin:10px 0 8px;border-top:1px solid rgba(201,169,110,0.1);padding-top:10px;}
+.advisor-section-compact h3{color:var(--gold);font-size:0.85em;letter-spacing:2px;margin-bottom:6px;text-align:center;}
+.advisor-icons-row{display:flex;gap:6px;justify-content:center;margin-bottom:10px;}
+.advisor-icon-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:rgba(201,169,110,0.06);border:1px solid rgba(201,169,110,0.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1em;cursor:pointer;transition:all 0.25s;
+}
+.advisor-icon-btn:hover,.advisor-icon-btn.active{
+  background:rgba(201,169,110,0.15);border-color:var(--gold);
+  transform:scale(1.15);box-shadow:0 0 10px rgba(201,169,110,0.2);
+}
+.advisor-expand-content{
+  max-height:0;overflow:hidden;transition:max-height 0.35s ease;
+  text-align:left;
+}
+.advisor-expand-content.open{max-height:200px;}
+.advisor-expand-text{
+  padding:8px 12px;background:rgba(201,169,110,0.04);
+  border-radius:6px;font-size:0.85em;color:#aaa;line-height:1.6;margin-bottom:8px;
+}
+.advisor-expand-text .aq-name{color:var(--gold);font-size:0.82em;margin-bottom:2px;}
+.advisor-expand-text .aq-rec{color:#8a7a5a;font-size:0.78em;margin-top:3px;font-style:italic;}
 </style>
 </head>
 <body>
@@ -2517,9 +2760,11 @@ function showEvent() {
   _regionDetailActive = false;
   _crisisPanelBackup = '';
 
-  // Set crisis type class on panel
+  // Set crisis type class on panel (preserve tab-active for mobile)
+  const hadTabActive = panel.classList.contains('tab-active');
   panel.className = 'crisis-' + crisis.type;
   panel.id = 'crisis-panel';
+  if (hadTabActive) panel.classList.add('tab-active');
 
   // Apply scene background
   applySceneBackground(crisis.type);
@@ -2532,19 +2777,26 @@ function showEvent() {
   let html = '';
   html += `<div class="event-progress-text">第 ${currentNum}/${totalEvents} 事</div>`;
   html += `<div class="event-progress-bar" style="width:${currentNum/totalEvents*100}%"></div>`;
+
+  // Animated event icon based on crisis type
+  html += _buildEventIcon(crisis.type);
+
   html += `<div class="crisis-tag ${crisis.cls}">${crisis.label}</div>`;
   html += `<div class="event-era-tag" id="ev-era">${ev.isTransformation ? '\u26A1 历史转折点' : ERA_NAMES[G.era]}</div>`;
   html += `<div class="event-title dramatic" id="ev-title">${ev.title}</div>`;
-  html += `<div class="event-desc" id="ev-desc">${ev.description}</div>`;
-  // Event background from 施展's analysis
+  // Shorten description display: truncate if too long
+  const shortDesc = ev.description.length > 60 ? ev.description.slice(0, 58) + '……' : ev.description;
+  html += `<div class="event-desc" id="ev-desc">${shortDesc}</div>`;
+  // Event background from 施展's analysis — collapsed by default
   const bg = (typeof EVENT_BACKGROUND !== 'undefined') ? EVENT_BACKGROUND[ev.id] : '';
   if (bg) {
-    html += `<div class="event-background" id="ev-bg"><div class="bg-label">📖 施展视角</div>${bg}</div>`;
+    html += `<div class="event-bg-toggle" id="ev-bg-toggle" onclick="toggleEventBg()"><span class="toggle-arrow">▶</span> 📖 深度解读</div>`;
+    html += `<div class="event-background collapsed" id="ev-bg">${bg}</div>`;
   }
   html += `<div class="event-quote" id="ev-quote">${ev.quote}</div>`;
 
-  // Advisor section
-  html += buildAdvisorHtml(ev.id);
+  // Advisor section — compact icon mode
+  html += buildAdvisorCompactHtml(ev.id);
 
   // Get advisor recommendations for choice buttons
   const advisorRecs = getAdvisorRecsForEvent(ev.id);
@@ -2585,18 +2837,18 @@ function showEvent() {
   const eraTag = content.querySelector('.event-era-tag');
   const titleEl = content.querySelector('.event-title');
   const descEl = content.querySelector('.event-desc');
-  const bgEl = content.querySelector('.event-background');
   const quoteEl = content.querySelector('.event-quote');
   const crisisTag = content.querySelector('.crisis-tag');
+  const bgToggle = content.querySelector('.event-bg-toggle');
   if (crisisTag) { crisisTag.style.opacity='0'; crisisTag.style.transition='opacity 0.4s'; setTimeout(()=>{crisisTag.style.opacity='1';}, 50); }
   setTimeout(() => eraTag && eraTag.classList.add('visible'), 100 * pace);
   setTimeout(() => titleEl && titleEl.classList.add('visible'), 300 * pace);
-  setTimeout(() => descEl && descEl.classList.add('visible'), 700 * pace);
-  setTimeout(() => bgEl && bgEl.classList.add('visible'), 900 * pace);
-  setTimeout(() => quoteEl && quoteEl.classList.add('visible'), 1100 * pace);
+  setTimeout(() => descEl && descEl.classList.add('visible'), 600 * pace);
+  if (bgToggle) { bgToggle.style.opacity='0'; bgToggle.style.transition='opacity 0.4s'; setTimeout(()=>{bgToggle.style.opacity='1';}, 750 * pace); }
+  setTimeout(() => quoteEl && quoteEl.classList.add('visible'), 850 * pace);
   const btns = content.querySelectorAll('.choice-btn');
   btns.forEach((btn, i) => {
-    setTimeout(() => btn.classList.add('visible'), (1400 + i * 200) * pace);
+    setTimeout(() => btn.classList.add('visible'), (1050 + i * 180) * pace);
   });
 
   // Highlight affected regions on map
@@ -2712,14 +2964,43 @@ function _executeChoice(idx, ev, choice) {
 
   // Replace crisis panel content with result (inline)
   const content = document.getElementById('crisis-content');
+
+  // Generate a verdict summary
+  const posCount = effectTags.filter(t => t.val > 0).length;
+  const negCount = effectTags.filter(t => t.val < 0).length;
+  let verdict = '';
+  if (posCount > 0 && negCount === 0) verdict = '天命眷顾，国运昌隆';
+  else if (negCount > 0 && posCount === 0) verdict = '天命示警，当思变通';
+  else if (posCount > negCount) verdict = '利弊相权，略有所得';
+  else if (negCount > posCount) verdict = '祸福相依，代价不轻';
+  else verdict = '天道无常，尚需观望';
+
+  // Shorten consequence text
+  const conseq = choice.consequence || '';
+  const shortConsequence = conseq.length > 50 ? conseq.slice(0, 48) + '……' : conseq;
+
   let html = '<div class="result-section">';
   html += '<div class="result-event-title">' + ev.title + '</div>';
   html += '<div class="result-chosen">' + ['\u7532','\u4E59','\u4E19'][idx] + ' \u00B7 ' + choice.text + '</div>';
   html += '<div class="result-divider"></div>';
-  html += '<div class="result-text">' + choice.consequence + '</div>';
+  html += '<div class="result-verdict">' + verdict + '</div>';
+  html += '<div class="result-text">' + shortConsequence + '</div>';
 
-  // Effect tags (hidden initially)
-  html += '<div class="effect-tags" id="res-effects">';
+  // Big animated stat change cards
+  html += '<div class="result-stat-cards" id="res-stat-cards">';
+  effectTags.forEach((t, i) => {
+    const cls = t.val > 0 ? 'pos' : 'neg';
+    const sign = t.val > 0 ? '+' : '';
+    html += `<div class="result-stat-card" style="animation-delay:${i*0.12}s">`;
+    html += `<div class="rsc-region">${t.region}</div>`;
+    html += `<div class="rsc-val ${cls}">${sign}${t.val}</div>`;
+    html += `<div class="rsc-stat">${t.stat}</div>`;
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Effect tags (hidden initially) — keep for sound/cascade logic
+  html += '<div class="effect-tags" id="res-effects" style="display:none;">';
   effectTags.forEach(t => {
     const cls = t.val > 0 ? 'positive' : 'negative';
     const sign = t.val > 0 ? '+' : '';
@@ -3392,9 +3673,11 @@ function showStrategicPhase() {
   const content = document.getElementById('crisis-content');
   const panel = document.getElementById('crisis-panel');
 
-  // Remove scene classes
+  // Remove scene classes (preserve tab-active for mobile)
+  const _spHadTab = panel.classList.contains('tab-active');
   panel.className = '';
   panel.id = 'crisis-panel';
+  if (_spHadTab) panel.classList.add('tab-active');
 
   const knowledge = ERA_KNOWLEDGE[G.era] || {};
   // Build summary of region states
@@ -3415,25 +3698,30 @@ function showStrategicPhase() {
 
   if (knowledge.theme) {
     html += '<div class="sp-knowledge">';
-    html += '<h3>\uD83D\uDD0D \u672C\u7EAA\u6838\u5FC3\u95EE\u9898</h3>';
-    html += '<p><strong style="color:var(--bright-gold);">' + knowledge.theme + '</strong></p>';
-    if (knowledge.insight) html += '<p style="margin-top:8px;">' + knowledge.insight + '</p>';
+    html += '<p><strong style="color:var(--bright-gold);font-size:1.05em;">\uD83D\uDD0D ' + knowledge.theme + '</strong></p>';
     if (knowledge.world) html += '<div class="sp-world">\uD83C\uDF0D ' + knowledge.world + '</div>';
     html += '</div>';
   }
 
-  html += '<div class="sp-summary">';
-  html += '<strong>各方势力：</strong><br>' + summaryHtml;
+  // Compact summary with visual bars
+  html += '<div class="sp-summary" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;">';
+  ranked.forEach(item => {
+    const pct = Math.round(item.total / 40 * 100);
+    html += `<span style="display:inline-flex;align-items:center;gap:4px;padding:3px 8px;background:rgba(201,169,110,0.06);border-radius:10px;font-size:0.82em;">`;
+    html += `<span style="color:var(--gold);">${item.name}</span>`;
+    html += `<span style="display:inline-block;width:32px;height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;"><span style="display:block;width:${pct}%;height:100%;background:var(--gold);border-radius:2px;"></span></span>`;
+    html += `<span style="color:#aaa;font-size:0.9em;">${item.total}</span></span>`;
+  });
   html += '</div>';
 
   // Era objectives checklist
   const objectives = ERA_OBJECTIVES[G.era];
   if (objectives) {
     html += '<div class="sp-objectives">';
-    html += '<strong>📋 本纪目标</strong>';
+    html += '<strong>\uD83C\uDFAF 目标</strong>';
     objectives.forEach(obj => {
       const met = obj.check();
-      const icon = met ? '✅' : '⬜';
+      const icon = met ? '\u2705' : '\u2B1C';
       const cls = met ? 'obj-met' : 'obj-unmet';
       html += `<div class="sp-obj ${cls}">${icon} ${obj.text}</div>`;
     });
@@ -3443,7 +3731,7 @@ function showStrategicPhase() {
   // Mini-investment: pick one region to boost
   if (!G._investedThisTurn) {
     html += '<div class="sp-invest">';
-    html += '<strong>💰 本纪余力</strong><div style="color:#aaa;font-size:0.85em;margin:6px 0;">选择一个区域额外投入（+1 随机属性）：</div>';
+    html += '<strong>\uD83D\uDCB0 余力投入</strong><div style="color:#aaa;font-size:0.82em;margin:4px 0;">选一区域 +1 随机属性</div>';
     html += '<div class="sp-invest-grid">';
     Object.keys(REGION_META).forEach(k => {
       html += `<button class="sp-invest-btn" onclick="investRegion('${k}')" style="border-color:${REGION_META[k].color}40;">${REGION_META[k].name}</button>`;
@@ -3451,19 +3739,18 @@ function showStrategicPhase() {
     html += '</div></div>';
   }
 
-  // Random Shizhan insight for this era
+  // Random Shizhan insight — collapsible
   if (typeof SHIZHAN_INSIGHTS !== 'undefined') {
     const eraInsights = SHIZHAN_INSIGHTS.filter(si => si.era === G.era);
     if (eraInsights.length > 0) {
       const si = eraInsights[Math.floor(Math.random() * eraInsights.length)];
-      html += '<div style="background:rgba(201,169,110,0.06);border-left:3px solid var(--gold);padding:10px 14px;margin:12px 0;font-size:0.85em;color:#b8a878;line-height:1.65;border-radius:0 4px 4px 0;">';
-      html += '<div style="color:var(--gold);font-size:0.8em;letter-spacing:2px;margin-bottom:4px;">💡 施展洞见 · ' + si.tag + '</div>';
-      html += si.text + '</div>';
+      html += `<div class="event-bg-toggle" onclick="this.classList.toggle('expanded');var s=this.nextElementSibling;s.classList.toggle('collapsed');s.classList.toggle('expanded');"><span class="toggle-arrow">\u25B6</span> \uD83D\uDCA1 施展洞见 \u00B7 ${si.tag}</div>`;
+      html += `<div class="event-background collapsed" style="font-size:0.85em;color:#b8a878;line-height:1.65;">${si.text}</div>`;
     }
   }
 
-  html += '<div class="sp-hint">点击地图区域浏览详情，或点击时间线回顾历史</div>';
-  html += '<button class="sp-next-btn" onclick="exitStrategicPhase()">迎 接 天 命</button>';
+  html += '<div class="sp-hint" style="margin-top:12px;">点击地图浏览 \u00B7 时间线回顾</div>';
+  html += '<button class="sp-next-btn" onclick="exitStrategicPhase()">\u8FCE \u63A5 \u5929 \u547D</button>';
   html += '</div>';
 
   content.innerHTML = html;
@@ -3496,6 +3783,104 @@ function exitStrategicPhase() {
   _crisisPanelBackup = '';
   G._investedThisTurn = false;
   showEvent();
+}
+
+// ==================== Event Icon Builder ====================
+
+function _buildEventIcon(crisisType) {
+  let inner = '';
+  switch(crisisType) {
+    case 'war':
+      inner = '<div class="spark"></div><div class="spark"></div><div class="spark"></div>';
+      break;
+    case 'trade':
+      inner = '<div class="silk"></div><div class="silk"></div><div class="silk"></div><div class="coin"></div>';
+      break;
+    case 'culture':
+      inner = '<div class="brush"></div><div class="ink-trail"></div>';
+      break;
+    case 'gov':
+      inner = '<div class="seal"></div><div class="stamp-ring"></div>';
+      break;
+    case 'transform':
+      inner = '<div class="bolt-glow"></div><div class="bolt"></div>';
+      break;
+    case 'finale':
+      inner = '<div class="crown">\uD83D\uDC51</div>';
+      break;
+    default:
+      inner = '<div class="seal"></div><div class="stamp-ring"></div>';
+  }
+  return `<div class="event-icon-scene icon-${crisisType}">${inner}</div>`;
+}
+
+// ==================== Event Background Toggle ====================
+
+function toggleEventBg() {
+  const toggle = document.getElementById('ev-bg-toggle');
+  const bg = document.getElementById('ev-bg');
+  if (!toggle || !bg) return;
+  if (bg.classList.contains('collapsed')) {
+    bg.classList.remove('collapsed');
+    bg.classList.add('expanded');
+    toggle.classList.add('expanded');
+  } else {
+    bg.classList.remove('expanded');
+    bg.classList.add('collapsed');
+    toggle.classList.remove('expanded');
+  }
+}
+
+// ==================== Compact Advisor Builder ====================
+
+function buildAdvisorCompactHtml(eventId) {
+  const comments = ADVISOR_COMMENTS[eventId];
+  if (!comments) return '';
+
+  let html = '<div class="advisor-section-compact">';
+  html += '<h3>\u8C0B\u58EB\u8FDB\u8A00</h3>';
+  html += '<div class="advisor-icons-row">';
+  ADVISORS.forEach((advisor, ai) => {
+    const comment = comments[advisor.id];
+    if (!comment) return;
+    html += `<div class="advisor-icon-btn" onclick="toggleCompactAdvisor(${ai},this)" title="${advisor.name}">${advisor.icon}</div>`;
+  });
+  html += '</div>';
+  html += '<div class="advisor-expand-content" id="advisor-expand">';
+  ADVISORS.forEach((advisor, ai) => {
+    const comment = comments[advisor.id];
+    if (!comment) return;
+    const recIdx = comments.recs ? comments.recs[ai] : -1;
+    const recText = recIdx >= 0 ? '\u2192 \u63A8\u8350\u7B2C' + ['\u7532','\u4E59','\u4E19'][recIdx] + '\u7B56' : '';
+    html += `<div class="advisor-expand-text" data-advisor="${ai}" style="display:none;">`;
+    html += `<div class="aq-name">${advisor.icon} ${advisor.name}</div>`;
+    html += `\u201C${comment}\u201D`;
+    if (recText) html += `<div class="aq-rec">${recText}</div>`;
+    html += '</div>';
+  });
+  html += '</div>';
+  html += '</div>';
+  return html;
+}
+
+function toggleCompactAdvisor(idx, btn) {
+  const container = document.getElementById('advisor-expand');
+  if (!container) return;
+  const allBtns = document.querySelectorAll('.advisor-icon-btn');
+  const allTexts = container.querySelectorAll('.advisor-expand-text');
+  const targetText = container.querySelector(`[data-advisor="${idx}"]`);
+  const isOpen = targetText && targetText.style.display !== 'none';
+
+  allBtns.forEach(b => b.classList.remove('active'));
+  allTexts.forEach(t => t.style.display = 'none');
+
+  if (!isOpen && targetText) {
+    targetText.style.display = 'block';
+    btn.classList.add('active');
+    container.classList.add('open');
+  } else {
+    container.classList.remove('open');
+  }
 }
 
 // ==================== Advisor System ====================
@@ -4183,8 +4568,10 @@ function tryRandomEvent() {
 function showRandomEvent(ev, callback) {
   const content = document.getElementById('crisis-content');
   const panel = document.getElementById('crisis-panel');
+  const _reHadTab = panel.classList.contains('tab-active');
   panel.className = '';
   panel.id = 'crisis-panel';
+  if (_reHadTab) panel.classList.add('tab-active');
 
   // Apply effects
   const effectTags = [];
