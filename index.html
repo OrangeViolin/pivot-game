@@ -1346,6 +1346,40 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   0%{opacity:0;transform:translateY(12px) scale(0.9);}
   100%{opacity:1;transform:translateY(0) scale(1);}
 }
+.result-stat-card{cursor:pointer;transition:border-color 0.2s,background 0.2s;}
+.result-stat-card:hover{border-color:rgba(201,169,110,0.3);background:rgba(201,169,110,0.06);}
+.result-stat-card:active{transform:scale(0.95);}
+.result-stat-card::after{content:'?';position:absolute;top:2px;right:4px;font-size:0.55em;color:rgba(201,169,110,0.4);font-weight:bold;}
+.result-stat-card{position:relative;}
+
+/* Stat explanation popup */
+#stat-explain-overlay{
+  position:fixed;inset:0;z-index:900;background:rgba(0,0,0,0.6);
+  display:none;align-items:center;justify-content:center;
+  animation:fadeIn 0.2s ease;
+}
+#stat-explain-overlay.active{display:flex;}
+#stat-explain-box{
+  max-width:420px;width:90%;max-height:70vh;overflow-y:auto;
+  background:linear-gradient(160deg,#1a1a2e,#22223a);
+  border:1px solid rgba(201,169,110,0.25);border-radius:12px;
+  padding:20px;box-shadow:0 8px 40px rgba(0,0,0,0.5);
+  animation:popIn 0.25s ease;
+}
+@keyframes popIn{0%{opacity:0;transform:scale(0.9);}100%{opacity:1;transform:scale(1);}}
+.se-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.se-region{font-size:1em;color:var(--gold);font-weight:bold;}
+.se-val{font-size:1.4em;font-weight:bold;}
+.se-val.pos{color:#6bba6b;}.se-val.neg{color:#c56b6b;}
+.se-stat-label{font-size:0.85em;color:#aaa;}
+.se-reason{color:#ccc;font-size:0.9em;line-height:1.7;margin:10px 0;padding:10px 12px;background:rgba(201,169,110,0.05);border-radius:6px;border-left:3px solid rgba(201,169,110,0.2);}
+.se-consequence{color:#999;font-size:0.85em;line-height:1.6;margin:8px 0;padding:8px 12px;background:rgba(255,255,255,0.02);border-radius:6px;}
+.se-knowledge{margin-top:10px;padding:10px 12px;background:rgba(201,169,110,0.04);border-radius:6px;}
+.se-knowledge div{font-size:0.82em;line-height:1.6;margin-bottom:6px;}
+.se-knowledge .se-insight{color:#c9a96e;font-style:italic;}
+.se-knowledge .se-dilemma{color:#c07060;}
+.se-close{display:block;margin:12px auto 0;padding:6px 24px;background:rgba(201,169,110,0.1);border:1px solid rgba(201,169,110,0.3);border-radius:6px;color:var(--gold);cursor:pointer;font-family:inherit;font-size:0.85em;}
+.se-close:hover{background:rgba(201,169,110,0.2);}
 
 /* ========== Section Dividers ========== */
 .section-divider{
@@ -1992,9 +2026,15 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   <button class="start-btn" onclick="location.reload()">再 续 天 命</button>
 </div>
 
+<!-- Stat explanation popup -->
+<div id="stat-explain-overlay" onclick="closeStatExplain(event)">
+  <div id="stat-explain-box"></div>
+</div>
+
 <script src="events-extra.js"></script>
 <script src="events-hard.js"></script>
 <script src="deep-knowledge.js"></script>
+<script src="effect-reasons.js"></script>
 <script>
 // ==================== Web Audio API 音效系统 ====================
 
@@ -3115,7 +3155,7 @@ function _executeChoice(idx, ev, choice) {
   effectTags.forEach((t, i) => {
     const cls = t.val > 0 ? 'pos' : 'neg';
     const sign = t.val > 0 ? '+' : '';
-    html += `<div class="result-stat-card" style="animation-delay:${i*0.12}s">`;
+    html += `<div class="result-stat-card" style="animation-delay:${i*0.12}s" onclick="showStatExplain('${ev.id}',${idx},'${t.regionKey||''}','${t.stat}',${t.val})">`;
     html += `<div class="rsc-region">${t.region}</div>`;
     html += `<div class="rsc-val ${cls}">${sign}${t.val}</div>`;
     html += `<div class="rsc-stat">${t.stat}</div>`;
@@ -4003,6 +4043,58 @@ function toggleEventDetail() {
   }
 }
 
+// ==================== Stat Explanation Popup ====================
+
+function showStatExplain(eventId, choiceIdx, regionKey, statLabel, val) {
+  const box = document.getElementById('stat-explain-box');
+  const overlay = document.getElementById('stat-explain-overlay');
+  if (!box || !overlay) return;
+
+  const regionName = REGION_META[regionKey] ? REGION_META[regionKey].name : regionKey;
+  const sign = val > 0 ? '+' : '';
+  const cls = val > 0 ? 'pos' : 'neg';
+
+  let html = '<div class="se-header">';
+  html += `<span class="se-region">${regionName}</span>`;
+  html += `<span class="se-stat-label">${statLabel}</span>`;
+  html += `<span class="se-val ${cls}">${sign}${val}</span>`;
+  html += '</div>';
+
+  // Try to get reason from EFFECT_REASONS
+  const reason = (typeof EFFECT_REASONS !== 'undefined' && EFFECT_REASONS[eventId] && EFFECT_REASONS[eventId][choiceIdx])
+    ? EFFECT_REASONS[eventId][choiceIdx][regionKey]
+    : null;
+
+  if (reason) {
+    html += `<div class="se-reason">${reason}</div>`;
+  }
+
+  // Get consequence from event choice
+  const ev = EVENTS[G.era] && EVENTS[G.era].find(e => e.id === eventId);
+  if (ev && ev.choices[choiceIdx] && ev.choices[choiceIdx].consequence) {
+    html += `<div class="se-consequence">${ev.choices[choiceIdx].consequence}</div>`;
+  }
+
+  // Deep knowledge snippet
+  const dk = (typeof DEEP_KNOWLEDGE !== 'undefined') ? DEEP_KNOWLEDGE[eventId] : null;
+  if (dk) {
+    html += '<div class="se-knowledge">';
+    if (dk.shiZhanInsight) html += `<div class="se-insight">💡 ${dk.shiZhanInsight.substring(0, 120)}…</div>`;
+    if (dk.dilemma) html += `<div class="se-dilemma">⚖️ ${dk.dilemma.substring(0, 100)}…</div>`;
+    html += '</div>';
+  }
+
+  html += '<button class="se-close" onclick="closeStatExplain(event)">关 闭</button>';
+  box.innerHTML = html;
+  overlay.classList.add('active');
+}
+
+function closeStatExplain(e) {
+  if (e.target === document.getElementById('stat-explain-overlay') || e.target.classList.contains('se-close')) {
+    document.getElementById('stat-explain-overlay').classList.remove('active');
+  }
+}
+
 // ==================== Compact Advisor Builder ====================
 
 function buildAdvisorCompactHtml(eventId) {
@@ -4522,20 +4614,32 @@ function initStartScreen() {
 
   // Start ambient sound + opening gong on first user interaction with the start screen
   const startScreen = document.getElementById('start-screen');
+  SFX._openingPlayed = false;
   const _startAmbient = () => {
     if (!SFX._initialized) SFX.init();
-    SFX.openingGong();
+    if (!SFX._openingPlayed) {
+      SFX.openingGong();
+      SFX._openingPlayed = true;
+    }
     SFX.ambient();
     startScreen.removeEventListener('click', _startAmbient);
     startScreen.removeEventListener('touchstart', _startAmbient);
   };
   startScreen.addEventListener('click', _startAmbient);
   startScreen.addEventListener('touchstart', _startAmbient, {passive:true});
+
+  // Clear mute preference so sound is ON by default each session
+  localStorage.removeItem('pivot_muted');
 }
 
 function startGame() {
   // Init audio on first user interaction and play effects
   if (!SFX._initialized) SFX.init();
+  // If opening gong hasn't played yet (user clicked start directly), play it now
+  if (!SFX._openingPlayed) {
+    SFX.openingGong();
+    SFX._openingPlayed = true;
+  }
   SFX.gameStartChord();
   SFX.fadeOutAmbient(1.5);
 
