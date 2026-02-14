@@ -114,6 +114,15 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 .region-path{cursor:pointer;stroke:rgba(201,169,110,0.2);stroke-width:1;transition:all 0.4s;opacity:0.7;}
 .region-path:hover{filter:brightness(1.3);stroke:rgba(201,169,110,0.6);stroke-width:1.5;opacity:0.9;}
 .region-path.selected{stroke:var(--bright-gold);stroke-width:2;opacity:0.95;filter:brightness(1.4);}
+.region-path.event-affected{animation:eventAffectedPulse 2s ease-in-out infinite;stroke:rgba(201,169,110,0.6);stroke-width:1.5;}
+.region-path.choice-hover{animation:choiceHoverGlow 0.8s ease-in-out infinite;stroke:var(--bright-gold);stroke-width:2.5;filter:brightness(1.5) drop-shadow(0 0 8px currentColor);}
+@keyframes eventAffectedPulse{0%,100%{opacity:0.75;filter:brightness(1);}50%{opacity:0.95;filter:brightness(1.25);}}
+@keyframes choiceHoverGlow{0%,100%{filter:brightness(1.3) drop-shadow(0 0 6px currentColor);}50%{filter:brightness(1.6) drop-shadow(0 0 14px currentColor);}}
+.event-background{background:rgba(201,169,110,0.06);border-left:3px solid var(--gold);padding:10px 14px;margin:10px 0;font-size:0.88em;color:#b8a878;line-height:1.7;border-radius:0 4px 4px 0;opacity:0;transform:translateY(10px);transition:opacity 0.4s,transform 0.4s;}
+.event-background.visible{opacity:1;transform:translateY(0);}
+.event-background .bg-label{color:var(--gold);font-weight:bold;font-size:0.85em;letter-spacing:2px;margin-bottom:4px;}
+.rd-dynamics{background:rgba(201,169,110,0.06);border-left:3px solid rgba(201,169,110,0.3);padding:10px 14px;margin:10px 0;font-size:0.85em;color:#a89868;line-height:1.65;border-radius:0 4px 4px 0;}
+.rd-dynamics h3{color:var(--gold);margin:0 0 6px;}
 .region-node{cursor:pointer;transition:all 0.3s;}
 .region-node:hover .node-circle{filter:brightness(1.4) drop-shadow(0 0 12px currentColor);}
 .node-circle{transition:all 0.3s;}
@@ -2527,6 +2536,11 @@ function showEvent() {
   html += `<div class="event-era-tag" id="ev-era">${ev.isTransformation ? '\u26A1 历史转折点' : ERA_NAMES[G.era]}</div>`;
   html += `<div class="event-title dramatic" id="ev-title">${ev.title}</div>`;
   html += `<div class="event-desc" id="ev-desc">${ev.description}</div>`;
+  // Event background from 施展's analysis
+  const bg = (typeof EVENT_BACKGROUND !== 'undefined') ? EVENT_BACKGROUND[ev.id] : '';
+  if (bg) {
+    html += `<div class="event-background" id="ev-bg"><div class="bg-label">📖 施展视角</div>${bg}</div>`;
+  }
   html += `<div class="event-quote" id="ev-quote">${ev.quote}</div>`;
 
   // Advisor section
@@ -2571,26 +2585,69 @@ function showEvent() {
   const eraTag = content.querySelector('.event-era-tag');
   const titleEl = content.querySelector('.event-title');
   const descEl = content.querySelector('.event-desc');
+  const bgEl = content.querySelector('.event-background');
   const quoteEl = content.querySelector('.event-quote');
   const crisisTag = content.querySelector('.crisis-tag');
   if (crisisTag) { crisisTag.style.opacity='0'; crisisTag.style.transition='opacity 0.4s'; setTimeout(()=>{crisisTag.style.opacity='1';}, 50); }
   setTimeout(() => eraTag && eraTag.classList.add('visible'), 100 * pace);
   setTimeout(() => titleEl && titleEl.classList.add('visible'), 300 * pace);
   setTimeout(() => descEl && descEl.classList.add('visible'), 700 * pace);
+  setTimeout(() => bgEl && bgEl.classList.add('visible'), 900 * pace);
   setTimeout(() => quoteEl && quoteEl.classList.add('visible'), 1100 * pace);
   const btns = content.querySelectorAll('.choice-btn');
   btns.forEach((btn, i) => {
     setTimeout(() => btn.classList.add('visible'), (1400 + i * 200) * pace);
   });
 
+  // Highlight affected regions on map
+  _highlightEventRegions(ev);
+
+  // Choice hover → map region preview
+  btns.forEach((btn, i) => {
+    const ch = ev.choices[i];
+    if (!ch || !ch.effects) return;
+    const regions = Object.keys(ch.effects);
+    btn.addEventListener('mouseenter', () => {
+      _clearMapHighlights();
+      regions.forEach(k => {
+        const p = document.querySelector(`[data-region="${k}"]`);
+        if (p) p.classList.add('choice-hover');
+      });
+    });
+    btn.addEventListener('mouseleave', () => {
+      _clearMapHighlights();
+      _highlightEventRegions(ev);
+    });
+  });
+
   // Scroll to top of crisis content
   content.scrollTop = 0;
+}
+
+function _highlightEventRegions(ev) {
+  _clearMapHighlights();
+  if (!ev.choices) return;
+  const allRegions = new Set();
+  ev.choices.forEach(ch => {
+    if (ch.effects) Object.keys(ch.effects).forEach(k => allRegions.add(k));
+  });
+  allRegions.forEach(k => {
+    const p = document.querySelector(`[data-region="${k}"]`);
+    if (p) p.classList.add('event-affected');
+  });
+}
+
+function _clearMapHighlights() {
+  document.querySelectorAll('.region-path.event-affected,.region-path.choice-hover').forEach(p => {
+    p.classList.remove('event-affected', 'choice-hover');
+  });
 }
 
 function makeChoice(idx, evt) {
   if (G._choosing) return;
   G._choosing = true;
   SFX.choiceConfirm();
+  _clearMapHighlights();
 
   // Ink ripple effect
   if (evt && evt.currentTarget) {
@@ -3283,6 +3340,27 @@ function showRegionDetail(regionKey) {
     html += '</div>';
   }
 
+  // Region dynamics - interaction with other regions
+  if (typeof REGION_DYNAMICS !== 'undefined' && REGION_DYNAMICS[G.era]) {
+    const dynamics = REGION_DYNAMICS[G.era];
+    const relatedDynamics = [];
+    for (let pair in dynamics) {
+      const parts = pair.split('-');
+      if (parts[0] === regionKey || parts[1] === regionKey) {
+        const otherKey = parts[0] === regionKey ? parts[1] : parts[0];
+        const otherName = REGION_META[otherKey] ? REGION_META[otherKey].name : otherKey;
+        relatedDynamics.push({other: otherName, text: dynamics[pair]});
+      }
+    }
+    if (relatedDynamics.length > 0) {
+      html += '<div class="rd-dynamics"><h3>🔗 区域互动（' + ERA_NAMES[G.era] + '）</h3>';
+      relatedDynamics.forEach(d => {
+        html += '<div style="margin-bottom:8px;"><strong style="color:var(--bright-gold);">↔ ' + d.other + '</strong><br>' + d.text + '</div>';
+      });
+      html += '</div>';
+    }
+  }
+
   // Event history
   if (affectedEvents.length > 0) {
     html += '<div class="rd-history"><h3>📅 影响事件</h3>';
@@ -3309,6 +3387,7 @@ function showStrategicPhase() {
   G._inStrategicPhase = true;
   _regionDetailActive = false;
   _crisisPanelBackup = '';
+  _clearMapHighlights();
 
   const content = document.getElementById('crisis-content');
   const panel = document.getElementById('crisis-panel');
@@ -3370,6 +3449,17 @@ function showStrategicPhase() {
       html += `<button class="sp-invest-btn" onclick="investRegion('${k}')" style="border-color:${REGION_META[k].color}40;">${REGION_META[k].name}</button>`;
     });
     html += '</div></div>';
+  }
+
+  // Random Shizhan insight for this era
+  if (typeof SHIZHAN_INSIGHTS !== 'undefined') {
+    const eraInsights = SHIZHAN_INSIGHTS.filter(si => si.era === G.era);
+    if (eraInsights.length > 0) {
+      const si = eraInsights[Math.floor(Math.random() * eraInsights.length)];
+      html += '<div style="background:rgba(201,169,110,0.06);border-left:3px solid var(--gold);padding:10px 14px;margin:12px 0;font-size:0.85em;color:#b8a878;line-height:1.65;border-radius:0 4px 4px 0;">';
+      html += '<div style="color:var(--gold);font-size:0.8em;letter-spacing:2px;margin-bottom:4px;">💡 施展洞见 · ' + si.tag + '</div>';
+      html += si.text + '</div>';
+    }
   }
 
   html += '<div class="sp-hint">点击地图区域浏览详情，或点击时间线回顾历史</div>';
