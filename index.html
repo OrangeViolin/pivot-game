@@ -3102,18 +3102,20 @@ function showEvent() {
   // Title is the HERO — big and bold
   html += `<div class="event-title dramatic" id="ev-title">${ev.title}</div>`;
 
-  // One-line context only — no wall of text
-  const shortDesc = ev.description.length > 45 ? ev.description.slice(0, 43) + '…' : ev.description;
-  html += `<div class="event-desc" id="ev-desc">${shortDesc}</div>`;
+  // Full event description — narrative is the content
+  html += `<div class="event-desc" id="ev-desc">${ev.description}</div>`;
 
-  // Expandable detail (quote + background + advisor) — hidden by default
+  // Quote inline (if exists)
+  if (ev.quote) html += `<div style="color:#8a7a5a;font-style:italic;font-size:0.85em;margin-bottom:10px;padding-left:10px;border-left:2px solid rgba(201,169,110,0.2);">${ev.quote}</div>`;
+
+  // Background knowledge — collapsible but clearly visible
   const bg = (typeof EVENT_BACKGROUND !== 'undefined') ? EVENT_BACKGROUND[ev.id] : '';
-  html += `<div class="event-expand-btn" onclick="toggleEventDetail()" id="ev-expand">📜 了解更多</div>`;
-  html += `<div class="event-detail-panel" id="ev-detail" style="display:none;">`;
-  html += `<div style="color:#999;font-size:0.85em;line-height:1.7;margin-bottom:8px;">${ev.description}</div>`;
-  if (ev.quote) html += `<div style="color:#8a7a5a;font-style:italic;font-size:0.82em;margin-bottom:8px;padding-left:10px;border-left:2px solid rgba(201,169,110,0.2);">${ev.quote}</div>`;
-  if (bg) html += `<div style="color:#a89868;font-size:0.82em;line-height:1.6;margin-top:8px;padding:8px 12px;background:rgba(201,169,110,0.04);border-radius:4px;">📖 ${bg}</div>`;
-  html += `</div>`;
+  if (bg) {
+    html += `<div class="event-expand-btn" onclick="toggleEventDetail()" id="ev-expand">📖 施展视角</div>`;
+    html += `<div class="event-detail-panel" id="ev-detail" style="display:none;">`;
+    html += `<div style="color:#a89868;font-size:0.85em;line-height:1.7;padding:8px 12px;background:rgba(201,169,110,0.04);border-radius:4px;">${bg}</div>`;
+    html += `</div>`;
+  }
 
   // Visual choice cards — no exam numbering
   html += '<div id="ev-choices">';
@@ -3133,10 +3135,8 @@ function showEvent() {
       for (let a = 0; a < Math.max(count, 1); a++) arrows += arrow;
       effectsHtml += `<span class="ce-region"><span style="color:${REGION_META[region]?REGION_META[region].color:'#aaa'}">${rn}</span> <span class="ce-arrow ${dir}">${arrows}</span></span>`;
     }
-    // Short choice label (first 12 chars or natural break)
-    const labelText = ch.text.length > 14 ? ch.text.slice(0, 12) + '…' : ch.text;
     html += `<button class="choice-btn risk-${risk}" onclick="makeChoice(${i},event)" data-choice="${i}">`;
-    html += `<span class="choice-label">${labelText}</span>`;
+    html += `<span class="choice-label">${ch.text}</span>`;
     html += `<div class="choice-effects">${effectsHtml}</div>`;
     html += `<span class="choice-risk">${riskLabels[risk]}</span>`;
     html += `</button>`;
@@ -3282,9 +3282,7 @@ function _executeChoice(idx, ev, choice) {
   else if (negCount > posCount) verdict = '祸福相依，代价不轻';
   else verdict = '天道无常，尚需观望';
 
-  // Shorten consequence text
   const conseq = choice.consequence || '';
-  const shortConsequence = conseq.length > 50 ? conseq.slice(0, 48) + '……' : conseq;
 
   let html = '<div class="result-section" style="text-align:center;">';
   html += '<div class="result-verdict" style="font-size:1.6em;color:var(--bright-gold);letter-spacing:4px;margin:16px 0 8px;text-shadow:0 0 20px rgba(201,169,110,0.3);">' + verdict + '</div>';
@@ -3312,37 +3310,27 @@ function _executeChoice(idx, ev, choice) {
   });
   html += '</div>';
 
-  // Auto-advance bar + tap to skip
-  html += '<div style="position:relative;margin-top:20px;cursor:pointer;" id="continue-area" title="点击跳过">';
-  html += '<div class="auto-advance-bar"></div>';
-  html += '<div style="color:rgba(201,169,110,0.4);font-size:0.75em;text-align:center;padding:8px 0;letter-spacing:2px;">点击任意处继续</div>';
-  html += '</div>';
+  // Consequence text
+  if (conseq) {
+    html += '<div style="color:#999;font-size:0.88em;line-height:1.7;margin:12px 0;padding:8px 14px;background:rgba(201,169,110,0.04);border-radius:6px;border-left:2px solid rgba(201,169,110,0.15);">' + conseq + '</div>';
+  }
+
+  // Continue button
+  html += '<button class="continue-btn hidden" id="res-continue">继 续</button>';
   html += '</div>';
   content.innerHTML = html;
   content.scrollTop = 0;
 
-  // Auto-advance: timer + tap to skip
+  // Wire up continue button
   const isFinaleChoice = ev.isFinale && choice.ending;
   const advanceFn = isFinaleChoice ? () => showEnding(choice.ending) : () => nextTurn();
-  let _advanced = false;
-  function doAdvance() {
-    if (_advanced) return;
-    _advanced = true;
-    SFX.click();
-    advanceFn();
+  const contBtn = document.getElementById('res-continue');
+  if (contBtn) {
+    contBtn.addEventListener('click', () => {
+      SFX.click();
+      advanceFn();
+    });
   }
-  // Auto-advance after 2.5s
-  const _autoTimer = setTimeout(doAdvance, 2500);
-  // Tap anywhere on result to skip
-  const contArea = document.getElementById('continue-area');
-  if (contArea) contArea.addEventListener('click', () => { clearTimeout(_autoTimer); doAdvance(); });
-  // Also tap on the whole result section
-  content.addEventListener('click', function _resultTap(e) {
-    if (e.target.closest('.choice-btn')) return; // Don't intercept choice clicks
-    clearTimeout(_autoTimer);
-    content.removeEventListener('click', _resultTap);
-    doAdvance();
-  });
 
   // Sequential reveal of effect tags + map pulse
   const tags = document.querySelectorAll('#res-effects .effect-tag');
@@ -4707,7 +4695,6 @@ function startGame() {
   G.eventIdx = 0;
   G.log = [];
   G.choices = [];
-  G.mandateScore = 0;
   G._choosing = false;
   G._inStrategicPhase = false;
   G.unlockedAchievements = [];
@@ -4717,6 +4704,8 @@ function startGame() {
     const r = G.regions[k];
     G.eraStartSnapshot[k] = {prosperity:r.prosperity, military:r.military, culture:r.culture, trade:r.trade};
   }
+  // Calculate initial mandate score from region stats (not 0!)
+  G.mandateScore = calculateMandateScore();
   renderAll();
   initMapTooltip();
   initGameParticles();
@@ -5372,9 +5361,11 @@ function updateMandateHealthVisual(score) {
       showMandateWarning('\u2620\uFE0F', '\u5929\u547D\u5371\u6025\uFF01\u6587\u660E\u5C06\u706D\uFF01');
     }
   } else {
-    // mandate 0 or below — game over
+    // mandate 0 or below — game over (but not during initial render!)
     container.classList.add('mandate-danger');
-    triggerGameOver();
+    if (G._totalEventsCompleted > 0) {
+      triggerGameOver();
+    }
   }
 }
 
