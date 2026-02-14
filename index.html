@@ -13,7 +13,7 @@
   --gaoyuan:#4a6fa5;--xinan:#6b8e6b;--haiyang:#2980b9;--guodu:#8b7355;
   --red:#8b2500;--shadow:rgba(0,0,0,0.4);
 }
-body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;overflow:hidden;height:100vh;user-select:none;}
+body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;overflow:hidden;height:100vh;user-select:none;}
 
 /* ========== 开始画面 ========== */
 #start-screen{
@@ -47,8 +47,9 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 #top-bar{
   grid-column:1/-1;background:linear-gradient(90deg,#0d0d1a,#1a1a30,#0d0d1a);
   display:flex;align-items:center;justify-content:space-between;padding:0 20px;
-  border-bottom:1px solid rgba(201,169,110,0.3);font-size:0.9em;
+  border-bottom:none;font-size:0.9em;position:relative;
 }
+#top-bar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(201,169,110,0.1) 15%,rgba(201,169,110,0.5) 50%,rgba(201,169,110,0.1) 85%,transparent 100%);}
 .era-badge{color:var(--gold);font-size:1.05em;letter-spacing:3px;}
 .turn-info{color:#8a7a5a;}
 .resources{display:flex;gap:16px;}
@@ -68,25 +69,30 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 .region-card:hover{border-color:rgba(201,169,110,0.3);background:rgba(201,169,110,0.05);}
 .region-card.selected{border-color:var(--gold);background:rgba(201,169,110,0.08);}
 .region-name{font-size:0.9em;margin-bottom:4px;display:flex;align-items:center;gap:6px;}
-.region-dot{width:8px;height:8px;border-radius:50%;display:inline-block;}
+.region-dot{width:10px;height:10px;border-radius:50%;display:inline-block;box-shadow:0 0 4px currentColor;}
 .stat-bars{display:flex;flex-direction:column;gap:2px;}
 .stat-row{display:flex;align-items:center;gap:4px;font-size:0.7em;color:#888;}
 .stat-label{width:24px;text-align:right;}
-.stat-bar{flex:1;height:6px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;}
+.stat-bar{flex:1;height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden;}
 .stat-fill{height:100%;border-radius:3px;transition:width 0.5s;}
 
 /* 中间主区域 */
-#main-area{background:#0f0f1f;position:relative;overflow:hidden;}
+#main-area{background:radial-gradient(ellipse at 50% 50%, #1a1a28 0%, #121218 70%);position:relative;overflow:hidden;}
 
 /* SVG 地图 */
 #map-svg{width:100%;height:100%;}
 .region-node{cursor:pointer;transition:all 0.3s;}
-.region-node:hover .node-circle{filter:brightness(1.3);}
+.region-node:hover .node-circle{filter:brightness(1.4) drop-shadow(0 0 8px currentColor);}
 .node-circle{transition:all 0.3s;}
-.node-label{fill:#ccc;font-family:'GF',serif;font-size:14px;text-anchor:middle;pointer-events:none;}
-.node-value{fill:#999;font-family:'GF',serif;font-size:11px;text-anchor:middle;pointer-events:none;}
-.connection-line{stroke:rgba(201,169,110,0.15);stroke-width:1.5;stroke-dasharray:4,4;animation:dashFlow 4s linear infinite;}
-@keyframes dashFlow{to{stroke-dashoffset:-16;}}
+.node-glow{pointer-events:none;}
+.node-label{fill:#ddd;font-family:'GF',serif;font-size:13px;text-anchor:middle;pointer-events:none;font-weight:bold;}
+.node-value{fill:#aaa;font-family:'GF',serif;font-size:10px;text-anchor:middle;pointer-events:none;}
+.connection-line{stroke:rgba(201,169,110,0.12);stroke-width:1.5;stroke-dasharray:6,4;fill:none;animation:dashFlow 6s linear infinite;}
+@keyframes dashFlow{to{stroke-dashoffset:-20;}}
+/* China map outline */
+.china-outline{fill:none;stroke:rgba(201,169,110,0.08);stroke-width:1.5;}
+.china-fill{fill:url(#terrainGrad);opacity:0.35;}
+/* Terrain texture gradient defined in SVG defs */
 
 /* 事件卡片 */
 #event-overlay{
@@ -95,16 +101,26 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 }
 #event-overlay.active{display:flex;}
 #event-card{
-  background:linear-gradient(135deg,#1a1a2e,#151525);border:1px solid rgba(201,169,110,0.3);
-  border-radius:8px;padding:28px 32px;max-width:520px;width:90%;
-  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  background:
+    repeating-linear-gradient(0deg,rgba(201,169,110,0.02) 0px,transparent 2px,transparent 4px),
+    linear-gradient(135deg,#1e1c2a 0%,#1a1825 30%,#181620 60%,#1a1825 100%);
+  border:1px solid rgba(201,169,110,0.3);
+  border-top:3px solid transparent;
+  border-image:repeating-linear-gradient(90deg,rgba(201,169,110,0.6) 0px,rgba(201,169,110,0.2) 8px,transparent 8px,transparent 12px,rgba(201,169,110,0.6) 12px,rgba(201,169,110,0.2) 20px,transparent 20px,transparent 24px) 3;
+  border-radius:0 0 8px 8px;padding:28px 32px;max-width:520px;width:90%;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5),inset 0 1px 0 rgba(201,169,110,0.1);
+  position:relative;
 }
+.event-progress-bar{position:absolute;top:0;left:0;height:3px;background:var(--gold);border-radius:0 2px 2px 0;transition:width 0.5s ease;z-index:1;}
+.event-progress-text{position:absolute;top:8px;right:12px;font-size:0.7em;color:rgba(201,169,110,0.5);letter-spacing:1px;}
 .event-era-tag{font-size:0.75em;color:var(--gold);letter-spacing:2px;opacity:0.7;margin-bottom:4px;}
-.event-title{font-size:1.4em;color:var(--bright-gold);margin-bottom:12px;letter-spacing:2px;}
-.event-desc{font-size:0.95em;color:#bbb;line-height:1.8;margin-bottom:12px;}
-.event-quote{font-size:0.85em;color:#7a7a6a;font-style:italic;margin-bottom:20px;padding-left:12px;border-left:2px solid rgba(201,169,110,0.3);}
+.event-title{font-size:1.6em;color:var(--bright-gold);margin-bottom:12px;letter-spacing:2px;padding-bottom:8px;border-bottom:1px solid rgba(201,169,110,0.25);}
+.event-desc{font-size:0.95em;color:#bbb;line-height:2.0;margin-bottom:12px;}
+.event-quote{font-size:0.85em;color:#8a8a7a;font-style:italic;margin-bottom:20px;padding:8px 16px;border-left:2px solid rgba(201,169,110,0.3);position:relative;}
+.event-quote::before{content:'\201C';position:absolute;top:-8px;left:4px;font-size:2em;color:rgba(201,169,110,0.25);font-style:normal;line-height:1;}
+.event-quote::after{content:'\201D';font-size:1.5em;color:rgba(201,169,110,0.25);font-style:normal;vertical-align:-0.2em;margin-left:4px;}
 .choice-btn{
-  display:block;width:100%;padding:12px 16px;margin-bottom:8px;font-family:inherit;
+  display:block;width:100%;padding:14px 18px;margin-bottom:8px;font-family:inherit;
   font-size:0.9em;cursor:pointer;background:rgba(201,169,110,0.06);
   color:#ccc;border:1px solid rgba(201,169,110,0.2);border-radius:4px;
   text-align:left;transition:all 0.2s;line-height:1.5;
@@ -151,8 +167,9 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 #bottom-bar{
   grid-column:1/-1;background:linear-gradient(90deg,#0d0d1a,#1a1a30,#0d0d1a);
   display:flex;align-items:center;justify-content:center;gap:20px;
-  border-top:1px solid rgba(201,169,110,0.2);
+  border-top:none;position:relative;
 }
+#bottom-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(201,169,110,0.1) 15%,rgba(201,169,110,0.4) 50%,rgba(201,169,110,0.1) 85%,transparent 100%);}
 .bottom-btn{
   padding:6px 20px;font-family:inherit;font-size:0.85em;cursor:pointer;
   background:transparent;color:#888;border:1px solid rgba(255,255,255,0.1);
@@ -213,17 +230,28 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
   background:#000;
 }
 #era-transition.active{display:flex;}
+#era-transition.era-to-2{background:radial-gradient(ellipse at 50% 50%,rgba(201,169,110,0.08),#000 70%);}
+#era-transition.era-to-3{background:radial-gradient(ellipse at 50% 50%,rgba(74,111,165,0.08),#000 70%);}
+#era-transition.era-to-4{background:radial-gradient(ellipse at 50% 50%,rgba(74,124,89,0.08),#000 70%);}
 /* era-trans styles moved to enhanced section below */
 
 /* 结局画面 */
 #ending-screen{
   position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
-  flex-direction:column;background:linear-gradient(180deg,#0a0a15,#1a1a30,#0d1520);
+  flex-direction:column;background:#000;
 }
-#ending-screen.active{display:flex;}
-#ending-screen h1{font-size:2.8em;color:var(--gold);letter-spacing:8px;margin-bottom:16px;}
+#ending-screen.active{display:flex;animation:endingFadeIn 2s ease forwards;}
+@keyframes endingFadeIn{0%{background:#000;}100%{background:linear-gradient(180deg,#0a0a15,#1a1a30,#0d1520);}}
+#ending-screen h1{font-size:2.8em;color:var(--gold);letter-spacing:8px;margin-bottom:16px;opacity:0;transform:scale(0.8);transition:opacity 0.8s ease,transform 1s ease,letter-spacing 1s ease;}
+#ending-screen h1.ending-visible{opacity:1;transform:scale(1);letter-spacing:8px;}
 #ending-screen .ending-desc{color:#aaa;font-size:1.05em;line-height:2;text-align:center;max-width:500px;margin-bottom:32px;}
-#ending-screen .score{color:var(--gold);font-size:1.2em;margin-bottom:24px;}
+#ending-screen .ending-desc .ending-line{opacity:0;transform:translateY(8px);transition:opacity 0.5s ease,transform 0.5s ease;}
+#ending-screen .ending-desc .ending-line.ending-visible{opacity:1;transform:translateY(0);}
+#ending-screen .score{color:var(--gold);font-size:1.2em;margin-bottom:24px;opacity:0;transition:opacity 0.5s ease;}
+#ending-screen .score.ending-visible{opacity:1;}
+#ending-screen .start-btn{opacity:0;transition:opacity 0.5s ease;}
+#ending-screen .start-btn.ending-visible{opacity:1;}
+@keyframes endingBtnPulse{0%,100%{box-shadow:0 0 10px rgba(201,169,110,0.1);}50%{box-shadow:0 0 30px rgba(201,169,110,0.4),0 0 60px rgba(201,169,110,0.15);}}
 
 /* 过渡动画 */
 .fade-in{animation:fadeIn 0.3s ease;}
@@ -255,8 +283,31 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 .connection-line.chain-active{stroke:var(--bright-gold)!important;stroke-width:3!important;stroke-dasharray:none!important;opacity:1;animation:lineFlash 1.2s;}
 @keyframes lineFlash{0%,100%{opacity:0.3;}50%{opacity:1;}}
 
+/* ========== 墨水涟漪效果 ========== */
+.ink-ripple{
+  position:absolute;border-radius:50%;
+  background:rgba(201,169,110,0.2);
+  transform:scale(0);animation:inkSpread 0.5s ease-out forwards;
+  pointer-events:none;
+}
+@keyframes inkSpread{to{transform:scale(25);opacity:0;}}
+
+/* ========== 选项效果预览 ========== */
+.choice-btn{position:relative;}
+.choice-preview{
+  display:none;position:absolute;left:24px;right:8px;top:100%;margin-top:2px;
+  background:rgba(0,0,0,0.85);border:1px solid rgba(201,169,110,0.2);border-radius:4px;
+  padding:6px 10px;font-size:0.75em;line-height:1.6;z-index:5;
+  opacity:0;transition:opacity 0.2s ease;pointer-events:none;
+  font-style:normal;letter-spacing:0;white-space:normal;
+}
+.choice-btn:hover .choice-preview{display:block;opacity:1;}
+.choice-preview .cp-pos{color:#6bba6b;}
+.choice-preview .cp-neg{color:#c56b6b;}
+.choice-preview .cp-region{color:var(--gold);margin-right:2px;}
+
 /* ========== 选项风险色带 ========== */
-.choice-btn{position:relative;padding-left:24px;overflow:hidden;}
+.choice-btn{position:relative;padding-left:24px;overflow:visible;}
 .choice-btn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;}
 .choice-btn.risk-low::before{background:#4a7c59;}
 .choice-btn.risk-medium::before{background:#b8860b;}
@@ -303,6 +354,32 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 .achievement-notif{background:linear-gradient(135deg,rgba(30,25,10,0.95),rgba(20,15,5,0.95));border:1px solid var(--gold);border-radius:6px;padding:10px 18px;color:var(--bright-gold);font-size:0.9em;letter-spacing:2px;box-shadow:0 0 20px rgba(201,169,110,0.25);opacity:0;transform:translateX(40px);animation:achieveSlide 3.5s forwards;}
 .achievement-notif .ach-icon{font-size:1.2em;margin-right:6px;}
 @keyframes achieveSlide{0%{opacity:0;transform:translateX(40px);}10%{opacity:1;transform:translateX(0);}80%{opacity:1;transform:translateX(0);}100%{opacity:0;transform:translateX(20px);}}
+
+/* ========== 帮助弹窗 ========== */
+#help-modal{
+  position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
+}
+#help-modal.active{display:flex;}
+.help-card{
+  background:linear-gradient(135deg,#1e1c2a,#181620);border:1px solid rgba(201,169,110,0.3);
+  border-radius:8px;padding:28px 32px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+.help-card h2{color:var(--gold);font-size:1.4em;letter-spacing:4px;margin-bottom:16px;text-align:center;}
+.help-card .help-section{margin-bottom:16px;}
+.help-card .help-section h3{color:var(--bright-gold);font-size:1em;margin-bottom:8px;letter-spacing:2px;}
+.help-card .help-section p{color:#bbb;font-size:0.9em;line-height:1.8;}
+.help-card .help-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:8px 0;}
+.help-card .help-stat{color:#aaa;font-size:0.85em;padding:4px 8px;background:rgba(201,169,110,0.05);border-radius:4px;border-left:3px solid var(--gold);}
+.help-card .help-stat b{color:var(--gold);}
+.help-card .help-tip{color:#8a8a7a;font-size:0.85em;font-style:italic;padding:8px 12px;border-left:2px solid rgba(201,169,110,0.2);margin-top:12px;line-height:1.7;}
+.help-dismiss{
+  display:block;margin:16px auto 0;padding:10px 36px;font-family:inherit;font-size:1em;cursor:pointer;
+  background:rgba(201,169,110,0.1);color:var(--gold);border:1px solid var(--gold);
+  border-radius:4px;letter-spacing:3px;transition:all 0.2s;
+}
+.help-dismiss:hover{background:rgba(201,169,110,0.2);}
 
 /* ========== 地图节点脉冲 ========== */
 .node-circle.pulse{animation:nodePulse 0.6s;}
@@ -469,11 +546,13 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
   }
   #event-card {
     max-width: 100%; width: 100%;
-    border-radius: 16px 16px 0 0;
+    border-radius: 12px 12px 0 0;
     padding: 20px 16px 28px 16px;
     max-height: 85vh;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    border-image: none;
+    border-top: 2px solid rgba(201,169,110,0.3);
   }
   .event-era-tag { font-size: 0.72em; }
   .event-title { font-size: 1.2em; margin-bottom: 10px; letter-spacing: 1px; }
@@ -548,6 +627,21 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 
   /* --- 连锁反应 --- */
   .chain-notif { font-size: 0.75em; padding: 3px 10px; }
+
+  /* --- 帮助弹窗移动端 --- */
+  .help-card { padding: 20px 16px; max-height: 85vh; }
+  .help-card h2 { font-size: 1.2em; }
+  .help-card .help-stats { grid-template-columns: 1fr 1fr; gap: 4px; }
+
+  /* --- 选项预览移动端：长按/聚焦显示 --- */
+  .choice-preview { font-size: 0.7em; }
+  .choice-btn:active .choice-preview { display:block; opacity:1; }
+
+  /* --- 事件进度条移动端 --- */
+  .event-progress-text { font-size: 0.65em; top: 6px; right: 10px; }
+
+  /* --- 结局动画移动端 --- */
+  #ending-screen h1.ending-visible { letter-spacing: 6px; }
 
   /* --- 底部势力排行 (移动端放到抽屉顶部) --- */
   #mobile-power-ranking {
@@ -1010,18 +1104,32 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
     <div id="mobile-turn-badge" style="display:none;">第 <span id="mobile-turn-num">1</span> 回合</div>
     <div id="chain-notifications"></div>
     <svg id="map-svg" viewBox="0 0 600 450">
-      <!-- 连接线 -->
-      <line class="connection-line" x1="300" y1="150" x2="160" y2="180"/>
-      <line class="connection-line" x1="300" y1="150" x2="440" y2="160"/>
-      <line class="connection-line" x1="300" y1="150" x2="300" y2="280"/>
-      <line class="connection-line" x1="160" y1="180" x2="100" y2="300"/>
-      <line class="connection-line" x1="440" y1="160" x2="500" y2="280"/>
-      <line class="connection-line" x1="300" y1="280" x2="160" y2="180"/>
-      <line class="connection-line" x1="300" y1="280" x2="440" y2="160"/>
-      <line class="connection-line" x1="300" y1="280" x2="200" y2="380"/>
-      <line class="connection-line" x1="300" y1="280" x2="400" y2="380"/>
-      <line class="connection-line" x1="100" y1="300" x2="200" y2="380"/>
-      <line class="connection-line" x1="500" y1="280" x2="400" y2="380"/>
+      <defs>
+        <radialGradient id="terrainGrad" cx="50%" cy="45%" r="55%">
+          <stop offset="0%" stop-color="rgba(201,169,110,0.06)"/>
+          <stop offset="50%" stop-color="rgba(201,169,110,0.03)"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+        <filter id="nodeGlow">
+          <feGaussianBlur stdDeviation="6" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Simplified China outline -->
+      <path class="china-fill" d="M120,60 L160,45 L200,50 L250,35 L300,30 L360,35 L420,40 L470,55 L510,80 L540,110 L555,150 L560,190 L555,230 L540,260 L530,290 L510,310 L490,340 L460,360 L430,380 L400,395 L370,405 L340,410 L310,405 L280,395 L250,380 L220,360 L195,340 L175,310 L155,280 L140,250 L120,220 L105,190 L95,160 L90,130 L95,100 L105,75 Z"/>
+      <path class="china-outline" d="M120,60 L160,45 L200,50 L250,35 L300,30 L360,35 L420,40 L470,55 L510,80 L540,110 L555,150 L560,190 L555,230 L540,260 L530,290 L510,310 L490,340 L460,360 L430,380 L400,395 L370,405 L340,410 L310,405 L280,395 L250,380 L220,360 L195,340 L175,310 L155,280 L140,250 L120,220 L105,190 L95,160 L90,130 L95,100 L105,75 Z"/>
+      <!-- Curved connection paths (trade routes / migration paths) -->
+      <path class="connection-line" d="M320,130 Q240,140 160,170"/>
+      <path class="connection-line" d="M320,130 Q380,120 440,140"/>
+      <path class="connection-line" d="M320,130 Q330,200 310,265"/>
+      <path class="connection-line" d="M160,170 Q120,230 110,290"/>
+      <path class="connection-line" d="M440,140 Q480,200 500,270"/>
+      <path class="connection-line" d="M310,265 Q230,210 160,170"/>
+      <path class="connection-line" d="M310,265 Q380,200 440,140"/>
+      <path class="connection-line" d="M310,265 Q250,330 200,370"/>
+      <path class="connection-line" d="M310,265 Q360,330 410,370"/>
+      <path class="connection-line" d="M110,290 Q150,340 200,370"/>
+      <path class="connection-line" d="M500,270 Q460,330 410,370"/>
       <!-- 区域节点由 JS 生成 -->
       <g id="map-nodes"></g>
     </svg>
@@ -1063,6 +1171,42 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
     <button class="bottom-btn" onclick="showHelp()">指南</button>
     <button class="mute-btn" id="game-mute-btn" title="音效开关">&#x1f50a;</button>
     <button class="mobile-toggle-btn" id="btn-toggle-history" onclick="toggleHistoryPanel()" style="display:none;">史卷</button>
+  </div>
+</div>
+
+<!-- 帮助弹窗 -->
+<div id="help-modal">
+  <div class="help-card">
+    <h2>枢纽：天下之道</h2>
+    <div class="help-section">
+      <h3>玩法说明</h3>
+      <p>你将经历中国3000年历史的四个纪元，每个事件有三种选择，影响七大空间的发展走向。</p>
+    </div>
+    <div class="help-section">
+      <h3>四项指标</h3>
+      <div class="help-stats">
+        <div class="help-stat"><b>兴</b> 经济繁荣</div>
+        <div class="help-stat"><b>武</b> 军事力量</div>
+        <div class="help-stat"><b>文</b> 文化影响</div>
+        <div class="help-stat"><b>商</b> 商贸活力</div>
+      </div>
+    </div>
+    <div class="help-section">
+      <h3>核心原则</h3>
+      <p>没有任何一个空间能单独定义"中国"。多元共生、均衡发展才能达成最佳结局。</p>
+    </div>
+    <div class="help-section">
+      <h3>小贴士</h3>
+      <div class="help-tip">
+        悬停选项可预览效果 | 左侧色带表示风险等级<br>
+        绿色=稳妥 · 黄色=有风险 · 红色=高风险<br>
+        天命值 = 总实力 + 均衡加成
+      </div>
+    </div>
+    <div class="help-section" style="text-align:center;">
+      <p style="color:#6a5a3a;font-size:0.8em;">基于施展《枢纽：3000年的中国》</p>
+    </div>
+    <button class="help-dismiss" onclick="closeHelp()">知 道 了</button>
   </div>
 </div>
 
@@ -1422,13 +1566,13 @@ const SFX = {
 // ==================== 游戏数据 ====================
 
 const REGION_META = {
-  zhongyuan: {name:'中原', color:'#b8860b', x:300, y:150, desc:'农耕心脏，文明根基'},
-  caoyuan:   {name:'草原', color:'#4a7c59', x:440, y:160, desc:'铁骑纵横，游牧雄风'},
-  xiyu:      {name:'西域', color:'#a0522d', x:160, y:180, desc:'丝路枢纽，万邦交汇'},
-  guodu:     {name:'过渡地带', color:'#8b7355', x:300, y:280, desc:'农牧交融，文明熔炉'},
-  gaoyuan:   {name:'高原', color:'#4a6fa5', x:500, y:280, desc:'雪域圣境，精神高地'},
-  xinan:     {name:'西南', color:'#6b8e6b', x:200, y:380, desc:'密林万族，多元共生'},
-  haiyang:   {name:'海洋', color:'#2980b9', x:400, y:380, desc:'碧波万里，通达四海'}
+  zhongyuan: {name:'中原', color:'#b8860b', x:320, y:130, desc:'农耕心脏，文明根基'},
+  caoyuan:   {name:'草原', color:'#4a7c59', x:440, y:140, desc:'铁骑纵横，游牧雄风'},
+  xiyu:      {name:'西域', color:'#a0522d', x:160, y:170, desc:'丝路枢纽，万邦交汇'},
+  guodu:     {name:'过渡地带', color:'#8b7355', x:310, y:265, desc:'农牧交融，文明熔炉'},
+  gaoyuan:   {name:'高原', color:'#4a6fa5', x:500, y:270, desc:'雪域圣境，精神高地'},
+  xinan:     {name:'西南', color:'#6b8e6b', x:200, y:370, desc:'密林万族，多元共生'},
+  haiyang:   {name:'海洋', color:'#2980b9', x:410, y:370, desc:'碧波万里，通达四海'}
 };
 
 const ERA_NAMES = ['','第一纪 · 封建社会','第二纪 · 豪族社会','第三纪 · 古代平民社会','第四纪 · 现代转型'];
@@ -1687,7 +1831,7 @@ function renderRegionList() {
   const existingCards = el.querySelectorAll('.region-card');
 
   if (existingCards.length === keys.length) {
-    // Diff update: only update stat-fill widths
+    // Diff update: update stat-fill widths and total power
     keys.forEach((k, i) => {
       const r = G.regions[k];
       const fills = existingCards[i].querySelectorAll('.stat-fill');
@@ -1695,19 +1839,23 @@ function renderRegionList() {
       if (fills[1]) fills[1].style.width = r.military * 10 + '%';
       if (fills[2]) fills[2].style.width = r.culture * 10 + '%';
       if (fills[3]) fills[3].style.width = r.trade * 10 + '%';
+      // Update total power display
+      const totalSpan = existingCards[i].querySelector('.region-name span:last-child');
+      if (totalSpan && totalSpan.style) totalSpan.textContent = r.prosperity + r.military + r.culture + r.trade;
     });
   } else {
     // Initial render
     let html = '';
     for (let k in REGION_META) {
       const m = REGION_META[k], r = G.regions[k];
-      html += `<div class="region-card" onclick="selectRegion('${k}')">
-        <div class="region-name"><span class="region-dot" style="background:${m.color}"></span>${m.name}</div>
+      const total = r.prosperity + r.military + r.culture + r.trade;
+      html += `<div class="region-card" onclick="selectRegion('${k}')" style="background:linear-gradient(135deg,rgba(255,255,255,0.03),${m.color}08);">
+        <div class="region-name"><span class="region-dot" style="background:${m.color};color:${m.color}"></span>${m.name}<span style="margin-left:auto;font-size:0.75em;color:var(--gold);opacity:0.7;">${total}</span></div>
         <div class="stat-bars">
-          <div class="stat-row"><span class="stat-label">兴</span><div class="stat-bar"><div class="stat-fill" style="width:${r.prosperity*10}%;background:${m.color}"></div></div></div>
-          <div class="stat-row"><span class="stat-label">武</span><div class="stat-bar"><div class="stat-fill" style="width:${r.military*10}%;background:${m.color}"></div></div></div>
-          <div class="stat-row"><span class="stat-label">文</span><div class="stat-bar"><div class="stat-fill" style="width:${r.culture*10}%;background:${m.color}"></div></div></div>
-          <div class="stat-row"><span class="stat-label">商</span><div class="stat-bar"><div class="stat-fill" style="width:${r.trade*10}%;background:${m.color}"></div></div></div>
+          <div class="stat-row"><span class="stat-label" title="经济繁荣">兴</span><div class="stat-bar"><div class="stat-fill" style="width:${r.prosperity*10}%;background:${m.color}"></div></div></div>
+          <div class="stat-row"><span class="stat-label" title="军事力量">武</span><div class="stat-bar"><div class="stat-fill" style="width:${r.military*10}%;background:${m.color}"></div></div></div>
+          <div class="stat-row"><span class="stat-label" title="文化影响">文</span><div class="stat-bar"><div class="stat-fill" style="width:${r.culture*10}%;background:${m.color}"></div></div></div>
+          <div class="stat-row"><span class="stat-label" title="商贸活力">商</span><div class="stat-bar"><div class="stat-fill" style="width:${r.trade*10}%;background:${m.color}"></div></div></div>
         </div>
       </div>`;
     }
@@ -1733,15 +1881,17 @@ function renderMap() {
       if (valueText) valueText.textContent = total;
     });
   } else {
-    // Initial render: create all nodes
+    // Initial render: create all nodes with radial glow
     let html = '';
     keys.forEach((k, i) => {
       const m = REGION_META[k], r = G.regions[k];
       const total = r.prosperity + r.military + r.culture + r.trade;
-      const radius = Math.max(20, Math.min(40, 15 + total * 0.8));
+      const radius = Math.max(18, Math.min(36, 14 + total * 0.7));
       const breatheDelay = (i * 0.7).toFixed(1);
       html += `<g class="region-node" onclick="selectRegion('${k}')">
-        <circle class="node-circle" cx="${m.x}" cy="${m.y}" r="${radius}" fill="${m.color}" opacity="0.7" stroke="${m.color}" stroke-width="2" style="animation:nodeBreathe 4s ease-in-out ${breatheDelay}s infinite;"/>
+        <circle class="node-glow" cx="${m.x}" cy="${m.y}" r="${radius+14}" fill="${m.color}" opacity="0.12" style="animation:nodeBreathe 4s ease-in-out ${breatheDelay}s infinite;"/>
+        <circle class="node-glow" cx="${m.x}" cy="${m.y}" r="${radius+8}" fill="${m.color}" opacity="0.18"/>
+        <circle class="node-circle" cx="${m.x}" cy="${m.y}" r="${radius}" fill="${m.color}" opacity="0.75" stroke="${m.color}" stroke-width="2" style="animation:nodeBreathe 4s ease-in-out ${breatheDelay}s infinite;" filter="url(#nodeGlow)"/>
         <text class="node-label" x="${m.x}" y="${m.y-2}">${m.name}</text>
         <text class="node-value" x="${m.x}" y="${m.y+14}">${total}</text>
       </g>`;
@@ -1886,6 +2036,26 @@ function showEvent() {
   descEl.textContent = ev.description;
   quoteEl.textContent = ev.quote;
 
+  // Progress indicator
+  const totalEvents = events.length;
+  const currentNum = G.eventIdx + 1;
+  let progressText = document.querySelector('.event-progress-text');
+  if (!progressText) {
+    progressText = document.createElement('div');
+    progressText.className = 'event-progress-text';
+    document.getElementById('event-card').appendChild(progressText);
+  }
+  progressText.textContent = `第 ${currentNum}/${totalEvents} 事`;
+
+  // Progress bar
+  let progressBar = document.querySelector('.event-progress-bar');
+  if (!progressBar) {
+    progressBar = document.createElement('div');
+    progressBar.className = 'event-progress-bar';
+    document.getElementById('event-card').appendChild(progressBar);
+  }
+  progressBar.style.width = (currentNum / totalEvents * 100) + '%';
+
   // Reset visibility
   [eraTag,titleEl,descEl,quoteEl].forEach(el => el.classList.remove('visible'));
 
@@ -1893,7 +2063,24 @@ function showEvent() {
   ev.choices.forEach((ch, i) => {
     const risk = assessRisk(ch);
     const riskLabel = risk === 'high' ? ' ⚡' : '';
-    choicesHtml += `<button class="choice-btn risk-${risk}" onclick="makeChoice(${i})"><span class="choice-num">${['甲','乙','丙'][i]}</span>${ch.text}${riskLabel}</button>`;
+    // Build preview tooltip
+    let previewParts = [];
+    for (let region in ch.effects) {
+      const eff = ch.effects[region];
+      const rn = REGION_META[region] ? REGION_META[region].name : region;
+      let parts = [];
+      const statNames = {p:'兴',m:'武',c:'文',t:'商'};
+      for (let sk in statNames) {
+        if (eff[sk] && eff[sk] !== 0) {
+          const cls = eff[sk] > 0 ? 'cp-pos' : 'cp-neg';
+          const sign = eff[sk] > 0 ? '+' : '';
+          parts.push(`<span class="${cls}">${statNames[sk]}${sign}${eff[sk]}</span>`);
+        }
+      }
+      if (parts.length > 0) previewParts.push(`<span class="cp-region">${rn}</span> ${parts.join(' ')}`);
+    }
+    const previewHtml = previewParts.length > 0 ? `<div class="choice-preview">${previewParts.join(' | ')}</div>` : '';
+    choicesHtml += `<button class="choice-btn risk-${risk}" onclick="makeChoice(${i},event)"><span class="choice-num">${['甲','乙','丙'][i]}</span>${ch.text}${riskLabel}${previewHtml}</button>`;
   });
   document.getElementById('ev-choices').innerHTML = choicesHtml;
 
@@ -1919,10 +2106,28 @@ function showEvent() {
   });
 }
 
-function makeChoice(idx) {
+function makeChoice(idx, evt) {
   if (G._choosing) return;
   G._choosing = true;
   SFX.choiceConfirm();
+
+  // Ink ripple effect
+  if (evt && evt.currentTarget) {
+    const btn = evt.currentTarget;
+    const rect = btn.getBoundingClientRect();
+    const ripple = document.createElement('div');
+    ripple.className = 'ink-ripple';
+    const x = evt.clientX - rect.left;
+    const y = evt.clientY - rect.top;
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    ripple.style.width = '10px';
+    ripple.style.height = '10px';
+    ripple.style.marginLeft = '-5px';
+    ripple.style.marginTop = '-5px';
+    btn.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  }
 
   const ev = EVENTS[G.era][G.eventIdx];
   const choice = ev.choices[idx];
@@ -2002,22 +2207,21 @@ function makeChoice(idx) {
       if (hasNeg) SFX.negativeThud();
       else if (hasPos) SFX.positiveChime();
       pulseMapNode(rk);
-    }, 400 * (gi + 1));
+    }, 250 * (gi + 1));
   });
 
-  // Show continue after all revealed
-  const totalRevealTime = 400 * (groupKeys.length + 1) + 300;
+  // Show chains simultaneously with last tags reveal
+  const totalRevealTime = 250 * (groupKeys.length + 1);
   setTimeout(() => {
-    // Show chain notifications after effects
     if (chains.length > 0) {
       showChainNotifications(chains);
     }
   }, totalRevealTime);
 
-  const chainTime = chains.length > 0 ? chains.length * 500 + 800 : 0;
+  // Show continue button 500ms after last tags
   setTimeout(() => {
     contBtn.classList.remove('hidden');
-  }, totalRevealTime + chainTime);
+  }, totalRevealTime + 500);
 
   // Finale handling
   if (ev.isFinale && choice.ending) {
@@ -2155,10 +2359,17 @@ function highlightConnection(fromKey, toKey) {
   if (!fromM || !toM) return;
   const lines = document.querySelectorAll('.connection-line');
   lines.forEach(line => {
-    const x1=+line.getAttribute('x1'),y1=+line.getAttribute('y1');
-    const x2=+line.getAttribute('x2'),y2=+line.getAttribute('y2');
-    const matchA = (Math.abs(x1-fromM.x)<5 && Math.abs(y1-fromM.y)<5 && Math.abs(x2-toM.x)<5 && Math.abs(y2-toM.y)<5);
-    const matchB = (Math.abs(x2-fromM.x)<5 && Math.abs(y2-fromM.y)<5 && Math.abs(x1-toM.x)<5 && Math.abs(y1-toM.y)<5);
+    // For path elements, parse the d attribute to find start/end points
+    const d = line.getAttribute('d');
+    if (!d) return;
+    // Extract start point (M x,y) and end point (last x,y)
+    const mMatch = d.match(/^M\s*([\d.]+)[,\s]+([\d.]+)/);
+    const endMatch = d.match(/([\d.]+)[,\s]+([\d.]+)\s*$/);
+    if (!mMatch || !endMatch) return;
+    const x1 = +mMatch[1], y1 = +mMatch[2];
+    const x2 = +endMatch[1], y2 = +endMatch[2];
+    const matchA = (Math.abs(x1-fromM.x)<15 && Math.abs(y1-fromM.y)<15 && Math.abs(x2-toM.x)<15 && Math.abs(y2-toM.y)<15);
+    const matchB = (Math.abs(x2-fromM.x)<15 && Math.abs(y2-fromM.y)<15 && Math.abs(x1-toM.x)<15 && Math.abs(y1-toM.y)<15);
     if (matchA || matchB) {
       line.classList.add('chain-active');
       setTimeout(() => line.classList.remove('chain-active'), 1200);
@@ -2216,6 +2427,9 @@ function nextEra() {
   desc.textContent = ERA_DESCS[G.era]; desc.style.opacity = '0';
   preview.textContent = G.era < 4 ? `下一纪：${ERA_NAMES[G.era+1]||''}` : ''; preview.style.opacity = '0';
 
+  // Apply era-specific background color
+  trans.classList.remove('era-to-2','era-to-3','era-to-4');
+  if (G.era >= 2 && G.era <= 4) trans.classList.add('era-to-' + G.era);
   trans.classList.add('active');
   SFX.eraGong();
   addLog(`═══ 进入${ERA_NAMES[G.era]} ═══`);
@@ -2251,8 +2465,21 @@ function showEnding(endingKey) {
   }
 
   const ending = ENDINGS[endingKey] || ENDINGS.balanced;
-  document.getElementById('ending-title').textContent = ending.title;
-  document.getElementById('ending-desc').textContent = ending.desc;
+  const endingTitle = document.getElementById('ending-title');
+  const endingDesc = document.getElementById('ending-desc');
+  const endingScoreEl = document.getElementById('ending-score');
+  const endingBtn = document.querySelector('#ending-screen .start-btn');
+
+  // Reset animation classes
+  endingTitle.classList.remove('ending-visible');
+  endingScoreEl.classList.remove('ending-visible');
+  if (endingBtn) endingBtn.classList.remove('ending-visible');
+
+  endingTitle.textContent = ending.title;
+
+  // Split description into lines for staggered reveal
+  const descLines = ending.desc.split('\n').filter(l => l.trim() !== '');
+  endingDesc.innerHTML = descLines.map(l => `<div class="ending-line">${l}</div>`).join('');
 
   // 计算分数
   let totalScore = 0;
@@ -2267,10 +2494,49 @@ function showEnding(endingKey) {
   const balanceBonus = Math.max(0, Math.round(30 - variance));
   totalScore += balanceBonus;
 
-  document.getElementById('ending-score').textContent = `天命值：${totalScore}（均衡加成 +${balanceBonus}）`;
+  endingScoreEl.textContent = `天命值：0（均衡加成 +${balanceBonus}）`;
 
   document.getElementById('game').classList.remove('active');
   document.getElementById('ending-screen').classList.add('active');
+
+  // Cinematic entrance sequence
+  // Phase 1: Title scales in (after 1.5s fade from black)
+  setTimeout(() => endingTitle.classList.add('ending-visible'), 1500);
+
+  // Phase 2: Description lines appear one by one
+  const lines = endingDesc.querySelectorAll('.ending-line');
+  lines.forEach((line, i) => {
+    setTimeout(() => line.classList.add('ending-visible'), 2500 + i * 300);
+  });
+
+  // Phase 3: Score counts up
+  const scoreDelay = 2500 + lines.length * 300 + 500;
+  setTimeout(() => {
+    endingScoreEl.classList.add('ending-visible');
+    // Count-up animation
+    let current = 0;
+    const steps = 30;
+    const stepVal = totalScore / steps;
+    let step = 0;
+    const scoreTimer = setInterval(() => {
+      step++;
+      current += stepVal;
+      endingScoreEl.textContent = `天命值：${Math.round(current)}（均衡加成 +${balanceBonus}）`;
+      if (step >= steps) {
+        clearInterval(scoreTimer);
+        endingScoreEl.textContent = `天命值：${totalScore}（均衡加成 +${balanceBonus}）`;
+      }
+    }, 40);
+  }, scoreDelay);
+
+  // Phase 4: Button appears last with pulse glow
+  const btnDelay = scoreDelay + 1500;
+  setTimeout(() => {
+    if (endingBtn) {
+      endingBtn.classList.add('ending-visible');
+      endingBtn.style.animation = 'endingBtnPulse 2.5s ease-in-out infinite';
+    }
+  }, btnDelay);
 }
 
 function calculateEnding() {
@@ -2338,13 +2604,12 @@ function loadGame() {
 
 function showHelp() {
   SFX.click();
-  alert('【枢纽：天下之道】\n\n'
-    + '你将经历中国3000年历史的四个纪元。\n'
-    + '每个事件有三种选择，影响七大空间的发展。\n\n'
-    + '四项指标：兴(经济)、武(军事)、文(文化)、商(贸易)\n\n'
-    + '核心原则：没有任何一个空间能单独定义"中国"。\n'
-    + '多元共生、均衡发展才能达成最佳结局。\n\n'
-    + '—— 基于施展《枢纽：3000年的中国》');
+  document.getElementById('help-modal').classList.add('active');
+}
+
+function closeHelp() {
+  SFX.click();
+  document.getElementById('help-modal').classList.remove('active');
 }
 
 function renderPowerRanking() {
