@@ -3394,7 +3394,9 @@ function _executeChoice(idx, ev, choice) {
   effectTags.forEach((t, i) => {
     const cls = t.val > 0 ? 'pos' : 'neg';
     const sign = t.val > 0 ? '+' : '';
-    html += `<div class="result-stat-card" style="animation-delay:${i*0.12}s" onclick="showStatExplain('${ev.id}',${idx},'${t.regionKey||''}','${t.stat}',${t.val})">`;
+    const statKeyMap = {'\u5174':'p','\u6B66':'m','\u6587':'c','\u5546':'t'};
+    const sk = statKeyMap[t.stat] || '';
+    html += `<div class="result-stat-card" style="animation-delay:${i*0.12}s" onclick="showStatExplain('${ev.id}',${idx},'${t.regionKey||''}','${t.stat}',${t.val},'${sk}')">`;
     html += `<div class="rsc-region">${t.region}</div>`;
     html += `<div class="rsc-val ${cls}">${sign}${t.val}</div>`;
     html += `<div class="rsc-stat">${t.stat}</div>`;
@@ -4284,7 +4286,7 @@ function toggleEventDetail() {
 
 // ==================== Stat Explanation Popup ====================
 
-function showStatExplain(eventId, choiceIdx, regionKey, statLabel, val) {
+function showStatExplain(eventId, choiceIdx, regionKey, statLabel, val, statKey) {
   const box = document.getElementById('stat-explain-box');
   const overlay = document.getElementById('stat-explain-overlay');
   if (!box || !overlay) return;
@@ -4292,17 +4294,24 @@ function showStatExplain(eventId, choiceIdx, regionKey, statLabel, val) {
   const regionName = REGION_META[regionKey] ? REGION_META[regionKey].name : regionKey;
   const sign = val > 0 ? '+' : '';
   const cls = val > 0 ? 'pos' : 'neg';
+  const statFullNames = {'兴':'繁荣（兴）','武':'军事（武）','文':'文化（文）','商':'商贸（商）'};
 
   let html = '<div class="se-header">';
   html += `<span class="se-region">${regionName}</span>`;
-  html += `<span class="se-stat-label">${statLabel}</span>`;
+  html += `<span class="se-stat-label">${statFullNames[statLabel] || statLabel}</span>`;
   html += `<span class="se-val ${cls}">${sign}${val}</span>`;
   html += '</div>';
 
-  // Try to get reason from EFFECT_REASONS
-  const reason = (typeof EFFECT_REASONS !== 'undefined' && EFFECT_REASONS[eventId] && EFFECT_REASONS[eventId][choiceIdx])
-    ? EFFECT_REASONS[eventId][choiceIdx][regionKey]
-    : null;
+  // Get per-stat reason from EFFECT_REASONS (new structure: [eventId][choiceIdx][regionKey][statKey])
+  let reason = null;
+  if (typeof EFFECT_REASONS !== 'undefined' && EFFECT_REASONS[eventId] && EFFECT_REASONS[eventId][choiceIdx] && EFFECT_REASONS[eventId][choiceIdx][regionKey]) {
+    const regionReasons = EFFECT_REASONS[eventId][choiceIdx][regionKey];
+    if (typeof regionReasons === 'object' && statKey) {
+      reason = regionReasons[statKey];
+    } else if (typeof regionReasons === 'string') {
+      reason = regionReasons; // fallback for old format
+    }
+  }
 
   if (reason) {
     html += `<div class="se-reason">${reason}</div>`;
@@ -4318,8 +4327,8 @@ function showStatExplain(eventId, choiceIdx, regionKey, statLabel, val) {
   const dk = (typeof DEEP_KNOWLEDGE !== 'undefined') ? DEEP_KNOWLEDGE[eventId] : null;
   if (dk) {
     html += '<div class="se-knowledge">';
-    if (dk.shiZhanInsight) html += `<div class="se-insight">💡 ${dk.shiZhanInsight.substring(0, 120)}…</div>`;
-    if (dk.dilemma) html += `<div class="se-dilemma">⚖️ ${dk.dilemma.substring(0, 100)}…</div>`;
+    if (dk.shiZhanInsight) html += `<div class="se-insight">💡 ${dk.shiZhanInsight.substring(0, 150)}…</div>`;
+    if (dk.dilemma) html += `<div class="se-dilemma">⚖️ ${dk.dilemma.substring(0, 120)}…</div>`;
     html += '</div>';
   }
 
