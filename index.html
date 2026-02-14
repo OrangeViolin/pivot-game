@@ -40,7 +40,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 .start-btn:hover{background:linear-gradient(135deg,rgba(201,169,110,0.3),rgba(201,169,110,0.15));box-shadow:0 0 30px rgba(201,169,110,0.2);}
 
 /* ========== 主游戏布局 (Crisis Mode) ========== */
-#game{display:none;height:100vh;width:100vw;grid-template-columns:1fr;grid-template-rows:auto auto 1fr auto;}
+#game{display:none;height:100vh;width:100vw;grid-template-columns:1fr;grid-template-rows:auto auto auto 1fr auto;}
 #game.active{display:grid;}
 
 /* ========== Timeline Bar ========== */
@@ -520,7 +520,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   .start-btn { padding: 14px 44px; font-size: 1.1em; letter-spacing: 4px; min-height: 48px; min-width: 180px; }
 
   /* Mobile: tab switching mode */
-  #game { grid-template-rows: auto auto 1fr auto !important; }
+  #game { grid-template-rows: auto auto auto 1fr auto !important; }
   #game-body { grid-template-columns: 1fr !important; grid-template-rows: 1fr !important; }
 
   #timeline-bar { padding: 6px 10px; }
@@ -1394,9 +1394,310 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 }
 .advisor-expand-text .aq-name{color:var(--gold);font-size:0.82em;margin-bottom:2px;}
 .advisor-expand-text .aq-rec{color:#8a7a5a;font-size:0.78em;margin-top:3px;font-style:italic;}
+
+/* ========== HERO'S JOURNEY: Prologue Overlay ========== */
+#prologue-overlay{
+  position:fixed;inset:0;z-index:1100;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#0a0608 0%,#1a0e05 30%,#2a1508 60%,#0d0d1a 100%);
+  opacity:0;animation:prologueFadeIn 1s ease forwards;
+  padding:20px;overflow-y:auto;
+}
+@keyframes prologueFadeIn{from{opacity:0;}to{opacity:1;}}
+.prologue-content{max-width:520px;width:100%;text-align:center;position:relative;z-index:2;}
+.prologue-book{
+  color:#a89868;font-size:0.92em;line-height:2;margin-bottom:28px;
+  opacity:0;transform:translateY(20px);
+  padding:0 16px;
+}
+.prologue-book.visible{opacity:1;transform:translateY(0);transition:opacity 0.8s,transform 0.8s;}
+.prologue-book .book-title{color:var(--gold);font-size:1.1em;font-weight:bold;letter-spacing:2px;}
+.prologue-role{
+  color:#ddd;font-size:1.05em;line-height:2;margin-bottom:28px;
+  opacity:0;transform:translateY(20px);padding:0 12px;
+}
+.prologue-role.visible{opacity:1;transform:translateY(0);transition:opacity 0.8s,transform 0.8s;}
+.prologue-role .role-name{
+  color:var(--bright-gold);font-size:1.4em;font-weight:bold;letter-spacing:4px;
+  text-shadow:0 0 20px rgba(201,169,110,0.4);display:block;margin:8px 0;
+}
+.prologue-howto{
+  color:#8a7a5a;font-size:0.88em;line-height:1.9;margin-bottom:32px;
+  padding:12px 18px;border:1px solid rgba(201,169,110,0.15);border-radius:8px;
+  background:rgba(201,169,110,0.04);
+  opacity:0;transform:translateY(20px);
+}
+.prologue-howto.visible{opacity:1;transform:translateY(0);transition:opacity 0.8s,transform 0.8s;}
+.prologue-howto b{color:var(--gold);}
+.prologue-divider{
+  width:0;height:1px;margin:0 auto 24px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  transition:width 1s ease;
+}
+.prologue-divider.expand{width:200px;}
+.prologue-cta{
+  padding:18px 64px;font-size:1.3em;font-family:inherit;cursor:pointer;
+  background:linear-gradient(135deg,rgba(201,169,110,0.2),rgba(201,169,110,0.08));
+  color:var(--bright-gold);border:2px solid var(--gold);border-radius:6px;
+  letter-spacing:8px;transition:all 0.3s;opacity:0;transform:scale(0.9);
+  text-shadow:0 0 12px rgba(201,169,110,0.3);
+}
+.prologue-cta.visible{opacity:1;transform:scale(1);transition:opacity 0.6s,transform 0.6s;}
+.prologue-cta:hover{
+  background:linear-gradient(135deg,rgba(201,169,110,0.35),rgba(201,169,110,0.15));
+  box-shadow:0 0 40px rgba(201,169,110,0.3);transform:scale(1.05);
+}
+.prologue-cta:active{transform:scale(0.97);}
+@keyframes prologueBtnPulse{0%,100%{box-shadow:0 0 10px rgba(201,169,110,0.15);}50%{box-shadow:0 0 35px rgba(201,169,110,0.45),0 0 70px rgba(201,169,110,0.1);}}
+.prologue-cta.pulse{animation:prologueBtnPulse 2.5s ease-in-out infinite;}
+
+/* ========== HERO'S JOURNEY: Score & Rank in Top Bar ========== */
+.hero-score{display:flex;align-items:center;gap:4px;color:var(--gold);font-size:0.88em;white-space:nowrap;}
+.hero-score .score-val{font-size:1.1em;min-width:32px;text-align:center;font-weight:bold;transition:color 0.3s;}
+.hero-rank{
+  font-size:0.72em;padding:2px 8px;border-radius:10px;
+  background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);
+  color:var(--bright-gold);letter-spacing:1px;white-space:nowrap;transition:all 0.3s;
+}
+
+/* ========== HERO'S JOURNEY: Progress Bar ========== */
+#journey-progress{
+  grid-column:1/-1;height:6px;background:rgba(255,255,255,0.04);position:relative;overflow:hidden;
+}
+#journey-progress-fill{
+  height:100%;border-radius:0 3px 3px 0;
+  background:linear-gradient(90deg,#8B6914,#A07828,#8B2500,#A03020,#2B4F8C,#3A6BA5,#1B6B3A,#2D8B4E);
+  background-size:400% 100%;
+  transition:width 0.6s ease;box-shadow:0 0 8px rgba(201,169,110,0.3);
+}
+#journey-progress-text{
+  position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  font-size:0.6em;color:rgba(201,169,110,0.6);letter-spacing:1px;line-height:1;
+}
+
+/* ========== HERO'S JOURNEY: Floating Score Animation ========== */
+.floating-score{
+  position:fixed;z-index:500;font-size:1.5em;font-weight:bold;
+  pointer-events:none;opacity:0;
+  animation:floatingScore 1.5s ease-out forwards;
+  text-shadow:0 2px 8px rgba(0,0,0,0.5);
+  font-family:'GF','STKaiti','KaiTi',serif;letter-spacing:2px;
+}
+.floating-score.gain{color:#6bba6b;}
+.floating-score.loss{color:#c56b6b;}
+@keyframes floatingScore{
+  0%{opacity:0;transform:translateY(0) scale(0.8);}
+  20%{opacity:1;transform:translateY(-10px) scale(1.2);}
+  40%{transform:translateY(-20px) scale(1);}
+  100%{opacity:0;transform:translateY(-60px) scale(0.9);}
+}
+
+/* ========== HERO'S JOURNEY: Streak Badge ========== */
+.streak-badge{
+  position:fixed;top:90px;left:50%;transform:translateX(-50%);z-index:160;
+  background:linear-gradient(135deg,rgba(40,20,5,0.95),rgba(25,12,2,0.95));
+  border:2px solid #f1c40f;border-radius:8px;padding:10px 24px;
+  color:#f1c40f;font-size:1.1em;letter-spacing:3px;
+  box-shadow:0 0 30px rgba(241,196,15,0.3);
+  opacity:0;pointer-events:none;animation:streakPop 3s forwards;
+  text-shadow:0 0 8px rgba(241,196,15,0.5);
+}
+@keyframes streakPop{
+  0%{opacity:0;transform:translateX(-50%) scale(0.7);}
+  10%{opacity:1;transform:translateX(-50%) scale(1.1);}
+  20%{transform:translateX(-50%) scale(1);}
+  80%{opacity:1;}
+  100%{opacity:0;transform:translateX(-50%) translateY(-10px);}
+}
+
+/* ========== HERO'S JOURNEY: Rank Up Notification ========== */
+.rankup-notif{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:600;
+  background:linear-gradient(135deg,rgba(30,20,5,0.97),rgba(15,10,2,0.97));
+  border:2px solid var(--gold);border-radius:12px;padding:28px 40px;
+  text-align:center;box-shadow:0 0 60px rgba(201,169,110,0.4),0 0 120px rgba(201,169,110,0.15);
+  opacity:0;pointer-events:none;animation:rankUpAppear 4s forwards;
+}
+.rankup-notif .ru-label{color:#8a7a5a;font-size:0.85em;letter-spacing:3px;margin-bottom:8px;}
+.rankup-notif .ru-title{
+  color:var(--bright-gold);font-size:2em;letter-spacing:6px;
+  text-shadow:0 0 24px rgba(201,169,110,0.5);margin-bottom:4px;
+}
+.rankup-notif .ru-arrow{color:#8a7a5a;font-size:0.9em;margin-bottom:4px;}
+.rankup-notif .ru-old{color:#666;font-size:0.9em;letter-spacing:2px;}
+@keyframes rankUpAppear{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}
+  10%{opacity:1;transform:translate(-50%,-50%) scale(1.08);}
+  18%{transform:translate(-50%,-50%) scale(1);}
+  80%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(0.95) translateY(-15px);}
+}
+
+/* ========== HERO'S JOURNEY: Event Score Display ========== */
+.event-score-display{
+  font-size:1.8em;font-weight:bold;text-align:center;margin:12px 0 8px;
+  letter-spacing:4px;opacity:0;animation:eventScorePop 0.8s 0.3s ease forwards;
+}
+.event-score-display.positive{color:#6bba6b;text-shadow:0 0 16px rgba(107,186,107,0.4);}
+.event-score-display.negative{color:#c56b6b;text-shadow:0 0 16px rgba(197,107,107,0.4);}
+@keyframes eventScorePop{
+  0%{opacity:0;transform:scale(0.4);}
+  50%{opacity:1;transform:scale(1.3);}
+  100%{opacity:1;transform:scale(1);}
+}
+.event-perfect{
+  color:#f1c40f;font-size:1em;text-align:center;letter-spacing:3px;margin:4px 0;
+  text-shadow:0 0 12px rgba(241,196,15,0.4);
+  opacity:0;animation:perfectPop 0.6s 0.6s ease forwards;
+}
+@keyframes perfectPop{0%{opacity:0;transform:scale(0.6);}60%{transform:scale(1.15);}100%{opacity:1;transform:scale(1);}}
+.event-streak-display{
+  color:#f1c40f;font-size:0.9em;text-align:center;letter-spacing:2px;margin:4px 0;
+  opacity:0;animation:perfectPop 0.5s 0.8s ease forwards;
+}
+
+/* ========== HERO'S JOURNEY: Mandate Health Bar Enhancement ========== */
+.mandate-score.mandate-high .ms-val{color:#f1c40f;text-shadow:0 0 12px rgba(241,196,15,0.5);}
+.mandate-score.mandate-ok .ms-val{color:#6bba6b;}
+.mandate-score.mandate-warn .ms-val{color:#e67e22;animation:mandateWarnPulse 1.2s infinite;}
+.mandate-score.mandate-danger .ms-val{color:#e74c3c;animation:mandateDangerPulse 0.8s infinite;}
+@keyframes mandateWarnPulse{0%,100%{text-shadow:none;}50%{text-shadow:0 0 12px rgba(230,126,34,0.6);}}
+@keyframes mandateDangerPulse{0%,100%{text-shadow:none;transform:scale(1);}50%{text-shadow:0 0 16px rgba(231,76,60,0.8);transform:scale(1.1);}}
+
+/* Mandate warning popup */
+.mandate-warning{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:400;
+  background:linear-gradient(135deg,rgba(40,10,10,0.95),rgba(20,5,5,0.95));
+  border:2px solid #e74c3c;border-radius:10px;padding:20px 36px;
+  text-align:center;
+  box-shadow:0 0 40px rgba(231,76,60,0.4);
+  opacity:0;pointer-events:none;animation:mandateWarnPop 3s forwards;
+}
+.mandate-warning .mw-icon{font-size:2em;margin-bottom:6px;}
+.mandate-warning .mw-text{color:#e74c3c;font-size:1.2em;letter-spacing:3px;text-shadow:0 0 10px rgba(231,76,60,0.4);}
+@keyframes mandateWarnPop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0.8);}
+  10%{opacity:1;transform:translate(-50%,-50%) scale(1.05);}
+  20%{transform:translate(-50%,-50%) scale(1);}
+  80%{opacity:1;}
+  100%{opacity:0;}
+}
+
+/* Screen red edge glow for critical mandate */
+.screen-danger-glow{
+  position:fixed;inset:0;z-index:50;pointer-events:none;
+  box-shadow:inset 0 0 80px rgba(231,76,60,0.3),inset 0 0 160px rgba(180,40,40,0.15);
+  animation:dangerGlowPulse 2s ease-in-out infinite;
+}
+@keyframes dangerGlowPulse{0%,100%{opacity:0.4;}50%{opacity:1;}}
+
+/* Golden glow for high mandate */
+.screen-golden-glow{
+  position:fixed;inset:0;z-index:50;pointer-events:none;
+  box-shadow:inset 0 0 60px rgba(241,196,15,0.1),inset 0 0 120px rgba(201,169,110,0.05);
+  opacity:0.6;
+}
+
+/* ========== HERO'S JOURNEY: Game Over Screen ========== */
+#gameover-overlay{
+  position:fixed;inset:0;z-index:700;display:none;align-items:center;justify-content:center;
+  flex-direction:column;background:rgba(0,0,0,0.95);
+}
+#gameover-overlay.active{display:flex;animation:gameoverFade 2s ease forwards;}
+@keyframes gameoverFade{0%{background:rgba(0,0,0,0);}100%{background:rgba(0,0,0,0.95);}}
+#gameover-overlay h1{
+  font-size:3em;color:#e74c3c;letter-spacing:10px;
+  text-shadow:0 0 40px rgba(231,76,60,0.5);
+  opacity:0;animation:gameoverTitle 1s 1s ease forwards;
+}
+@keyframes gameoverTitle{0%{opacity:0;transform:scale(0.6);}100%{opacity:1;transform:scale(1);}}
+#gameover-overlay .go-desc{
+  color:#888;font-size:1em;line-height:2;text-align:center;max-width:400px;
+  margin:16px 0 28px;opacity:0;animation:fadeIn 0.8s 2s ease forwards;
+}
+#gameover-overlay .go-score{
+  color:var(--gold);font-size:1em;margin-bottom:24px;
+  opacity:0;animation:fadeIn 0.8s 2.5s ease forwards;
+}
+#gameover-overlay .start-btn{opacity:0;animation:fadeIn 0.8s 3s ease forwards;}
+
+/* ========== HERO'S JOURNEY: Score Milestone Flash ========== */
+.score-milestone{
+  position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);z-index:500;
+  color:var(--bright-gold);font-size:1.8em;letter-spacing:6px;
+  text-shadow:0 0 30px rgba(201,169,110,0.5);
+  opacity:0;pointer-events:none;animation:milestonePop 2.5s forwards;
+}
+@keyframes milestonePop{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0.5);}
+  15%{opacity:1;transform:translate(-50%,-50%) scale(1.15);}
+  25%{transform:translate(-50%,-50%) scale(1);}
+  75%{opacity:1;}
+  100%{opacity:0;transform:translate(-50%,-50%) translateY(-20px);}
+}
+
+/* ========== HERO'S JOURNEY: Responsive adjustments ========== */
+@media (max-width: 768px) {
+  #prologue-overlay{padding:16px;}
+  .prologue-content{max-width:95vw;}
+  .prologue-book{font-size:0.85em;}
+  .prologue-role{font-size:0.95em;}
+  .prologue-role .role-name{font-size:1.2em;}
+  .prologue-howto{font-size:0.82em;padding:10px 14px;}
+  .prologue-cta{padding:14px 40px;font-size:1.1em;letter-spacing:5px;}
+  .hero-rank{font-size:0.65em;padding:1px 6px;}
+  .hero-score{font-size:0.78em;}
+  .hero-score .score-val{font-size:1em;min-width:24px;}
+  #journey-progress{height:4px;}
+  #journey-progress-text{font-size:0.5em;}
+  .floating-score{font-size:1.2em;}
+  .streak-badge{font-size:0.9em;padding:8px 18px;}
+  .rankup-notif{padding:20px 28px;max-width:90vw;}
+  .rankup-notif .ru-title{font-size:1.5em;}
+  .event-score-display{font-size:1.4em;}
+  .mandate-warning{padding:16px 24px;}
+  #gameover-overlay h1{font-size:2.2em;letter-spacing:6px;}
+}
 </style>
 </head>
 <body>
+
+<!-- ========== 英雄序章 (Prologue) ========== -->
+<div id="prologue-overlay" style="display:none;">
+  <div class="prologue-content">
+    <div class="prologue-book" id="prologue-book">
+      <span class="book-title">《枢纽：3000年的中国》</span><br>
+      讲述了一个文明体的故事——<br>
+      中国不是一个简单的国家，而是由<br>
+      <b>中原、草原、西域、高原、海洋</b><br>
+      五大空间交织而成的世界。
+    </div>
+    <div class="prologue-divider" id="prologue-divider"></div>
+    <div class="prologue-role" id="prologue-role">
+      你将扮演<br>
+      <span class="role-name">天 命 执 掌 者</span>
+      超越时空的文明引导者<br>
+      你的每一个决策，都将塑造华夏三千年的命运走向。
+    </div>
+    <div class="prologue-howto" id="prologue-howto">
+      <b>目标</b>：维持天命值在 100 以上，引导七大区域走向繁荣<br>
+      <b>胜利</b>：七区均衡强盛 = 最佳结局「天下枢纽」<br>
+      <b>危机</b>：天命归零，文明陨落 = 游戏结束
+    </div>
+    <button class="prologue-cta" id="prologue-cta" onclick="closePrologueAndStart()">执 掌 天 命</button>
+  </div>
+</div>
+
+<!-- ========== 游戏结束 (Game Over) ========== -->
+<div id="gameover-overlay">
+  <h1>天 命 陨 落</h1>
+  <div class="go-desc">天命值归零，文明的火种在历史长河中黯然熄灭。<br>三千年的辉煌，终归尘土。<br>然而历史从不止步——你是否愿意重新执掌天命？</div>
+  <div class="go-score" id="gameover-score">最终得分：0</div>
+  <button class="start-btn" onclick="location.reload()">再 续 天 命</button>
+</div>
+
+<!-- ========== Screen Glow Effects ========== -->
+<div id="screen-glow" style="display:none;"></div>
 
 <!-- ========== 开始画面 ========== -->
 <div id="start-screen">
@@ -1474,6 +1775,12 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
     </div>
   </div>
 
+  <!-- Journey Progress Bar -->
+  <div id="journey-progress">
+    <div id="journey-progress-fill" style="width:0%"></div>
+    <div id="journey-progress-text">旅程 0/36</div>
+  </div>
+
   <!-- Top Bar with Resources -->
   <div id="top-bar">
     <div class="era-badge" id="era-display">第一纪 · 封建社会</div>
@@ -1483,6 +1790,11 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
       <span class="ms-val" id="mandate-val">0</span>
       <span class="ms-trend" id="mandate-trend"></span>
     </div>
+    <div class="hero-score" title="得分">
+      <span style="color:#8a7a5a;font-size:0.85em;">分</span>
+      <span class="score-val" id="score-display">0</span>
+    </div>
+    <div class="hero-rank" id="rank-display" title="称号">草莽布衣</div>
     <div class="resources">
       <div class="res-item" id="ri-power" title="七区经济繁荣度之和（满分70）">兴 <span id="res-power">50</span><span class="res-max">/70</span></div>
       <div class="res-item" id="ri-military" title="七区军事力量之和（满分70）">武 <span id="res-military">50</span><span class="res-max">/70</span></div>
@@ -4885,6 +5197,520 @@ highlightConnection = function(fromKey, toKey) {
     }
   });
 };
+
+// ================================================================
+//  HERO'S JOURNEY SYSTEM
+//  Scoring, ranking, streaks, prologue, progress bar, mandate health
+// ================================================================
+
+// ==================== Rank Definitions ====================
+const HERO_RANKS = [
+  {min:0,    title:'草莽布衣'},
+  {min:201,  title:'乡野贤士'},
+  {min:501,  title:'朝堂谋臣'},
+  {min:1001, title:'治世能臣'},
+  {min:2001, title:'一代明主'},
+  {min:3501, title:'千古一帝'},
+  {min:5001, title:'天命之子'}
+];
+
+function getHeroRank(score) {
+  let rank = HERO_RANKS[0];
+  for (let i = HERO_RANKS.length - 1; i >= 0; i--) {
+    if (score >= HERO_RANKS[i].min) { rank = HERO_RANKS[i]; break; }
+  }
+  return rank;
+}
+
+// ==================== Total Event Count ====================
+function getTotalEventCount() {
+  let total = 0;
+  for (let era = 1; era <= 4; era++) {
+    if (EVENTS[era]) total += EVENTS[era].length;
+  }
+  return total;
+}
+
+function getCompletedEventCount() {
+  return G.choices.length;
+}
+
+// ==================== Journey Progress Bar ====================
+function updateJourneyProgress() {
+  const total = getTotalEventCount();
+  const completed = getCompletedEventCount();
+  const pct = Math.min(100, (completed / total) * 100);
+  const fill = document.getElementById('journey-progress-fill');
+  const text = document.getElementById('journey-progress-text');
+  if (fill) fill.style.width = pct + '%';
+  if (text) text.textContent = '\u65C5\u7A0B ' + completed + '/' + total;
+}
+
+// ==================== Score Display ====================
+function updateScoreDisplay(animate) {
+  const el = document.getElementById('score-display');
+  if (!el) return;
+  if (animate) {
+    const oldVal = parseInt(el.textContent) || 0;
+    const newVal = G.score;
+    const diff = newVal - oldVal;
+    if (diff === 0) return;
+    let current = oldVal;
+    const steps = 15;
+    const stepVal = diff / steps;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      current += stepVal;
+      el.textContent = Math.round(current);
+      if (step >= steps) { clearInterval(timer); el.textContent = newVal; }
+    }, 30);
+  } else {
+    el.textContent = G.score;
+  }
+}
+
+// ==================== Rank Display ====================
+function updateRankDisplay() {
+  const el = document.getElementById('rank-display');
+  if (!el) return;
+  const rank = getHeroRank(G.score);
+  el.textContent = rank.title;
+}
+
+// ==================== Floating Score Animation ====================
+function showFloatingScore(amount, anchorEl) {
+  if (amount === 0) return;
+  const el = document.createElement('div');
+  el.className = 'floating-score ' + (amount > 0 ? 'gain' : 'loss');
+  el.textContent = (amount > 0 ? '+' : '') + amount;
+
+  // Position near the score display in top bar
+  const scoreEl = document.getElementById('score-display');
+  if (scoreEl) {
+    const rect = scoreEl.getBoundingClientRect();
+    el.style.left = rect.left + 'px';
+    el.style.top = (rect.bottom + 4) + 'px';
+  } else {
+    el.style.left = '50%';
+    el.style.top = '80px';
+  }
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1600);
+}
+
+// ==================== Streak Badge ====================
+function showStreakBadge(streak, multiplier) {
+  const el = document.createElement('div');
+  el.className = 'streak-badge';
+  if (streak >= 5) {
+    el.textContent = '\u5929\u547D\u5E87\u62A4 \u00D7' + streak + ' \u2014 \u5F97\u5206\u00D73';
+  } else {
+    el.textContent = '\u8FDE\u80DC\u00D7' + streak + ' \u2014 \u5F97\u5206\u00D7' + multiplier;
+  }
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3100);
+}
+
+// ==================== Rank Up Notification ====================
+function showRankUpNotification(oldTitle, newTitle) {
+  const el = document.createElement('div');
+  el.className = 'rankup-notif';
+  el.innerHTML = '<div class="ru-label">\u79F0\u53F7\u63D0\u5347\uFF01</div>'
+    + '<div class="ru-old">' + oldTitle + '</div>'
+    + '<div class="ru-arrow">\u2193</div>'
+    + '<div class="ru-title">' + newTitle + '</div>';
+  document.body.appendChild(el);
+  SFX.eraGong && SFX.eraGong();
+  setTimeout(() => el.remove(), 4200);
+}
+
+// ==================== Score Milestone ====================
+let _lastMilestone = 0;
+function checkScoreMilestone() {
+  const milestone = Math.floor(G.score / 500) * 500;
+  if (milestone > _lastMilestone && milestone > 0) {
+    _lastMilestone = milestone;
+    const el = document.createElement('div');
+    el.className = 'score-milestone';
+    el.textContent = '\u2605 ' + milestone + ' \u5206\u7A81\u7834\uFF01';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 2600);
+  }
+}
+
+// ==================== Mandate Health Bar ====================
+let _mandateWarnShown = {};
+
+function updateMandateHealthVisual(score) {
+  const container = document.getElementById('mandate-display');
+  if (!container) return;
+  container.classList.remove('mandate-high','mandate-ok','mandate-warn','mandate-danger');
+
+  // Remove existing screen glows
+  const oldGlow = document.getElementById('screen-glow');
+  if (oldGlow) { oldGlow.style.display = 'none'; oldGlow.className = ''; }
+
+  if (score > 200) {
+    container.classList.add('mandate-high');
+    if (oldGlow) { oldGlow.style.display = 'block'; oldGlow.className = 'screen-golden-glow'; }
+  } else if (score > 150) {
+    container.classList.add('mandate-ok');
+  } else if (score >= 100) {
+    // normal, no special class needed
+  } else if (score >= 50) {
+    container.classList.add('mandate-warn');
+    if (!_mandateWarnShown['warn100']) {
+      _mandateWarnShown['warn100'] = true;
+      showMandateWarning('\u26A0\uFE0F', '\u5929\u547D\u5C06\u5C3D\uFF01');
+    }
+  } else if (score > 0) {
+    container.classList.add('mandate-danger');
+    if (oldGlow) { oldGlow.style.display = 'block'; oldGlow.className = 'screen-danger-glow'; }
+    if (!_mandateWarnShown['warn50']) {
+      _mandateWarnShown['warn50'] = true;
+      showMandateWarning('\u2620\uFE0F', '\u5929\u547D\u5371\u6025\uFF01\u6587\u660E\u5C06\u706D\uFF01');
+    }
+  } else {
+    // mandate 0 or below — game over
+    container.classList.add('mandate-danger');
+    triggerGameOver();
+  }
+}
+
+function showMandateWarning(icon, text) {
+  const el = document.createElement('div');
+  el.className = 'mandate-warning';
+  el.innerHTML = '<div class="mw-icon">' + icon + '</div><div class="mw-text">' + text + '</div>';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+
+// ==================== Game Over ====================
+function triggerGameOver() {
+  const overlay = document.getElementById('gameover-overlay');
+  if (!overlay) return;
+  const scoreEl = document.getElementById('gameover-score');
+  if (scoreEl) scoreEl.textContent = '\u6700\u7EC8\u5F97\u5206\uFF1A' + G.score;
+  document.getElementById('game').classList.remove('active');
+  overlay.classList.add('active');
+}
+
+// ==================== Scoring Calculation ====================
+function calculateEventScore(effectTags, chains) {
+  let baseScore = 0;
+  let posCount = 0, negCount = 0;
+
+  effectTags.forEach(t => {
+    if (t.val > 0) {
+      baseScore += t.val * 20;
+      posCount++;
+    } else {
+      baseScore += t.val * 15; // negative * 15 = loses points
+      negCount++;
+    }
+  });
+
+  // Perfect decision bonus (all positive)
+  let perfectBonus = 0;
+  if (posCount > 0 && negCount === 0) {
+    perfectBonus = 50;
+  }
+
+  // High risk success bonus
+  let riskBonus = 0;
+  if (posCount > negCount && negCount > 0) {
+    riskBonus = 30;
+  }
+
+  // Chain reaction bonus
+  let chainBonus = 0;
+  if (chains && chains.length > 0) {
+    chains.forEach(ch => {
+      // Each positive chain reaction = +25
+      chainBonus += 25;
+    });
+  }
+
+  let rawScore = baseScore + perfectBonus + riskBonus + chainBonus;
+
+  // Streak multiplier
+  let multiplier = 1;
+  const isPositive = rawScore > 0;
+  if (isPositive) {
+    G._streak = (G._streak || 0) + 1;
+  } else {
+    if (G._streak >= 2) {
+      // Show streak broken message
+      showStreakBroken();
+    }
+    G._streak = 0;
+  }
+
+  if (G._streak >= 5) multiplier = 3;
+  else if (G._streak >= 3) multiplier = 2;
+  else if (G._streak >= 2) multiplier = 1.5;
+
+  const finalScore = Math.round(rawScore * multiplier);
+
+  return {
+    baseScore: rawScore,
+    multiplier: multiplier,
+    finalScore: finalScore,
+    posCount: posCount,
+    negCount: negCount,
+    perfectBonus: perfectBonus > 0,
+    riskBonus: riskBonus > 0,
+    chainBonus: chainBonus,
+    streak: G._streak,
+    isPositive: isPositive
+  };
+}
+
+function showStreakBroken() {
+  const el = document.createElement('div');
+  el.className = 'streak-badge';
+  el.style.borderColor = '#c56b6b';
+  el.style.color = '#c56b6b';
+  el.textContent = '\u8FDE\u80DC\u4E2D\u65AD';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2500);
+}
+
+// ==================== Prologue System ====================
+function showPrologue() {
+  const overlay = document.getElementById('prologue-overlay');
+  if (!overlay) return;
+  overlay.style.display = 'flex';
+
+  // Staggered reveal
+  const book = document.getElementById('prologue-book');
+  const divider = document.getElementById('prologue-divider');
+  const role = document.getElementById('prologue-role');
+  const howto = document.getElementById('prologue-howto');
+  const cta = document.getElementById('prologue-cta');
+
+  setTimeout(() => book && book.classList.add('visible'), 500);
+  setTimeout(() => divider && divider.classList.add('expand'), 1500);
+  setTimeout(() => role && role.classList.add('visible'), 2000);
+  setTimeout(() => howto && howto.classList.add('visible'), 3200);
+  setTimeout(() => {
+    if (cta) { cta.classList.add('visible'); cta.classList.add('pulse'); }
+  }, 4200);
+}
+
+function closePrologueAndStart() {
+  const overlay = document.getElementById('prologue-overlay');
+  if (overlay) {
+    overlay.style.transition = 'opacity 0.6s';
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 600);
+  }
+  // The actual game start is handled by startGame which was already called
+}
+
+// ==================== Hook into startGame ====================
+const _heroStartGame = startGame;
+startGame = function() {
+  // Initialize hero's journey state
+  G.score = 0;
+  G._streak = 0;
+  G._totalEventsCompleted = 0;
+  _lastMilestone = 0;
+  _mandateWarnShown = {};
+
+  _heroStartGame();
+
+  // Update displays
+  updateScoreDisplay(false);
+  updateRankDisplay();
+  updateJourneyProgress();
+
+  // Show prologue after a brief delay (game UI loads first)
+  setTimeout(() => showPrologue(), 800);
+};
+
+// ==================== Hook into _executeChoice for scoring ====================
+const _origExecuteChoice = _executeChoice;
+_executeChoice = function(idx, ev, choice) {
+  // Snapshot before execution to compute our own effect tags
+  const beforeStats = {};
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    beforeStats[k] = {prosperity:r.prosperity, military:r.military, culture:r.culture, trade:r.trade};
+  }
+
+  // Call original
+  _origExecuteChoice(idx, ev, choice);
+
+  // Compute effect tags from the before/after difference
+  const effectTags = [];
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    const b = beforeStats[k];
+    if (!b) continue;
+    const dp = r.prosperity - b.prosperity;
+    const dm = r.military - b.military;
+    const dc = r.culture - b.culture;
+    const dt = r.trade - b.trade;
+    if (dp !== 0) effectTags.push({region:REGION_META[k].name, regionKey:k, stat:'\u5174', val:dp});
+    if (dm !== 0) effectTags.push({region:REGION_META[k].name, regionKey:k, stat:'\u6B66', val:dm});
+    if (dc !== 0) effectTags.push({region:REGION_META[k].name, regionKey:k, stat:'\u6587', val:dc});
+    if (dt !== 0) effectTags.push({region:REGION_META[k].name, regionKey:k, stat:'\u5546', val:dt});
+  }
+
+  // Get chain reactions (already applied, just count them)
+  const chains = []; // We approximate — chains were already applied
+
+  // Calculate score
+  const scoreResult = calculateEventScore(effectTags, chains);
+  const oldScore = G.score;
+  G.score = Math.max(0, G.score + scoreResult.finalScore);
+  G._totalEventsCompleted = getCompletedEventCount();
+
+  // Check rank change
+  const oldRank = getHeroRank(oldScore);
+  const newRank = getHeroRank(G.score);
+  if (newRank.title !== oldRank.title) {
+    setTimeout(() => showRankUpNotification(oldRank.title, newRank.title), 800);
+  }
+
+  // Show floating score
+  showFloatingScore(scoreResult.finalScore);
+
+  // Show streak badge (if streak >= 2)
+  if (scoreResult.streak >= 2 && scoreResult.isPositive) {
+    setTimeout(() => showStreakBadge(scoreResult.streak, scoreResult.multiplier), 400);
+  }
+
+  // Inject score display into the result panel
+  injectEventScoreDisplay(scoreResult);
+
+  // Update displays
+  updateScoreDisplay(true);
+  updateRankDisplay();
+  updateJourneyProgress();
+  checkScoreMilestone();
+
+  // Update mandate health visual
+  setTimeout(() => updateMandateHealthVisual(G.mandateScore), 600);
+};
+
+// ==================== Inject Score Display Into Result Panel ====================
+function injectEventScoreDisplay(scoreResult) {
+  const resultSection = document.querySelector('.result-section');
+  if (!resultSection) return;
+
+  // Create score display elements
+  const scoreDiv = document.createElement('div');
+  const sign = scoreResult.finalScore >= 0 ? '+' : '';
+  const cls = scoreResult.finalScore >= 0 ? 'positive' : 'negative';
+  scoreDiv.className = 'event-score-display ' + cls;
+  scoreDiv.textContent = sign + scoreResult.finalScore + ' \u5206';
+
+  // Insert after verdict
+  const verdict = resultSection.querySelector('.result-verdict');
+  if (verdict && verdict.nextSibling) {
+    resultSection.insertBefore(scoreDiv, verdict.nextSibling);
+  } else {
+    resultSection.insertBefore(scoreDiv, resultSection.firstChild.nextSibling || resultSection.firstChild);
+  }
+
+  // Perfect decision indicator
+  if (scoreResult.perfectBonus) {
+    const perfectEl = document.createElement('div');
+    perfectEl.className = 'event-perfect';
+    perfectEl.textContent = '\uD83C\uDF89 \u5B8C\u7F8E\u51B3\u7B56\uFF01';
+    scoreDiv.after(perfectEl);
+  }
+
+  // Streak display
+  if (scoreResult.streak >= 2 && scoreResult.isPositive) {
+    const streakEl = document.createElement('div');
+    streakEl.className = 'event-streak-display';
+    let streakText = '';
+    if (scoreResult.streak >= 5) streakText = '\uD83D\uDD25 \u5929\u547D\u5E87\u62A4 \u00D7' + scoreResult.streak + ' \u2014 \u5F97\u5206\u00D73';
+    else streakText = '\uD83D\uDD25 \u8FDE\u80DC \u00D7' + scoreResult.streak + ' \u2014 \u5F97\u5206\u00D7' + scoreResult.multiplier;
+    streakEl.textContent = streakText;
+    const afterEl = resultSection.querySelector('.event-perfect') || scoreDiv;
+    afterEl.after(streakEl);
+  }
+}
+
+// ==================== Hook into renderTopBar for mandate health ====================
+const _heroRenderTopBar = renderTopBar;
+renderTopBar = function() {
+  _heroRenderTopBar();
+  // Update mandate health visual whenever top bar refreshes
+  updateMandateHealthVisual(G.mandateScore);
+  updateJourneyProgress();
+};
+
+// ==================== Hook into nextEra for era score summary ====================
+const _origNextEra = nextEra;
+nextEra = function() {
+  // Show era score in the transition
+  const eraScore = G.score;
+  _origNextEra();
+
+  // After era transition starts, inject score info
+  setTimeout(() => {
+    const summary = document.getElementById('era-trans-summary');
+    if (summary && summary.textContent) {
+      summary.textContent += '  |  \u5F53\u524D\u5F97\u5206\uFF1A' + eraScore;
+    }
+  }, 600);
+};
+
+// ==================== Hook into showEnding for final score ====================
+const _heroShowEnding = showEnding;
+showEnding = function(endingKey) {
+  _heroShowEnding(endingKey);
+
+  // Enhance ending with hero score
+  const endingScoreEl = document.getElementById('ending-score');
+  if (endingScoreEl) {
+    const origText = endingScoreEl.textContent;
+    setTimeout(() => {
+      const rank = getHeroRank(G.score);
+      endingScoreEl.textContent = origText + '  |  \u82F1\u96C4\u5F97\u5206\uFF1A' + G.score + '  |  \u79F0\u53F7\uFF1A' + rank.title;
+    }, 4000);
+  }
+};
+
+// ==================== Hook into animateMandateScore for health check ====================
+const _heroAnimateMandate = animateMandateScore;
+animateMandateScore = function(newScore) {
+  _heroAnimateMandate(newScore);
+  // Delayed check for game over (after animation completes)
+  setTimeout(() => {
+    updateMandateHealthVisual(G.mandateScore);
+  }, 1000);
+};
+
+// ==================== Save/Load support for hero fields ====================
+const _origSaveGame = typeof saveGame === 'function' ? saveGame : null;
+if (_origSaveGame) {
+  saveGame = function() {
+    // Ensure hero fields are part of G before saving
+    _origSaveGame();
+  };
+}
+
+const _origLoadGame = typeof loadGame === 'function' ? loadGame : null;
+if (_origLoadGame) {
+  loadGame = function() {
+    _origLoadGame();
+    // Restore hero displays after load
+    if (typeof G.score === 'undefined') G.score = 0;
+    if (typeof G._streak === 'undefined') G._streak = 0;
+    _lastMilestone = Math.floor(G.score / 500) * 500;
+    updateScoreDisplay(false);
+    updateRankDisplay();
+    updateJourneyProgress();
+    updateMandateHealthVisual(G.mandateScore);
+  };
+}
 </script>
 </body>
 </html>
