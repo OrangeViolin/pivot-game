@@ -111,7 +111,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 
 /* SVG 地图 */
 #map-svg{width:100%;height:100%;position:relative;z-index:1;}
-.region-path{cursor:pointer;stroke:rgba(201,169,110,0.2);stroke-width:1;transition:all 0.4s;opacity:0.7;}
+.region-path{cursor:pointer;stroke:rgba(201,169,110,0.2);stroke-width:1;transition:all 0.6s ease;opacity:0.7;}
 .region-path:hover{filter:brightness(1.3);stroke:rgba(201,169,110,0.6);stroke-width:1.5;opacity:0.9;}
 .region-path.selected{stroke:var(--bright-gold);stroke-width:2;opacity:0.95;filter:brightness(1.4);}
 .region-path.event-affected{animation:eventAffectedPulse 2s ease-in-out infinite;stroke:rgba(201,169,110,0.6);stroke-width:1.5;}
@@ -989,6 +989,52 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 .choice-btn .choice-advisor-icon{
   float:right;font-size:0.9em;opacity:0.6;margin-left:6px;
 }
+
+/* ========== Map Scene Overlays ========== */
+#map-scene-layer{pointer-events:none;}
+.scene-label{font-family:'GF','STKaiti','KaiTi',serif;fill-opacity:0;animation:sceneLabelIn 0.6s ease forwards;}
+.scene-label.size-large{font-size:14px;font-weight:bold;letter-spacing:2px;}
+.scene-label.size-medium{font-size:11px;font-weight:bold;}
+.scene-label.size-small{font-size:9px;}
+.scene-label.style-fading{fill-opacity:0.4 !important;}
+.scene-label.style-glowing{filter:drop-shadow(0 0 6px currentColor);}
+.scene-label.style-ancient{font-style:italic;fill-opacity:0.5 !important;}
+@keyframes sceneLabelIn{0%{fill-opacity:0;transform:translateY(8px);}100%{fill-opacity:0.9;transform:translateY(0);}}
+
+.scene-arrow{stroke-dasharray:6 4;stroke-dashoffset:60;animation:sceneDash 1.5s linear forwards;}
+.scene-arrow.type-military{stroke:#c56b6b;stroke-width:2;}
+.scene-arrow.type-trade{stroke:#dbb978;stroke-width:1.5;}
+.scene-arrow.type-culture{stroke:#9b7ed8;stroke-width:1.5;}
+.scene-arrow.type-alliance{stroke:#6bba6b;stroke-width:2;stroke-dasharray:4 3;}
+.scene-arrow.type-migration{stroke:#5b9bd5;stroke-width:1.5;}
+.scene-arrow.type-expansion{stroke:#d4944a;stroke-width:2;}
+@keyframes sceneDash{0%{stroke-dashoffset:60;opacity:0.3;}100%{stroke-dashoffset:0;opacity:1;}}
+
+.scene-arrowhead{fill-opacity:0;animation:sceneFadeIn 0.5s 0.8s ease forwards;}
+.scene-arrow-label{font-size:8px;fill:#aaa;fill-opacity:0;animation:sceneFadeIn 0.4s 1s ease forwards;}
+@keyframes sceneFadeIn{to{fill-opacity:0.8;}}
+
+.scene-icon{fill-opacity:0;animation:sceneIconPop 0.4s ease forwards;}
+@keyframes sceneIconPop{0%{fill-opacity:0;transform:scale(0.3);}60%{transform:scale(1.2);}100%{fill-opacity:0.85;transform:scale(1);}}
+
+/* Region event highlight */
+.region-path.scene-highlight{animation:sceneHighlight 2s ease-in-out infinite;}
+@keyframes sceneHighlight{0%,100%{stroke:rgba(201,169,110,0.3);stroke-width:1;}50%{stroke:rgba(201,169,110,0.7);stroke-width:2.5;}}
+
+/* Before/After delta fly animation */
+.delta-fly{position:absolute;font-size:1.2em;font-weight:bold;pointer-events:none;z-index:20;animation:deltaFlyUp 1.8s ease-out forwards;}
+.delta-fly.pos{color:#6bba6b;text-shadow:0 0 8px rgba(107,186,107,0.4);}
+.delta-fly.neg{color:#c56b6b;text-shadow:0 0 8px rgba(197,107,107,0.4);}
+@keyframes deltaFlyUp{0%{opacity:0;transform:translateY(10px) scale(0.7);}20%{opacity:1;transform:translateY(0) scale(1.1);}40%{transform:translateY(-8px) scale(1);}100%{opacity:0;transform:translateY(-30px) scale(0.8);}}
+
+/* Scene atmosphere overlays */
+#map-area.atmo-war::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 55% 40%,rgba(180,40,40,0.08) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-crisis::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(160,80,20,0.08) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-trade::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 45% 55%,rgba(220,190,60,0.06) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-culture::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(120,80,200,0.06) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-peace::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(107,186,107,0.05) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-transformation::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(201,169,110,0.1) 0%,transparent 50%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+@keyframes atmoFade{0%{opacity:0;}100%{opacity:1;}}
 
 /* ========== Map Era Tinting ========== */
 #map-area.era-1{background:radial-gradient(ellipse at 50% 50%,rgba(139,105,20,0.08),rgba(18,18,24,1) 70%) !important;}
@@ -1892,6 +1938,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
         </g>
         <!-- Region labels (rendered by JS) -->
         <g id="map-labels"></g>
+        <!-- Event scene overlay (arrows, labels, icons) -->
+        <g id="map-scene-layer"></g>
         <!-- Animated trade dots container -->
         <g id="trade-dots"></g>
       </svg>
@@ -2035,6 +2083,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 <script src="events-hard.js"></script>
 <script src="deep-knowledge.js"></script>
 <script src="effect-reasons.js"></script>
+<script src="map-scenes.js"></script>
 <script>
 // ==================== Web Audio API 音效系统 ====================
 
@@ -2713,6 +2762,12 @@ function renderMap() {
     path.style.opacity = opacity;
     path.onclick = () => selectRegion(k);
 
+    // Scale transform: strong regions "expand", weak regions "shrink"
+    const scale = 0.92 + (total / 40) * 0.16; // range 0.92 ~ 1.08
+    const cx = m.x, cy = m.y;
+    path.style.transformOrigin = `${cx}px ${cy}px`;
+    path.style.transform = `scale(${scale.toFixed(3)})`;
+
     // Status glow based on dominant stat
     const maxStat = Math.max(r.military, r.culture, r.trade);
     if (total <= 12) {
@@ -2736,9 +2791,22 @@ function renderMap() {
     const total = r.prosperity + r.military + r.culture + r.trade;
     const tier = total <= 12 ? '危' : total <= 20 ? '弱' : total <= 28 ? '平' : total <= 35 ? '盛' : '极';
     const tierColor = total <= 12 ? '#c56b6b' : total <= 20 ? '#b8860b' : total <= 28 ? '#aaa' : total <= 35 ? '#7cb87c' : '#dbb978';
+    // Dominant stat icon
+    const domStat = r.military >= r.culture && r.military >= r.trade ? (r.military >= 7 ? '⚔' : '') :
+                    r.culture >= r.trade ? (r.culture >= 7 ? '📜' : '') : (r.trade >= 7 ? '💰' : '');
     labelsHtml += `<text class="node-label" x="${m.x}" y="${m.y-4}">${m.name}</text>`;
     labelsHtml += `<text class="node-value" x="${m.x}" y="${m.y+12}">${total}</text>`;
     labelsHtml += `<text x="${m.x+18}" y="${m.y+12}" fill="${tierColor}" font-size="9" text-anchor="start" style="font-weight:bold">${tier}</text>`;
+    if (domStat) labelsHtml += `<text x="${m.x-20}" y="${m.y+13}" font-size="10" text-anchor="end">${domStat}</text>`;
+
+    // Mini stat bars under region name
+    const barW = 28, barH = 3, barY = m.y + 18;
+    const stats = [{v:r.prosperity,c:'#6bba6b'},{v:r.military,c:'#c56b6b'},{v:r.culture,c:'#9b7ed8'},{v:r.trade,c:'#dbb978'}];
+    stats.forEach((s, si) => {
+      const bx = m.x - barW/2 + si * (barW/4 + 1) - 4;
+      labelsHtml += `<rect x="${bx}" y="${barY}" width="${barW/4}" height="${barH}" rx="1" fill="rgba(255,255,255,0.08)"/>`;
+      labelsHtml += `<rect x="${bx}" y="${barY}" width="${(s.v/10)*(barW/4)}" height="${barH}" rx="1" fill="${s.c}" opacity="0.7"/>`;
+    });
   });
   labelsG.innerHTML = labelsHtml;
 
@@ -2775,6 +2843,167 @@ function updateTradeRoutes() {
   });
 
   if (dotsG) dotsG.innerHTML = dotsHtml;
+}
+
+// ==================== Map Scene System ====================
+
+const ICON_SYMBOLS = {
+  battle:'⚔', capital:'🏛', fortress:'🏰', port:'⚓', temple:'🛕',
+  market:'🏪', nomad:'🐎', fleet:'⛵', scholar:'📜', rebellion:'🔥',
+  alliance:'🤝', wall:'🧱'
+};
+
+function renderMapScene(eventId) {
+  const layer = document.getElementById('map-scene-layer');
+  if (!layer) return;
+  layer.innerHTML = '';
+
+  const scene = (typeof MAP_SCENES !== 'undefined') ? MAP_SCENES[eventId] : null;
+  if (!scene) return;
+
+  let html = '';
+  const ns = 'http://www.w3.org/2000/svg';
+
+  // --- Atmosphere ---
+  const mapArea = document.getElementById('map-area');
+  mapArea.classList.remove('atmo-war','atmo-peace','atmo-trade','atmo-culture','atmo-crisis','atmo-transformation');
+  if (scene.atmosphere) mapArea.classList.add('atmo-' + scene.atmosphere);
+
+  // --- Region highlights ---
+  document.querySelectorAll('.region-path').forEach(p => p.classList.remove('scene-highlight'));
+  if (scene.highlights) {
+    scene.highlights.forEach(rk => {
+      const p = document.querySelector(`[data-region="${rk}"]`);
+      if (p) p.classList.add('scene-highlight');
+    });
+  }
+
+  // --- Arrows with arrowheads ---
+  if (scene.arrows) {
+    // Arrowhead marker def
+    html += '<defs>';
+    ['military','trade','culture','alliance','migration','expansion'].forEach(t => {
+      const colors = {military:'#c56b6b',trade:'#dbb978',culture:'#9b7ed8',alliance:'#6bba6b',migration:'#5b9bd5',expansion:'#d4944a'};
+      html += `<marker id="ah-${t}" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="${colors[t]}" opacity="0.8"/></marker>`;
+    });
+    html += '</defs>';
+
+    scene.arrows.forEach((a, i) => {
+      const [fx, fy] = a.from;
+      const [tx, ty] = a.to;
+      const mx = (fx+tx)/2 + (Math.random()-0.5)*20;
+      const my = (fy+ty)/2 + (Math.random()-0.5)*20;
+      const delay = i * 0.3;
+      html += `<path class="scene-arrow type-${a.type||'military'}" d="M${fx},${fy} Q${mx},${my} ${tx},${ty}" fill="none" marker-end="url(#ah-${a.type||'military'})" style="animation-delay:${delay}s"/>`;
+      if (a.label) {
+        const lx = (fx+tx)/2, ly = (fy+ty)/2 - 6;
+        html += `<text class="scene-arrow-label" x="${lx}" y="${ly}" text-anchor="middle" style="animation-delay:${delay+0.5}s">${a.label}</text>`;
+      }
+    });
+  }
+
+  // --- Labels ---
+  if (scene.labels) {
+    scene.labels.forEach((lb, i) => {
+      const sizeClass = 'size-' + (lb.size || 'medium');
+      const styleClass = lb.style ? 'style-' + lb.style : '';
+      const delay = 0.15 + i * 0.12;
+      html += `<text class="scene-label ${sizeClass} ${styleClass}" x="${lb.x}" y="${lb.y}" text-anchor="middle" fill="${lb.color || '#c9a96e'}" style="animation-delay:${delay}s">${lb.text}</text>`;
+    });
+  }
+
+  // --- Icons ---
+  if (scene.icons) {
+    scene.icons.forEach((ic, i) => {
+      const sym = ICON_SYMBOLS[ic.type] || '●';
+      const delay = 0.3 + i * 0.2;
+      html += `<text class="scene-icon" x="${ic.x}" y="${ic.y}" text-anchor="middle" font-size="14" style="animation-delay:${delay}s">${sym}</text>`;
+    });
+  }
+
+  layer.innerHTML = html;
+}
+
+function clearMapScene() {
+  const layer = document.getElementById('map-scene-layer');
+  if (layer) layer.innerHTML = '';
+  document.querySelectorAll('.region-path').forEach(p => p.classList.remove('scene-highlight'));
+  const mapArea = document.getElementById('map-area');
+  if (mapArea) mapArea.classList.remove('atmo-war','atmo-peace','atmo-trade','atmo-culture','atmo-crisis','atmo-transformation');
+}
+
+// ==================== Map Delta Fly Animation ====================
+
+function showMapDeltas(effectTags) {
+  const mapArea = document.getElementById('map-area');
+  const svg = document.getElementById('map-svg');
+  if (!mapArea || !svg) return;
+
+  // Get SVG bounding rect for coordinate conversion
+  const svgRect = svg.getBoundingClientRect();
+  const mapRect = mapArea.getBoundingClientRect();
+
+  effectTags.forEach((t, i) => {
+    const regionKey = t.regionKey;
+    if (!regionKey || !REGION_META[regionKey]) return;
+
+    const m = REGION_META[regionKey];
+    // Convert SVG coords to screen coords
+    const svgW = 600, svgH = 450;
+    const scaleX = svgRect.width / svgW;
+    const scaleY = svgRect.height / svgH;
+    const screenX = svgRect.left - mapRect.left + m.x * scaleX;
+    const screenY = svgRect.top - mapRect.top + m.y * scaleY;
+
+    const el = document.createElement('div');
+    el.className = 'delta-fly ' + (t.val > 0 ? 'pos' : 'neg');
+    const sign = t.val > 0 ? '+' : '';
+    el.textContent = t.stat + sign + t.val;
+    el.style.left = (screenX + (i % 3 - 1) * 28) + 'px';
+    el.style.top = (screenY - 15 + Math.floor(i / 3) * 22) + 'px';
+    el.style.animationDelay = (i * 0.15) + 's';
+    mapArea.appendChild(el);
+
+    setTimeout(() => el.remove(), 2200);
+  });
+}
+
+// ==================== Choice Preview on Map ====================
+
+function previewChoiceOnMap(choiceIdx) {
+  const ev = EVENTS[G.era] && EVENTS[G.era][G.eventIdx];
+  if (!ev || !ev.choices[choiceIdx]) return;
+
+  const choice = ev.choices[choiceIdx];
+  const svg = document.getElementById('map-svg');
+  if (!svg) return;
+
+  // Highlight affected regions with glow
+  document.querySelectorAll('.region-path').forEach(p => {
+    p.style.transition = 'opacity 0.3s, stroke 0.3s';
+    p.classList.remove('preview-affected');
+  });
+
+  for (const region in choice.effects) {
+    const path = document.querySelector(`[data-region="${region}"]`);
+    if (!path) continue;
+    const eff = choice.effects[region];
+    const net = (eff.p||0) + (eff.m||0) + (eff.c||0) + (eff.t||0);
+    if (net > 0) {
+      path.style.stroke = 'rgba(107,186,107,0.6)';
+      path.style.strokeWidth = '2';
+    } else if (net < 0) {
+      path.style.stroke = 'rgba(197,107,107,0.6)';
+      path.style.strokeWidth = '2';
+    }
+  }
+}
+
+function clearChoicePreview() {
+  document.querySelectorAll('.region-path').forEach(p => {
+    p.style.stroke = '';
+    p.style.strokeWidth = '';
+  });
 }
 
 function renderTopBar() {
@@ -3020,22 +3249,27 @@ function showEvent() {
     setTimeout(() => btn.classList.add('visible'), 400 + i * 120);
   });
 
+  // Render event scene on map (historical labels, arrows, icons)
+  renderMapScene(ev.id);
+
   // Highlight affected regions on map
   _highlightEventRegions(ev);
 
-  // Choice hover → map region preview
+  // Choice hover → map region preview (green/red glow + original highlight)
   btns.forEach((btn, i) => {
     const ch = ev.choices[i];
     if (!ch || !ch.effects) return;
     const regions = Object.keys(ch.effects);
     btn.addEventListener('mouseenter', () => {
       _clearMapHighlights();
+      previewChoiceOnMap(i);
       regions.forEach(k => {
         const p = document.querySelector(`[data-region="${k}"]`);
         if (p) p.classList.add('choice-hover');
       });
     });
     btn.addEventListener('mouseleave', () => {
+      clearChoicePreview();
       _clearMapHighlights();
       _highlightEventRegions(ev);
     });
@@ -3126,6 +3360,11 @@ function _executeChoice(idx, ev, choice) {
 
   // Screen effect on map area
   screenEffect(ev, choice, effectTags);
+
+  // Clear scene overlay and show stat deltas on map
+  clearChoicePreview();
+  clearMapScene();
+  setTimeout(() => showMapDeltas(effectTags), 300);
 
   // Record
   G.choices.push({era:G.era, event:ev.id, choice:idx});
