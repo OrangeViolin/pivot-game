@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>枢纽：天下之道</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -85,7 +85,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 .node-circle{transition:all 0.3s;}
 .node-label{fill:#ccc;font-family:'GF',serif;font-size:14px;text-anchor:middle;pointer-events:none;}
 .node-value{fill:#999;font-family:'GF',serif;font-size:11px;text-anchor:middle;pointer-events:none;}
-.connection-line{stroke:rgba(201,169,110,0.15);stroke-width:1.5;stroke-dasharray:4,4;}
+.connection-line{stroke:rgba(201,169,110,0.15);stroke-width:1.5;stroke-dasharray:4,4;animation:dashFlow 4s linear infinite;}
+@keyframes dashFlow{to{stroke-dashoffset:-16;}}
 
 /* 事件卡片 */
 #event-overlay{
@@ -108,7 +109,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
   color:#ccc;border:1px solid rgba(201,169,110,0.2);border-radius:4px;
   text-align:left;transition:all 0.2s;line-height:1.5;
 }
-.choice-btn:hover{background:rgba(201,169,110,0.12);border-color:var(--gold);color:var(--gold);}
+.choice-btn:hover{background:rgba(201,169,110,0.12);border-color:var(--gold);color:var(--gold);transform:translateX(4px);}
+.choice-btn.risk-high:hover::before{box-shadow:4px 0 12px rgba(139,37,0,0.4);}
 .choice-btn .choice-num{color:var(--gold);margin-right:8px;}
 
 /* 结果弹窗 */
@@ -154,6 +156,53 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
   border-radius:3px;transition:all 0.2s;letter-spacing:2px;
 }
 .bottom-btn:hover{color:var(--gold);border-color:rgba(201,169,110,0.3);}
+
+/* ========== 按钮触感 ========== */
+.choice-btn:active{transform:scale(0.97) translateY(1px);filter:brightness(0.85);transition:transform 0.05s;}
+.start-btn:active{transform:scale(0.95);}
+.continue-btn:active{transform:scale(0.96);}
+.bottom-btn:active{transform:scale(0.95);}
+
+/* ========== 节点呼吸动画 ========== */
+@keyframes nodeBreathe{0%,100%{opacity:0.7;}50%{opacity:0.85;}}
+
+/* ========== 转型事件差异化 ========== */
+#event-card.transformation{border:2px solid var(--gold);box-shadow:0 0 40px rgba(201,169,110,0.2);}
+
+/* ========== 效果标签弹性入场 ========== */
+@keyframes tagBounceUp{0%{opacity:0;transform:translateY(16px);}60%{opacity:1;transform:translateY(-4px);}100%{opacity:1;transform:translateY(0);}}
+@keyframes tagShakeIn{0%{opacity:0;transform:translateX(-8px);}20%{opacity:1;transform:translateX(6px);}40%{transform:translateX(-4px);}60%{transform:translateX(3px);}80%{transform:translateX(-1px);}100%{opacity:1;transform:translateX(0);}}
+.effect-tag.revealed.positive{animation:tagBounceUp 0.5s ease-out forwards;}
+.effect-tag.revealed.negative{animation:tagShakeIn 0.5s ease-out forwards;}
+
+/* ========== 顶部资源数字动画 ========== */
+.res-item span, .ms-val{transition:transform 0.3s, color 0.3s;}
+.res-item span.res-changed-up{animation:resNumPop 0.6s;}
+.res-item span.res-changed-down{animation:resNumDrop 0.6s;}
+@keyframes resNumPop{0%{color:var(--gold);}30%{color:#6bba6b;transform:scale(1.3);}100%{color:var(--gold);transform:scale(1);}}
+@keyframes resNumDrop{0%{color:var(--gold);}30%{color:#c56b6b;transform:scale(1.3);}100%{color:var(--gold);transform:scale(1);}}
+
+/* ========== 开场动画相关 ========== */
+@keyframes titleGlow{0%,100%{text-shadow:0 0 30px rgba(201,169,110,0.3);}50%{text-shadow:0 0 50px rgba(201,169,110,0.6),0 0 80px rgba(201,169,110,0.2);}}
+.title-area h1{animation:titleGlow 3s ease-in-out infinite;}
+
+.poem-line{opacity:0;transform:translateY(12px);transition:opacity 0.8s ease,transform 0.8s ease;}
+.poem-line.visible{opacity:1;transform:translateY(0);}
+.poem-line.gold-line{color:var(--gold);font-size:1.15em;font-weight:bold;text-shadow:0 0 20px rgba(201,169,110,0.3);}
+
+@keyframes btnPulse{0%,100%{box-shadow:0 0 10px rgba(201,169,110,0.1);}50%{box-shadow:0 0 30px rgba(201,169,110,0.35),0 0 60px rgba(201,169,110,0.1);}}
+.start-btn.pulse-glow{animation:btnPulse 2.5s ease-in-out infinite;}
+
+/* ========== 开场粒子效果 ========== */
+.start-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+.start-particle{position:absolute;width:2px;height:2px;background:rgba(201,169,110,0.4);border-radius:50%;animation:particleDrift linear infinite;}
+@keyframes particleDrift{0%{transform:translate(0,0);opacity:0;}10%{opacity:1;}90%{opacity:1;}100%{transform:translate(var(--dx),var(--dy));opacity:0;}}
+
+/* ========== 标题入场动画 ========== */
+@keyframes titleLetterCollapse{0%{letter-spacing:40px;opacity:0;}100%{letter-spacing:12px;opacity:1;}}
+@keyframes subtitleFadeUp{0%{opacity:0;transform:translateY(16px);}100%{opacity:1;transform:translateY(0);}}
+.title-area h1.animate-in{animation:titleLetterCollapse 1.5s ease-out forwards;}
+.title-area .subtitle.animate-in{animation:subtitleFadeUp 0.8s ease-out forwards;}
 
 /* 时代过渡动画 */
 #era-transition{
@@ -255,24 +304,335 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 /* ========== 地图节点脉冲 ========== */
 .node-circle.pulse{animation:nodePulse 0.6s;}
 @keyframes nodePulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.6);}}
+
+/* ================================================================
+   移动端适配 (max-width: 768px)
+   ================================================================ */
+@media (max-width: 768px) {
+  /* --- 基础重置 --- */
+  html { font-size: 16px; }
+  body { overflow: hidden; height: 100vh; height: 100dvh; -webkit-tap-highlight-color: transparent; }
+
+  /* --- 开始画面 --- */
+  #start-screen { padding: 20px; }
+  .title-area { margin-bottom: 24px; }
+  .title-area h1 { font-size: 2.2em; letter-spacing: 8px; }
+  .title-area .subtitle { font-size: 0.95em; letter-spacing: 4px; }
+  .title-area .author { font-size: 0.75em; margin-top: 10px; }
+  .poem { font-size: 0.85em; line-height: 2; margin-bottom: 28px; padding: 0 12px; }
+  .start-btn {
+    padding: 14px 44px; font-size: 1.1em; letter-spacing: 4px;
+    min-height: 48px; min-width: 180px;
+  }
+
+  /* --- 主游戏布局：移动端单列 --- */
+  #game {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: 44px 1fr 44px !important;
+  }
+  #game.active { display: grid; }
+
+  /* --- 左侧面板：底部抽屉 --- */
+  #left-panel {
+    position: fixed; left: 0; right: 0; bottom: 44px;
+    height: 55vh; z-index: 50;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    border-right: none; border-top: 1px solid rgba(201,169,110,0.3);
+    border-radius: 16px 16px 0 0;
+    background: linear-gradient(180deg, #16162a, #0d0d1a);
+    padding: 8px 12px 60px 12px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #left-panel.mobile-open {
+    transform: translateY(0);
+  }
+  /* 抽屉拖拽把手 */
+  #left-panel::before {
+    content: '';
+    display: block;
+    width: 40px; height: 4px;
+    background: rgba(201,169,110,0.4);
+    border-radius: 2px;
+    margin: 4px auto 8px auto;
+  }
+  .panel-title { font-size: 0.9em; padding: 4px 0; }
+  .region-card { padding: 10px 12px; margin-bottom: 6px; min-height: 44px; }
+  .region-name { font-size: 0.95em; }
+
+  /* --- 右侧面板：浮层 --- */
+  #right-panel {
+    position: fixed; right: 0; top: 44px; bottom: 44px;
+    width: 75vw; max-width: 300px; z-index: 50;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    border-left: 1px solid rgba(201,169,110,0.3);
+    background: linear-gradient(180deg, #16162a, #0d0d1a);
+    padding: 8px 12px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #right-panel.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* --- 遮罩层 --- */
+  #mobile-overlay {
+    display: none;
+    position: fixed; inset: 0; z-index: 45;
+    background: rgba(0,0,0,0.5);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+  #mobile-overlay.active { display: block; }
+
+  /* --- 顶栏 --- */
+  #top-bar {
+    grid-column: 1;
+    padding: 0 10px;
+    font-size: 0.78em;
+    height: 44px;
+    gap: 6px;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+  .era-badge { font-size: 0.9em; letter-spacing: 1px; white-space: nowrap; flex-shrink: 0; }
+  .turn-info { display: none; }
+  .mandate-score { flex-shrink: 0; }
+  .mandate-score .ms-label { font-size: 0.8em; }
+  .mandate-score .ms-val { font-size: 1em; }
+  .resources { gap: 8px; flex-shrink: 1; overflow: hidden; }
+  .res-item { font-size: 0.78em; white-space: nowrap; }
+
+  /* --- 底栏 --- */
+  #bottom-bar {
+    grid-column: 1;
+    height: 44px;
+    gap: 8px;
+    padding: 0 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+  }
+  #power-ranking {
+    display: none; /* 移到底部抽屉中或隐藏，节省空间 */
+  }
+  .bottom-btn {
+    padding: 8px 14px; font-size: 0.82em;
+    min-height: 36px; min-width: 44px;
+    flex-shrink: 0;
+    letter-spacing: 1px;
+  }
+  /* 移动端底栏控制按钮 */
+  .mobile-toggle-btn {
+    padding: 8px 14px; font-size: 0.82em;
+    font-family: inherit; cursor: pointer;
+    background: transparent; color: var(--gold);
+    border: 1px solid rgba(201,169,110,0.3);
+    border-radius: 3px; letter-spacing: 1px;
+    min-height: 36px; min-width: 44px;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .mobile-toggle-btn:hover, .mobile-toggle-btn:active {
+    background: rgba(201,169,110,0.1);
+    border-color: var(--gold);
+  }
+
+  /* --- 中间主区域 --- */
+  #main-area {
+    grid-column: 1;
+    grid-row: 2;
+    overflow: hidden;
+    touch-action: pan-x pan-y pinch-zoom;
+  }
+
+  /* SVG 地图：自适应 + 支持双指缩放 */
+  #map-svg {
+    width: 100%; height: 100%;
+    touch-action: pinch-zoom pan-x pan-y;
+  }
+  .node-label { font-size: 12px; }
+  .node-value { font-size: 10px; }
+
+  /* --- 事件卡片：全屏展示 --- */
+  #event-overlay {
+    position: fixed; inset: 0;
+    z-index: 60;
+    padding: 0;
+    align-items: flex-end;
+  }
+  #event-card {
+    max-width: 100%; width: 100%;
+    border-radius: 16px 16px 0 0;
+    padding: 20px 16px 28px 16px;
+    max-height: 85vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .event-era-tag { font-size: 0.72em; }
+  .event-title { font-size: 1.2em; margin-bottom: 10px; letter-spacing: 1px; }
+  .event-desc { font-size: 0.9em; line-height: 1.75; margin-bottom: 10px; }
+  .event-quote { font-size: 0.82em; margin-bottom: 16px; padding-left: 10px; }
+  .choice-btn {
+    padding: 14px 16px 14px 24px;
+    font-size: 0.92em;
+    min-height: 48px;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    border-radius: 6px;
+  }
+  .choice-btn:active {
+    background: rgba(201,169,110,0.18);
+    border-color: var(--gold);
+  }
+
+  /* --- 结果弹窗 --- */
+  #result-overlay {
+    position: fixed; inset: 0;
+    z-index: 61;
+    padding: 0;
+    align-items: flex-end;
+  }
+  #result-card {
+    max-width: 100%; width: 100%;
+    border-radius: 16px 16px 0 0;
+    padding: 20px 16px 28px 16px;
+    max-height: 80vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .result-text { font-size: 0.95em; line-height: 1.75; }
+  .effect-tags { gap: 8px; }
+  .effect-tag { font-size: 0.82em; padding: 4px 12px; }
+  .continue-btn {
+    padding: 14px 44px; font-size: 1em;
+    min-height: 48px; min-width: 160px;
+    letter-spacing: 2px;
+  }
+  .continue-btn:active {
+    background: rgba(201,169,110,0.25);
+  }
+
+  /* --- 时代过渡 --- */
+  #era-transition { padding: 20px; }
+  .era-trans-content { max-width: 90vw; }
+  .era-trans-content h2 { font-size: 1.8em; letter-spacing: 12px; }
+  .era-trans-content p { font-size: 0.95em; }
+  .era-trans-summary { font-size: 0.82em; line-height: 1.7; }
+  .era-trans-preview { font-size: 0.8em; }
+
+  /* --- 结局画面 --- */
+  #ending-screen { padding: 20px; }
+  #ending-screen h1 { font-size: 2em; letter-spacing: 6px; }
+  #ending-screen .ending-desc {
+    font-size: 0.92em; line-height: 1.9;
+    max-width: 90vw; margin-bottom: 24px;
+    padding: 0 8px;
+  }
+  #ending-screen .score { font-size: 1em; margin-bottom: 20px; }
+
+  /* --- 成就通知 --- */
+  #achievement-container { right: 8px; top: 50px; }
+  .achievement-notif { font-size: 0.82em; padding: 8px 14px; }
+
+  /* --- 霸主通知 --- */
+  #hegemony-notif { top: 50px; font-size: 0.95em; padding: 10px 20px; letter-spacing: 2px; }
+
+  /* --- 连锁反应 --- */
+  .chain-notif { font-size: 0.75em; padding: 3px 10px; }
+
+  /* --- 底部势力排行 (移动端放到抽屉顶部) --- */
+  #mobile-power-ranking {
+    display: flex; flex-wrap: wrap; gap: 6px;
+    padding: 6px 0; margin-bottom: 6px;
+    border-bottom: 1px solid rgba(201,169,110,0.15);
+  }
+  #mobile-power-ranking .rank-item { font-size: 0.75em; }
+
+  /* --- 移动端回合指示 --- */
+  #mobile-turn-badge {
+    position: absolute; top: 50px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.6);
+    color: #8a7a5a;
+    font-size: 0.72em;
+    padding: 2px 10px;
+    border-radius: 0 0 8px 8px;
+    border: 1px solid rgba(201,169,110,0.15);
+    border-top: none;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  /* --- 触摸优化：增大可点击区域 --- */
+  button, .region-card, .choice-btn, .bottom-btn, .mobile-toggle-btn {
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* 防止文本选择干扰操作 */
+  .region-card, .choice-btn, .bottom-btn, .mobile-toggle-btn, #top-bar, #bottom-bar {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+/* 超小屏适配 (max-width: 380px) */
+@media (max-width: 380px) {
+  .title-area h1 { font-size: 1.8em; letter-spacing: 6px; }
+  .poem { font-size: 0.8em; }
+  .start-btn { padding: 12px 32px; font-size: 1em; }
+  #top-bar { padding: 0 6px; font-size: 0.72em; }
+  .era-badge { font-size: 0.82em; }
+  .resources { gap: 5px; }
+  .res-item { font-size: 0.72em; }
+  .event-title { font-size: 1.1em; }
+  .event-desc { font-size: 0.85em; }
+  .choice-btn { font-size: 0.85em; padding: 12px 14px 12px 22px; }
+  #ending-screen h1 { font-size: 1.6em; }
+  #ending-screen .ending-desc { font-size: 0.85em; }
+}
+
+/* 横屏提示 (移动端横屏时) */
+@media (max-width: 768px) and (orientation: landscape) {
+  #event-card, #result-card {
+    max-height: 90vh;
+  }
+  #event-overlay, #result-overlay {
+    align-items: center;
+  }
+  #event-card, #result-card {
+    border-radius: 8px;
+    max-width: 90vw;
+    width: 90vw;
+  }
+  #left-panel {
+    height: 50vh;
+    bottom: 44px;
+  }
+}
 </style>
 </head>
 <body>
 
 <!-- ========== 开始画面 ========== -->
 <div id="start-screen">
+  <div class="start-particles" id="start-particles"></div>
   <div class="title-area">
-    <h1>枢纽</h1>
-    <div class="subtitle">天 下 之 道</div>
+    <h1 id="main-title">枢纽</h1>
+    <div class="subtitle" id="main-subtitle">天 下 之 道</div>
     <div class="author">—— 基于施展《枢纽：3000年的中国》 ——</div>
   </div>
-  <div class="poem">
-    中原、草原、西域、高原、海洋<br>
-    五大空间，彼此塑造，互为条件<br>
-    三千年兴衰轮转，一个永恒之问<br>
-    <strong style="color:var(--gold)">何谓中国？</strong>
+  <div class="poem" id="start-poem">
+    <div class="poem-line">三千年风云际会</div>
+    <div class="poem-line">七大空间，纵横捭阖</div>
+    <div class="poem-line">铁骑踏破山河，丝路连通四海</div>
+    <div class="poem-line gold-line">天命在手——你，将如何经略天下？</div>
   </div>
-  <button class="start-btn" onclick="startGame()">开 始 经 略</button>
+  <button class="start-btn pulse-glow" id="start-btn">执 掌 天 命</button>
 </div>
 
 <!-- ========== 时代过渡 ========== -->
@@ -304,10 +664,12 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
 
   <div id="left-panel">
     <div class="panel-title">七 大 空 间</div>
+    <div id="mobile-power-ranking" style="display:none;"></div>
     <div id="region-list"></div>
   </div>
 
   <div id="main-area">
+    <div id="mobile-turn-badge" style="display:none;">第 <span id="mobile-turn-num">1</span> 回合</div>
     <div id="chain-notifications"></div>
     <svg id="map-svg" viewBox="0 0 600 450">
       <!-- 连接线 -->
@@ -342,7 +704,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
       <div id="result-card" class="fade-in">
         <div class="result-text" id="res-text"></div>
         <div class="effect-tags" id="res-effects"></div>
-        <button class="continue-btn hidden" id="continue-btn" onclick="nextTurn()">继 续</button>
+        <button class="continue-btn hidden" id="continue-btn">继 续</button>
       </div>
     </div>
   </div>
@@ -353,12 +715,17 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#0d0d1a;color:#ddd;over
   </div>
 
   <div id="bottom-bar">
+    <button class="mobile-toggle-btn" id="btn-toggle-regions" onclick="toggleRegionDrawer()" style="display:none;">空间</button>
     <div id="power-ranking"></div>
     <button class="bottom-btn" onclick="saveGame()">存档</button>
     <button class="bottom-btn" onclick="loadGame()">读档</button>
     <button class="bottom-btn" onclick="showHelp()">指南</button>
+    <button class="mobile-toggle-btn" id="btn-toggle-history" onclick="toggleHistoryPanel()" style="display:none;">史卷</button>
   </div>
 </div>
+
+<!-- 移动端遮罩层 -->
+<div id="mobile-overlay" onclick="closeMobilePanels()"></div>
 
 <div id="achievement-container"></div>
 <div id="hegemony-notif" style="display:none;"></div>
@@ -607,6 +974,9 @@ let G = {
   unlockedAchievements: []
 };
 
+// ==================== 防重入 & 计时器 ====================
+let _mandateTimer = null;
+
 // ==================== 成就定义 ====================
 const ACHIEVEMENTS = [
   {id:'peak',name:'登峰造极',icon:'🏔️',desc:'任一区域属性达到10',check:()=>Object.values(G.regions).some(r=>r.prosperity>=10||r.military>=10||r.culture>=10||r.trade>=10)},
@@ -633,37 +1003,71 @@ function initRegions() {
 
 function renderRegionList() {
   const el = document.getElementById('region-list');
-  let html = '';
-  for (let k in REGION_META) {
-    const m = REGION_META[k], r = G.regions[k];
-    const total = r.prosperity + r.military + r.culture + r.trade;
-    html += `<div class="region-card" onclick="selectRegion('${k}')">
-      <div class="region-name"><span class="region-dot" style="background:${m.color}"></span>${m.name}</div>
-      <div class="stat-bars">
-        <div class="stat-row"><span class="stat-label">兴</span><div class="stat-bar"><div class="stat-fill" style="width:${r.prosperity*10}%;background:${m.color}"></div></div></div>
-        <div class="stat-row"><span class="stat-label">武</span><div class="stat-bar"><div class="stat-fill" style="width:${r.military*10}%;background:${m.color}"></div></div></div>
-        <div class="stat-row"><span class="stat-label">文</span><div class="stat-bar"><div class="stat-fill" style="width:${r.culture*10}%;background:${m.color}"></div></div></div>
-        <div class="stat-row"><span class="stat-label">商</span><div class="stat-bar"><div class="stat-fill" style="width:${r.trade*10}%;background:${m.color}"></div></div></div>
-      </div>
-    </div>`;
+  const keys = Object.keys(REGION_META);
+  const existingCards = el.querySelectorAll('.region-card');
+
+  if (existingCards.length === keys.length) {
+    // Diff update: only update stat-fill widths
+    keys.forEach((k, i) => {
+      const r = G.regions[k];
+      const fills = existingCards[i].querySelectorAll('.stat-fill');
+      if (fills[0]) fills[0].style.width = r.prosperity * 10 + '%';
+      if (fills[1]) fills[1].style.width = r.military * 10 + '%';
+      if (fills[2]) fills[2].style.width = r.culture * 10 + '%';
+      if (fills[3]) fills[3].style.width = r.trade * 10 + '%';
+    });
+  } else {
+    // Initial render
+    let html = '';
+    for (let k in REGION_META) {
+      const m = REGION_META[k], r = G.regions[k];
+      html += `<div class="region-card" onclick="selectRegion('${k}')">
+        <div class="region-name"><span class="region-dot" style="background:${m.color}"></span>${m.name}</div>
+        <div class="stat-bars">
+          <div class="stat-row"><span class="stat-label">兴</span><div class="stat-bar"><div class="stat-fill" style="width:${r.prosperity*10}%;background:${m.color}"></div></div></div>
+          <div class="stat-row"><span class="stat-label">武</span><div class="stat-bar"><div class="stat-fill" style="width:${r.military*10}%;background:${m.color}"></div></div></div>
+          <div class="stat-row"><span class="stat-label">文</span><div class="stat-bar"><div class="stat-fill" style="width:${r.culture*10}%;background:${m.color}"></div></div></div>
+          <div class="stat-row"><span class="stat-label">商</span><div class="stat-bar"><div class="stat-fill" style="width:${r.trade*10}%;background:${m.color}"></div></div></div>
+        </div>
+      </div>`;
+    }
+    el.innerHTML = html;
   }
-  el.innerHTML = html;
 }
 
 function renderMap() {
   const g = document.getElementById('map-nodes');
-  let html = '';
-  for (let k in REGION_META) {
-    const m = REGION_META[k], r = G.regions[k];
-    const total = r.prosperity + r.military + r.culture + r.trade;
-    const radius = Math.max(20, Math.min(40, 15 + total * 0.8));
-    html += `<g class="region-node" onclick="selectRegion('${k}')">
-      <circle class="node-circle" cx="${m.x}" cy="${m.y}" r="${radius}" fill="${m.color}" opacity="0.7" stroke="${m.color}" stroke-width="2"/>
-      <text class="node-label" x="${m.x}" y="${m.y-2}">${m.name}</text>
-      <text class="node-value" x="${m.x}" y="${m.y+14}">${total}</text>
-    </g>`;
+  const keys = Object.keys(REGION_META);
+  const existingNodes = g.querySelectorAll('.region-node');
+
+  if (existingNodes.length === keys.length) {
+    // Diff update: only update circle r and text content
+    keys.forEach((k, i) => {
+      const m = REGION_META[k], r = G.regions[k];
+      const total = r.prosperity + r.military + r.culture + r.trade;
+      const radius = Math.max(20, Math.min(40, 15 + total * 0.8));
+      const node = existingNodes[i];
+      const circle = node.querySelector('.node-circle');
+      const valueText = node.querySelector('.node-value');
+      if (circle) circle.setAttribute('r', radius);
+      if (valueText) valueText.textContent = total;
+    });
+  } else {
+    // Initial render: create all nodes
+    let html = '';
+    keys.forEach((k, i) => {
+      const m = REGION_META[k], r = G.regions[k];
+      const total = r.prosperity + r.military + r.culture + r.trade;
+      const radius = Math.max(20, Math.min(40, 15 + total * 0.8));
+      const breatheDelay = (i * 0.7).toFixed(1);
+      html += `<g class="region-node" onclick="selectRegion('${k}')">
+        <circle class="node-circle" cx="${m.x}" cy="${m.y}" r="${radius}" fill="${m.color}" opacity="0.7" stroke="${m.color}" stroke-width="2" style="animation:nodeBreathe 4s ease-in-out ${breatheDelay}s infinite;"/>
+        <text class="node-label" x="${m.x}" y="${m.y-2}">${m.name}</text>
+        <text class="node-value" x="${m.x}" y="${m.y+14}">${total}</text>
+      </g>`;
+    });
+    g.innerHTML = html;
   }
-  g.innerHTML = html;
 }
 
 function renderTopBar() {
@@ -674,10 +1078,40 @@ function renderTopBar() {
     const r = G.regions[k];
     p += r.prosperity; m += r.military; c += r.culture;
   }
+  const oldP = G.totalPower, oldM = G.totalMorale, oldC = G.totalCulture;
   G.totalPower = p; G.totalMorale = m; G.totalCulture = c;
-  document.getElementById('res-power').textContent = p;
-  document.getElementById('res-morale').textContent = m;
-  document.getElementById('res-culture').textContent = c;
+
+  // Animate resource numbers
+  animateResNum('res-power', oldP, p);
+  animateResNum('res-morale', oldM, m);
+  animateResNum('res-culture', oldC, c);
+}
+
+function animateResNum(elId, oldVal, newVal) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (oldVal === newVal) { el.textContent = newVal; return; }
+  const diff = newVal - oldVal;
+  // Add flash class
+  const cls = diff > 0 ? 'res-changed-up' : 'res-changed-down';
+  el.classList.remove('res-changed-up','res-changed-down');
+  void el.offsetWidth;
+  el.classList.add(cls);
+  // Counting animation
+  let current = oldVal;
+  const steps = 12;
+  const stepVal = diff / steps;
+  let step = 0;
+  const t = setInterval(() => {
+    step++;
+    current += stepVal;
+    el.textContent = Math.round(current);
+    if (step >= steps) {
+      clearInterval(t);
+      el.textContent = newVal;
+    }
+  }, 35);
+  setTimeout(() => el.classList.remove(cls), 700);
 }
 
 function calculateMandateScore() {
@@ -698,6 +1132,11 @@ function animateMandateScore(newScore) {
   const container = document.getElementById('mandate-display');
   const oldScore = G.mandateScore;
   if (newScore === oldScore) return;
+  // Clear any existing animation timer
+  if (_mandateTimer !== null) {
+    clearInterval(_mandateTimer);
+    _mandateTimer = null;
+  }
   const diff = newScore - oldScore;
   const cls = diff > 0 ? 'pulse-up' : 'pulse-down';
   container.classList.remove('pulse-up','pulse-down');
@@ -707,12 +1146,13 @@ function animateMandateScore(newScore) {
   const stepVal = diff / steps;
   let current = oldScore;
   let step = 0;
-  const timer = setInterval(() => {
+  _mandateTimer = setInterval(() => {
     step++;
     current += stepVal;
     el.textContent = Math.round(current);
     if (step >= steps) {
-      clearInterval(timer);
+      clearInterval(_mandateTimer);
+      _mandateTimer = null;
       el.textContent = newScore;
       G.mandateScore = newScore;
     }
@@ -777,20 +1217,32 @@ function showEvent() {
   });
   document.getElementById('ev-choices').innerHTML = choicesHtml;
 
+  // Transformation class
+  const eventCard = document.getElementById('event-card');
+  if (ev.isTransformation) {
+    eventCard.classList.add('transformation');
+  } else {
+    eventCard.classList.remove('transformation');
+  }
+
   document.getElementById('event-overlay').classList.add('active');
 
-  // Staggered reveal
-  setTimeout(() => eraTag.classList.add('visible'), 100);
-  setTimeout(() => titleEl.classList.add('visible'), 300);
-  setTimeout(() => descEl.classList.add('visible'), 700);
-  setTimeout(() => quoteEl.classList.add('visible'), 1100);
+  // Staggered reveal (transformation events are 50% slower)
+  const pace = ev.isTransformation ? 1.5 : 1.0;
+  setTimeout(() => eraTag.classList.add('visible'), 100 * pace);
+  setTimeout(() => titleEl.classList.add('visible'), 300 * pace);
+  setTimeout(() => descEl.classList.add('visible'), 700 * pace);
+  setTimeout(() => quoteEl.classList.add('visible'), 1100 * pace);
   const btns = document.querySelectorAll('#ev-choices .choice-btn');
   btns.forEach((btn, i) => {
-    setTimeout(() => btn.classList.add('visible'), 1400 + i * 200);
+    setTimeout(() => btn.classList.add('visible'), (1400 + i * 200) * pace);
   });
 }
 
 function makeChoice(idx) {
+  if (G._choosing) return;
+  G._choosing = true;
+
   const ev = EVENTS[G.era][G.eventIdx];
   const choice = ev.choices[idx];
 
@@ -801,7 +1253,7 @@ function makeChoice(idx) {
     beforeStats[k] = {prosperity:r.prosperity, military:r.military, culture:r.culture, trade:r.trade};
   }
 
-  // Apply effects
+  // Apply effects (track actual deltas after clamping)
   const effectTags = [];
   const affectedRegions = new Set();
   for (let region in choice.effects) {
@@ -809,10 +1261,10 @@ function makeChoice(idx) {
     const r = G.regions[region];
     if (!r) continue;
     affectedRegions.add(region);
-    if (eff.p) { r.prosperity = clamp(r.prosperity + eff.p, 0, 10); effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'兴', val:eff.p}); }
-    if (eff.m) { r.military = clamp(r.military + eff.m, 0, 10); effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'武', val:eff.m}); }
-    if (eff.c) { r.culture = clamp(r.culture + eff.c, 0, 10); effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'文', val:eff.c}); }
-    if (eff.t) { r.trade = clamp(r.trade + eff.t, 0, 10); effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'商', val:eff.t}); }
+    if (eff.p) { const before = r.prosperity; r.prosperity = clamp(r.prosperity + eff.p, 0, 10); const actual = r.prosperity - before; if (actual !== 0) effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'兴', val:actual}); }
+    if (eff.m) { const before = r.military; r.military = clamp(r.military + eff.m, 0, 10); const actual = r.military - before; if (actual !== 0) effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'武', val:actual}); }
+    if (eff.c) { const before = r.culture; r.culture = clamp(r.culture + eff.c, 0, 10); const actual = r.culture - before; if (actual !== 0) effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'文', val:actual}); }
+    if (eff.t) { const before = r.trade; r.trade = clamp(r.trade + eff.t, 0, 10); const actual = r.trade - before; if (actual !== 0) effectTags.push({region:REGION_META[region].name, regionKey:region, stat:'商', val:actual}); }
   }
 
   // Chain reactions
@@ -878,9 +1330,9 @@ function makeChoice(idx) {
 
   // Finale handling
   if (ev.isFinale && choice.ending) {
-    contBtn.onclick = () => showEnding(choice.ending);
+    contBtn._customAction = () => showEnding(choice.ending);
   } else {
-    contBtn.onclick = () => nextTurn();
+    contBtn._customAction = null;
   }
 
   renderMap();
@@ -1023,7 +1475,9 @@ function highlightConnection(fromKey, toKey) {
 }
 
 function nextTurn() {
+  G._choosing = false;
   document.getElementById('result-overlay').classList.remove('active');
+  document.getElementById('event-card').classList.remove('transformation');
   G.turn++;
   G.eventIdx++;
   showEvent();
@@ -1093,8 +1547,10 @@ function nextEra() {
 }
 
 function showEnding(endingKey) {
+  G._choosing = false;
   document.getElementById('result-overlay').classList.remove('active');
   document.getElementById('event-overlay').classList.remove('active');
+  document.getElementById('event-card').classList.remove('transformation');
 
   // 如果没有指定结局，根据状态判断
   if (!endingKey) {
@@ -1165,7 +1621,20 @@ function saveGame() {
 function loadGame() {
   const data = localStorage.getItem('pivot_save');
   if (data) {
+    // Clear all overlay active states first
+    document.getElementById('event-overlay').classList.remove('active');
+    document.getElementById('result-overlay').classList.remove('active');
+    document.getElementById('era-transition').classList.remove('active');
+    document.getElementById('ending-screen').classList.remove('active');
+    document.getElementById('event-card').classList.remove('transformation');
+
     G = JSON.parse(data);
+    // Default value protection for old saves
+    G.mandateScore = G.mandateScore || 0;
+    G.unlockedAchievements = G.unlockedAchievements || [];
+    G.eraStartSnapshot = G.eraStartSnapshot || null;
+    G._choosing = false;
+
     renderAll();
     addLog('📜 读档成功');
     showEvent();
@@ -1242,6 +1711,75 @@ function renderAll() {
 
 // ==================== 启动 ====================
 
+// Opening screen animation
+function initStartScreen() {
+  // Generate particles
+  const particleContainer = document.getElementById('start-particles');
+  if (particleContainer) {
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'start-particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.top = Math.random() * 100 + '%';
+      p.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px');
+      p.style.setProperty('--dy', (Math.random() * 80 - 40) + 'px');
+      p.style.animationDuration = (8 + Math.random() * 12) + 's';
+      p.style.animationDelay = (Math.random() * 6) + 's';
+      p.style.width = (1.5 + Math.random() * 2) + 'px';
+      p.style.height = p.style.width;
+      particleContainer.appendChild(p);
+    }
+  }
+
+  // Title animation
+  const mainTitle = document.getElementById('main-title');
+  const mainSubtitle = document.getElementById('main-subtitle');
+  if (mainTitle) {
+    mainTitle.style.opacity = '0';
+    mainTitle.style.letterSpacing = '40px';
+    setTimeout(() => {
+      mainTitle.classList.add('animate-in');
+    }, 200);
+  }
+  if (mainSubtitle) {
+    mainSubtitle.style.opacity = '0';
+    setTimeout(() => {
+      mainSubtitle.classList.add('animate-in');
+    }, 1200);
+  }
+
+  // Staggered poem lines
+  const poemLines = document.querySelectorAll('.poem-line');
+  poemLines.forEach((line, i) => {
+    const delay = 1800 + i * 700;
+    // Last line (gold) has extra delay
+    const extra = line.classList.contains('gold-line') ? 500 : 0;
+    setTimeout(() => line.classList.add('visible'), delay + extra);
+  });
+
+  // Show start button after poems
+  const startBtn = document.getElementById('start-btn');
+  if (startBtn) {
+    startBtn.style.opacity = '0';
+    startBtn.style.transition = 'opacity 0.8s ease';
+    setTimeout(() => { startBtn.style.opacity = '1'; }, 1800 + poemLines.length * 700 + 600);
+  }
+
+  // Bind start button click
+  if (startBtn) {
+    startBtn.addEventListener('click', startGame);
+  }
+
+  // Bind continue button via JS (no HTML onclick)
+  const contBtn = document.getElementById('continue-btn');
+  if (contBtn) {
+    contBtn.addEventListener('click', function() {
+      if (this._customAction) { this._customAction(); }
+      else { nextTurn(); }
+    });
+  }
+}
+
 function startGame() {
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('game').classList.add('active');
@@ -1252,6 +1790,7 @@ function startGame() {
   G.log = [];
   G.choices = [];
   G.mandateScore = 0;
+  G._choosing = false;
   G.unlockedAchievements = [];
   // Snapshot for era 1
   G.eraStartSnapshot = {};
@@ -1264,6 +1803,262 @@ function startGame() {
 
   setTimeout(() => showEvent(), 500);
 }
+
+// ==================== 移动端适配 ====================
+
+const isMobile = () => window.innerWidth <= 768;
+
+function initMobile() {
+  if (!isMobile()) return;
+
+  // 显示移动端控件
+  document.getElementById('btn-toggle-regions').style.display = '';
+  document.getElementById('btn-toggle-history').style.display = '';
+  document.getElementById('mobile-turn-badge').style.display = '';
+  document.getElementById('mobile-power-ranking').style.display = '';
+
+  // 给左面板添加触摸滑动关闭
+  setupDrawerSwipe();
+
+  // SVG 地图双指缩放
+  setupMapPinchZoom();
+}
+
+function toggleRegionDrawer() {
+  const panel = document.getElementById('left-panel');
+  const overlay = document.getElementById('mobile-overlay');
+  const rightPanel = document.getElementById('right-panel');
+
+  // 关闭右侧面板
+  rightPanel.classList.remove('mobile-open');
+
+  if (panel.classList.contains('mobile-open')) {
+    panel.classList.remove('mobile-open');
+    overlay.classList.remove('active');
+  } else {
+    panel.classList.add('mobile-open');
+    overlay.classList.add('active');
+  }
+}
+
+function toggleHistoryPanel() {
+  const panel = document.getElementById('right-panel');
+  const overlay = document.getElementById('mobile-overlay');
+  const leftPanel = document.getElementById('left-panel');
+
+  // 关闭左侧面板
+  leftPanel.classList.remove('mobile-open');
+
+  if (panel.classList.contains('mobile-open')) {
+    panel.classList.remove('mobile-open');
+    overlay.classList.remove('active');
+  } else {
+    panel.classList.add('mobile-open');
+    overlay.classList.add('active');
+  }
+}
+
+function closeMobilePanels() {
+  document.getElementById('left-panel').classList.remove('mobile-open');
+  document.getElementById('right-panel').classList.remove('mobile-open');
+  document.getElementById('mobile-overlay').classList.remove('active');
+}
+
+function setupDrawerSwipe() {
+  const drawer = document.getElementById('left-panel');
+  let startY = 0, currentY = 0, isDragging = false;
+
+  drawer.addEventListener('touchstart', (e) => {
+    // 仅在抽屉顶部区域触发拖拽
+    const rect = drawer.getBoundingClientRect();
+    const touchY = e.touches[0].clientY;
+    if (touchY - rect.top > 40) return; // 只在把手区域
+    startY = e.touches[0].clientY;
+    isDragging = true;
+  }, { passive: true });
+
+  drawer.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    currentY = e.touches[0].clientY;
+    const diff = currentY - startY;
+    if (diff > 0) {
+      drawer.style.transition = 'none';
+      drawer.style.transform = `translateY(${diff}px)`;
+    }
+  }, { passive: true });
+
+  drawer.addEventListener('touchend', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    const diff = currentY - startY;
+    drawer.style.transition = '';
+    drawer.style.transform = '';
+    if (diff > 80) {
+      closeMobilePanels();
+    }
+  }, { passive: true });
+}
+
+function setupMapPinchZoom() {
+  const svg = document.getElementById('map-svg');
+  if (!svg) return;
+
+  let scale = 1, originX = 300, originY = 225;
+  let startDist = 0, startScale = 1;
+  let lastPanX = 0, lastPanY = 0;
+  let isPanning = false;
+
+  svg.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      startDist = getTouchDist(e.touches);
+      startScale = scale;
+    } else if (e.touches.length === 1 && scale > 1) {
+      lastPanX = e.touches[0].clientX;
+      lastPanY = e.touches[0].clientY;
+      isPanning = true;
+    }
+  }, { passive: false });
+
+  svg.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const dist = getTouchDist(e.touches);
+      scale = Math.min(3, Math.max(1, startScale * (dist / startDist)));
+      applyMapTransform(svg, scale, originX, originY);
+    } else if (e.touches.length === 1 && isPanning && scale > 1) {
+      const dx = e.touches[0].clientX - lastPanX;
+      const dy = e.touches[0].clientY - lastPanY;
+      lastPanX = e.touches[0].clientX;
+      lastPanY = e.touches[0].clientY;
+      originX -= dx / scale;
+      originY -= dy / scale;
+      originX = Math.max(0, Math.min(600, originX));
+      originY = Math.max(0, Math.min(450, originY));
+      applyMapTransform(svg, scale, originX, originY);
+    }
+  }, { passive: false });
+
+  svg.addEventListener('touchend', (e) => {
+    if (e.touches.length < 2) {
+      isPanning = false;
+    }
+    // 如果缩放回到1，重置原点
+    if (scale <= 1) {
+      scale = 1;
+      originX = 300;
+      originY = 225;
+      applyMapTransform(svg, 1, 300, 225);
+    }
+  }, { passive: true });
+
+  // 双击重置缩放
+  let lastTap = 0;
+  svg.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTap < 300 && e.changedTouches.length === 1) {
+      scale = 1;
+      originX = 300;
+      originY = 225;
+      svg.style.transition = 'transform 0.3s';
+      applyMapTransform(svg, 1, 300, 225);
+      setTimeout(() => { svg.style.transition = ''; }, 300);
+    }
+    lastTap = now;
+  }, { passive: true });
+}
+
+function getTouchDist(touches) {
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+function applyMapTransform(svg, scale, ox, oy) {
+  if (scale <= 1) {
+    svg.removeAttribute('style');
+    return;
+  }
+  // Use viewBox manipulation for SVG zoom
+  const w = 600 / scale, h = 450 / scale;
+  const vx = Math.max(0, Math.min(600 - w, ox - w / 2));
+  const vy = Math.max(0, Math.min(450 - h, oy - h / 2));
+  svg.setAttribute('viewBox', `${vx} ${vy} ${w} ${h}`);
+}
+
+// 更新移动端回合显示
+function updateMobileTurn() {
+  const el = document.getElementById('mobile-turn-num');
+  if (el) el.textContent = G.turn;
+}
+
+// 移动端势力排行
+function renderMobilePowerRanking() {
+  if (!isMobile()) return;
+  const container = document.getElementById('mobile-power-ranking');
+  if (!container) return;
+  const ranked = Object.keys(REGION_META).map(k => {
+    const r = G.regions[k];
+    return {key:k, name:REGION_META[k].name, color:REGION_META[k].color, total:r.prosperity+r.military+r.culture+r.trade};
+  }).sort((a,b) => b.total - a.total);
+
+  let html = '';
+  ranked.forEach((item, i) => {
+    const crown = i === 0 ? '👑 ' : '';
+    html += `<div class="rank-item ${i===0?'rank-1':''}"><span class="rank-dot" style="background:${item.color}"></span>${crown}${item.name} <span class="rank-val">${item.total}</span></div>`;
+  });
+  container.innerHTML = html;
+}
+
+// 覆盖原始的 renderPowerRanking 以也刷新移动端
+const _origRenderPowerRanking = renderPowerRanking;
+renderPowerRanking = function() {
+  _origRenderPowerRanking();
+  renderMobilePowerRanking();
+};
+
+// 覆盖原始的 renderTopBar 以更新移动端回合
+const _origRenderTopBar = renderTopBar;
+renderTopBar = function() {
+  _origRenderTopBar();
+  updateMobileTurn();
+};
+
+// 响应窗口大小变化
+window.addEventListener('resize', () => {
+  if (isMobile()) {
+    document.getElementById('btn-toggle-regions').style.display = '';
+    document.getElementById('btn-toggle-history').style.display = '';
+    document.getElementById('mobile-turn-badge').style.display = '';
+    document.getElementById('mobile-power-ranking').style.display = '';
+  } else {
+    document.getElementById('btn-toggle-regions').style.display = 'none';
+    document.getElementById('btn-toggle-history').style.display = 'none';
+    document.getElementById('mobile-turn-badge').style.display = 'none';
+    document.getElementById('mobile-power-ranking').style.display = 'none';
+    closeMobilePanels();
+    // 重置 SVG viewBox
+    const svg = document.getElementById('map-svg');
+    if (svg) svg.setAttribute('viewBox', '0 0 600 450');
+  }
+});
+
+// 初始化
+document.addEventListener('DOMContentLoaded', () => {
+  initStartScreen();
+  initMobile();
+});
+
+// 覆盖原始的 startGame 以在启动时初始化移动端
+const _origStartGame = startGame;
+startGame = function() {
+  _origStartGame();
+  if (isMobile()) {
+    initMobile();
+    renderMobilePowerRanking();
+    updateMobileTurn();
+  }
+};
 </script>
 </body>
 </html>
