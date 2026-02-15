@@ -486,9 +486,9 @@ body::after {
   background:#000;
 }
 #era-transition.active{display:flex;}
-#era-transition.era-to-2{background:radial-gradient(ellipse at 50% 50%,rgba(201,169,110,0.08),#000 70%);}
-#era-transition.era-to-3{background:radial-gradient(ellipse at 50% 50%,rgba(74,111,165,0.08),#000 70%);}
-#era-transition.era-to-4{background:radial-gradient(ellipse at 50% 50%,rgba(74,124,89,0.08),#000 70%);}
+#era-transition.era-to-2{background:radial-gradient(ellipse at 50% 50%,rgba(201,169,110,0.12),rgba(0,0,0,0.97) 70%);}
+#era-transition.era-to-3{background:radial-gradient(ellipse at 50% 50%,rgba(74,111,165,0.12),rgba(0,0,0,0.97) 70%);}
+#era-transition.era-to-4{background:radial-gradient(ellipse at 50% 50%,rgba(74,124,89,0.12),rgba(0,0,0,0.97) 70%);}
 /* era-trans styles moved to enhanced section below */
 
 /* 结局画面 */
@@ -585,12 +585,12 @@ body::after {
 @keyframes hegemonyPop{0%{opacity:0;transform:translateX(-50%) scale(0.8);}10%{opacity:1;transform:translateX(-50%) scale(1.05);}20%{transform:translateX(-50%) scale(1);}80%{opacity:1;}100%{opacity:0;}}
 
 /* ========== 时代过渡升级 ========== */
-.era-trans-content{text-align:center;max-width:620px;overflow-y:auto;max-height:90vh;padding:20px;}
+.era-trans-content{text-align:center;max-width:620px;overflow-y:auto;max-height:90vh;padding:20px;background:rgba(8,6,3,0.92);border-radius:12px;box-shadow:0 0 60px rgba(0,0,0,0.8);}
 .era-trans-summary{color:#8a7a5a;font-size:0.9em;line-height:1.8;margin-bottom:20px;opacity:0;}
 .era-trans-content h2{font-size:2.5em;color:var(--gold);letter-spacing:20px;margin-bottom:12px;opacity:0;}
 .era-trans-line{width:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:12px auto;transition:width 0.8s;}
 .era-trans-content p{font-size:1.1em;color:#8a7a5a;letter-spacing:3px;opacity:0;}
-.era-trans-intro{color:#aaa;font-size:0.85em;line-height:1.9;text-align:left;margin:20px 0;padding:16px 20px;background:rgba(201,169,110,0.04);border-radius:8px;border-left:3px solid rgba(201,169,110,0.2);opacity:0;white-space:pre-line;max-height:45vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(201,169,110,0.2) transparent;}
+.era-trans-intro{color:#bbb;font-size:0.85em;line-height:1.9;text-align:left;margin:20px 0;padding:16px 20px;background:rgba(201,169,110,0.08);border-radius:8px;border-left:3px solid rgba(201,169,110,0.3);opacity:0;white-space:pre-line;max-height:45vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(201,169,110,0.2) transparent;}
 .era-trans-preview{color:#6a5a3a;font-size:0.85em;margin-top:16px;opacity:0;letter-spacing:2px;}
 
 /* ========== 属性浮动数字 ========== */
