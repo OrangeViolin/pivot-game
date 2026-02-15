@@ -59,8 +59,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 .timeline-era-seg.active-era{filter:brightness(1.4);box-shadow:0 0 8px currentColor;}
 .timeline-dots{position:absolute;top:0;left:0;right:0;height:100%;display:flex;align-items:center;pointer-events:none;}
 .timeline-dot{width:16px;height:16px;border-radius:50%;position:absolute;transform:translateX(-50%);cursor:pointer;pointer-events:auto;transition:all 0.25s;z-index:2;}
-.timeline-dot.completed{background:var(--gold);box-shadow:0 0 6px rgba(201,169,110,0.6);}
-.timeline-dot.completed:hover{transform:translateX(-50%) scale(1.5);box-shadow:0 0 16px rgba(201,169,110,1);z-index:5;}
+.timeline-dot.completed{background:var(--dot-color, var(--gold));box-shadow:0 0 6px rgba(201,169,110,0.6);}
+.timeline-dot.completed:hover{transform:translateX(-50%) scale(1.5);box-shadow:0 0 16px var(--dot-color, var(--gold));z-index:5;}
 .timeline-dot.completed:active{transform:translateX(-50%) scale(1.2);}
 .timeline-dot.current{width:18px;height:18px;background:var(--bright-gold);box-shadow:0 0 12px rgba(201,169,110,0.8);animation:dotPulse 1.5s ease-in-out infinite;}
 .timeline-dot.future{width:12px;height:12px;background:rgba(201,169,110,0.15);border:1px solid rgba(201,169,110,0.25);}
@@ -72,6 +72,21 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 .timeline-marker{position:relative;}
 .timeline-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(18,18,30,0.95);backdrop-filter:blur(12px);border:1px solid rgba(201,169,110,0.3);border-radius:6px;padding:6px 10px;font-size:0.75em;color:#bbb;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s;z-index:30;}
 .timeline-dot:hover .timeline-tooltip{opacity:1;}
+
+/* Era-specific dot colors */
+.timeline-dot.era-1{--dot-color:#c9a96e;}
+.timeline-dot.era-2{--dot-color:#b8432f;}
+.timeline-dot.era-3{--dot-color:#2980b9;}
+.timeline-dot.era-4{--dot-color:#4a7c59;}
+/* Transition/finale diamond shape */
+.timeline-dot.transition-dot{border-radius:2px;transform:translateX(-50%) rotate(45deg);width:14px;height:14px;}
+.timeline-dot.transition-dot.completed:hover{transform:translateX(-50%) rotate(45deg) scale(1.5);}
+.timeline-dot.transition-dot.current{width:16px;height:16px;transform:translateX(-50%) rotate(45deg);}
+/* Choice label tag above completed dots */
+.choice-label-tag{position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);font-size:0.55em;color:var(--dot-color, var(--gold));white-space:nowrap;pointer-events:none;letter-spacing:0;line-height:1;opacity:0.9;}
+/* Rewind hint on hover */
+.rewind-hint{position:absolute;bottom:calc(100% + 14px);left:50%;transform:translateX(-50%);font-size:0.55em;color:#f1c40f;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s;letter-spacing:1px;}
+.timeline-dot.completed:hover .rewind-hint{opacity:1;}
 
 /* ========== 顶部资源栏 ========== */
 #top-bar{
@@ -303,114 +318,22 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   grid-column:1/-1;
   background:linear-gradient(90deg,rgba(13,13,26,0.95),rgba(26,26,48,0.95),rgba(13,13,26,0.95));
   backdrop-filter:blur(12px);
-  display:flex;align-items:stretch;
-  height:86px;
-  border-top:none;position:relative;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  height:48px;padding:0 16px;border-top:none;position:relative;
 }
 #bottom-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(201,169,110,0.1) 15%,rgba(201,169,110,0.4) 50%,rgba(201,169,110,0.1) 85%,transparent 100%);}
 #power-ranking{display:none;}
-
-/* 底部时间轴容器 */
-#btl-container{
-  flex:1;overflow-x:auto;overflow-y:hidden;position:relative;
-  scrollbar-width:thin;scrollbar-color:rgba(201,169,110,0.2) transparent;
+.bottom-btn{
+  padding:6px 18px;font-family:inherit;font-size:0.88em;cursor:pointer;
+  background:rgba(201,169,110,0.06);color:#aaa;border:1px solid rgba(201,169,110,0.15);
+  border-radius:4px;letter-spacing:2px;transition:all 0.2s;
 }
-#btl-container::-webkit-scrollbar{height:3px;}
-#btl-container::-webkit-scrollbar-thumb{background:rgba(201,169,110,0.2);border-radius:2px;}
-#btl-track{
-  display:flex;align-items:center;height:100%;min-width:max-content;
-  padding:6px 16px;position:relative;
-}
-
-/* 纪元分段 */
-.btl-era-seg{
-  display:flex;align-items:center;position:relative;padding:0 4px;
-}
-.btl-era-sep{
-  width:1px;height:50px;background:rgba(201,169,110,0.3);margin:0 2px;flex-shrink:0;
-}
-
-/* 节点 */
-.btl-node{
-  display:flex;flex-direction:column;align-items:center;position:relative;
-  cursor:pointer;padding:0 6px;flex-shrink:0;min-width:28px;
-}
-.btl-node-dot{
-  width:12px;height:12px;border-radius:50%;border:2px solid;
-  transition:all 0.3s;position:relative;z-index:2;
-}
-.btl-node.completed .btl-node-dot{
-  background:var(--btl-color);border-color:var(--btl-color);
-}
-.btl-node.current .btl-node-dot{
-  width:16px;height:16px;background:var(--btl-color);border-color:var(--btl-color);
-  box-shadow:0 0 8px var(--btl-color),0 0 16px var(--btl-color);
-  animation:btlPulse 1.8s ease-in-out infinite;
-}
-.btl-node.future .btl-node-dot{
-  background:transparent;border-color:rgba(255,255,255,0.15);
-}
-.btl-node.transition .btl-node-dot{
-  width:14px;height:14px;border-radius:3px;transform:rotate(45deg);
-}
-.btl-node.transition.current .btl-node-dot{
-  width:18px;height:18px;
-}
-@keyframes btlPulse{
-  0%,100%{box-shadow:0 0 6px var(--btl-color),0 0 12px transparent;}
-  50%{box-shadow:0 0 10px var(--btl-color),0 0 22px var(--btl-color);}
-}
-
-/* 节点间连线 */
-.btl-connector{
-  width:14px;height:2px;flex-shrink:0;
-  background:rgba(255,255,255,0.1);
-}
-.btl-connector.done{opacity:0.5;}
-
-/* 选择标签（甲/乙/丙）*/
-.btl-label{
-  position:absolute;top:-2px;font-size:10px;
-  color:var(--btl-color);opacity:0.9;white-space:nowrap;letter-spacing:0;
-}
-
-/* 纪年文字 */
-.btl-era-range{
-  position:absolute;bottom:2px;left:8px;font-size:9px;
-  color:rgba(255,255,255,0.25);white-space:nowrap;
-}
-
-/* Tooltip */
-.btl-tooltip{
-  position:fixed;z-index:500;padding:8px 12px;
-  background:rgba(13,13,26,0.95);border:1px solid rgba(201,169,110,0.4);
-  border-radius:6px;font-size:0.82em;max-width:220px;
-  pointer-events:none;opacity:0;transition:opacity 0.15s;
-  box-shadow:0 4px 16px rgba(0,0,0,0.5);
-}
-.btl-tooltip.visible{opacity:1;}
-.btl-tooltip .btt-title{color:var(--gold);margin-bottom:4px;letter-spacing:1px;}
-.btl-tooltip .btt-choice{color:#aaa;font-size:0.9em;line-height:1.5;}
-
-/* 操作按钮 */
-#btl-actions{
-  display:flex;flex-direction:column;justify-content:center;gap:4px;
-  padding:6px 8px;border-left:1px solid rgba(201,169,110,0.15);flex-shrink:0;
-}
-.btl-action-btn{
-  width:32px;height:14px;display:flex;align-items:center;justify-content:center;
-  font-size:13px;cursor:pointer;background:transparent;color:#888;
-  border:none;border-radius:3px;transition:all 0.2s;padding:0;line-height:1;
-  font-family:inherit;
-}
-.btl-action-btn:hover{color:var(--gold);background:rgba(201,169,110,0.1);}
+.bottom-btn:hover{color:var(--gold);border-color:var(--gold);background:rgba(201,169,110,0.12);}
 
 /* ========== 按钮触感 ========== */
 .choice-btn:active{transform:scale(0.97) translateY(1px);filter:brightness(0.85);transition:transform 0.05s;}
 .start-btn:active{transform:scale(0.95);}
 .continue-btn:active{transform:scale(0.96);}
-.btl-action-btn:active{transform:scale(0.95);}
-
 /* Hidden utility */
 .hidden{opacity:0;pointer-events:none;}
 
@@ -666,12 +589,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   .result-stat-card .rsc-val { font-size: 1.3em; }
   .event-bg-toggle { padding: 6px 0; }
 
-  #bottom-bar { height: 64px; }
-  #btl-track { padding: 4px 10px; }
-  .btl-node { padding: 0 4px; min-width: 22px; }
-  .btl-connector { width: 8px; }
-  #btl-actions { padding: 4px 6px; gap: 2px; }
-  .btl-action-btn { width: 28px; height: 12px; font-size: 11px; }
+  #bottom-bar { height: 44px; gap: 8px; padding: 0 10px; }
+  .bottom-btn { padding: 5px 12px; font-size: 0.78em; letter-spacing: 1px; }
 
   #era-transition { padding: 20px; }
   .era-trans-content { max-width: 90vw; max-height: 85vh; }
@@ -691,8 +610,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   .choice-preview { font-size: 0.7em; }
   .choice-btn:active .choice-preview { display:block; opacity:1; }
 
-  button, .choice-btn, .btl-action-btn { cursor: pointer; -webkit-tap-highlight-color: transparent; }
-  .choice-btn, .btl-action-btn, #top-bar, #bottom-bar { user-select: none; -webkit-user-select: none; }
+  button, .choice-btn, .bottom-btn { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .choice-btn, .bottom-btn, #top-bar, #bottom-bar { user-select: none; -webkit-user-select: none; }
 }
 
 @media (max-width: 380px) {
@@ -1898,6 +1817,33 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   .mandate-warning{padding:16px 24px;}
   #gameover-overlay h1{font-size:2.2em;letter-spacing:6px;}
 }
+
+/* ========== 回溯系统 (Rewind) ========== */
+.rewind-btn-container{display:flex;gap:10px;justify-content:center;align-items:center;margin-top:8px;}
+.rewind-btn-container .continue-btn{margin:0;}
+.rewind-btn{
+  padding:12px 30px;font-family:inherit;font-size:1em;cursor:pointer;
+  background:rgba(100,120,140,0.1);color:#8a9aaa;border:1px solid rgba(100,120,140,0.4);
+  border-radius:6px;letter-spacing:3px;transition:all 0.25s;
+}
+.rewind-btn:hover{background:rgba(100,120,140,0.2);color:#aabccc;border-color:rgba(100,120,140,0.6);box-shadow:0 0 15px rgba(100,120,140,0.15);}
+.rewind-btn:active{transform:scale(0.96);}
+.rewind-explorer{font-size:0.8em;color:#7a8a9a;text-align:center;margin-top:6px;letter-spacing:1px;}
+.choice-btn.choice-tried{border-left-color:rgba(100,120,140,0.6) !important;position:relative;}
+.choice-btn.choice-tried::before{background:rgba(100,120,140,0.5) !important;}
+.tried-badge{
+  position:absolute;top:6px;right:8px;font-size:0.68em;color:#8a9aaa;
+  background:rgba(100,120,140,0.12);padding:2px 8px;border-radius:10px;
+  border:1px solid rgba(100,120,140,0.25);letter-spacing:1px;pointer-events:none;
+}
+.explore-progress{
+  text-align:center;font-size:0.78em;color:#7a8a9a;margin-bottom:8px;
+  padding:4px 10px;background:rgba(100,120,140,0.06);border-radius:12px;letter-spacing:1px;
+}
+@media(max-width:800px){
+  .rewind-btn-container{flex-direction:column;gap:8px;}
+  .rewind-btn,.rewind-btn-container .continue-btn{width:100%;padding:14px;}
+}
 </style>
 </head>
 <body>
@@ -2144,16 +2090,11 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   <!-- Bottom Bar -->
   <div id="bottom-bar">
     <div id="power-ranking"></div>
-    <div id="btl-container">
-      <div id="btl-track"></div>
-    </div>
-    <div id="btl-actions">
-      <button class="btl-action-btn" onclick="showHistory()" title="史卷">📜</button>
-      <button class="btl-action-btn" onclick="saveGame()" title="存档">💾</button>
-      <button class="btl-action-btn" onclick="loadGame()" title="读档">📂</button>
-      <button class="btl-action-btn" onclick="showHelp()" title="指南">❓</button>
-      <button class="btl-action-btn mute-btn" id="game-mute-btn" title="音效开关">&#x1f507;</button>
-    </div>
+    <button class="bottom-btn" onclick="showHistory()">史卷</button>
+    <button class="bottom-btn" onclick="saveGame()">存档</button>
+    <button class="bottom-btn" onclick="loadGame()">读档</button>
+    <button class="bottom-btn" onclick="showHelp()">指南</button>
+    <button class="mute-btn" id="game-mute-btn" title="音效开关">&#x1f507;</button>
   </div>
 </div>
 
@@ -3666,6 +3607,27 @@ function showEvent() {
   }
 
   const ev = events[G.eventIdx];
+
+  // Record snapshot before showing event (for rewind support)
+  if (!G.snapshots) G.snapshots = [];
+  if (!G.snapshots.find(s => s.eventId === ev.id)) {
+    const regionsClone = {};
+    for (let k in G.regions) {
+      const r = G.regions[k];
+      regionsClone[k] = {prosperity:r.prosperity, military:r.military, culture:r.culture, trade:r.trade};
+    }
+    G.snapshots.push({
+      eventId: ev.id,
+      era: G.era,
+      eventIdx: G.eventIdx,
+      turn: G.turn,
+      regions: regionsClone,
+      mandateScore: G.mandateScore,
+      choicesLength: G.choices.length,
+      logLength: G.log.length
+    });
+  }
+
   const crisis = getCrisisType(ev);
   const panel = document.getElementById('crisis-panel');
   const content = document.getElementById('crisis-content');
@@ -4060,7 +4022,6 @@ function _executeChoice(idx, ev, choice) {
   renderMap();
   renderTopBar();
   renderTimeline();
-  renderBottomTimeline();
   updateMapNodeCritical();
 
   // Update mandate score
@@ -4373,7 +4334,7 @@ function nextEra() {
     preview.removeEventListener('click', closeTrans);
     renderTopBar();
     renderPowerRanking();
-    renderBottomTimeline();
+    renderTimeline();
     updateMapEraTint();
     updateMapNodeCritical();
     showEvent();
@@ -4558,6 +4519,152 @@ function showFutureTeaser() {
   card.innerHTML = '<h2 style="margin-bottom:16px;">\u672A\u77E5\u5929\u547D</h2><div style="color:#8a7a5a;font-size:1em;text-align:center;line-height:2;margin-bottom:20px;">\u6B64\u4E8B\u5C1A\u672A\u53D1\u751F\u2026\u2026<br><br>\u5929\u547D\u96BE\u6D4B\uFF0C\u4F46\u8D24\u8005\u53EF\u4EE5\u51C6\u5907\u3002<br>\u5F53\u65F6\u673A\u5230\u6765\uFF0C\u4F60\u5C06\u505A\u51FA\u62C9\u62E9\u3002</div><button class="review-dismiss" onclick="closeEventReview()">\u77E5 \u9053 \u4E86</button>';
   modal.classList.add('active');
   SFX.click();
+}
+
+// ==================== 回溯机制 ====================
+
+function confirmRewind(eventId) {
+  // Find the event
+  let ev = null, evEra = 0;
+  for (let era = 1; era <= 4; era++) {
+    const found = EVENTS[era].find(e => e.id === eventId);
+    if (found) { ev = found; evEra = era; break; }
+  }
+  if (!ev) return;
+
+  const choiceRecord = G.choices.find(c => c.event === eventId);
+  const choiceLabels = ['\u7532','\u4E59','\u4E19'];
+  const modal = document.getElementById('event-review-modal');
+  const card = document.getElementById('review-card-content');
+
+  let html = '<h2 style="color:#f1c40f;">\u2694\uFE0F \u56DE\u6EAF\u786E\u8BA4</h2>';
+  html += '<div class="review-era">' + ERA_NAMES[evEra] + '</div>';
+  html += '<div style="color:var(--gold);font-size:1.1em;text-align:center;margin:8px 0;">' + ev.title + '</div>';
+
+  if (choiceRecord) {
+    const ch = ev.choices[choiceRecord.choice];
+    if (ch) {
+      html += '<div style="color:#aaa;font-size:0.88em;text-align:center;margin:6px 0;">\u4E0A\u6B21\u9009\u62E9\uFF1A' + choiceLabels[choiceRecord.choice] + ' \u00B7 ' + ch.text + '</div>';
+    }
+  }
+
+  html += '<div style="color:#c56b6b;font-size:0.88em;text-align:center;margin:16px 0;padding:10px;background:rgba(197,107,107,0.08);border:1px solid rgba(197,107,107,0.2);border-radius:6px;">\u26A0\uFE0F \u6B64\u4E8B\u4EF6\u4E4B\u540E\u7684\u6240\u6709\u9009\u62E9\u5C06\u88AB\u64A4\u9500\uFF0C\u6E38\u620F\u5C06\u56DE\u5230\u8BE5\u4E8B\u4EF6\u91CD\u65B0\u5F00\u59CB\u3002</div>';
+
+  html += '<div style="display:flex;gap:12px;justify-content:center;margin-top:16px;">';
+  html += '<button class="review-dismiss" onclick="closeEventReview()" style="background:rgba(255,255,255,0.05);">\u53D6 \u6D88</button>';
+  html += '<button class="review-dismiss" onclick="closeEventReview();executeRewind(\'' + eventId + '\')" style="background:rgba(241,196,15,0.12);border-color:#f1c40f;color:#f1c40f;">\u786E\u8BA4\u56DE\u6EAF</button>';
+  html += '</div>';
+
+  card.innerHTML = html;
+  modal.classList.add('active');
+  SFX.click();
+}
+
+function executeRewind(eventId) {
+  if (!G.snapshots) { replayFromScratch(eventId); return; }
+  const snap = G.snapshots.find(s => s.eventId === eventId);
+  if (!snap) { replayFromScratch(eventId); return; }
+
+  // Restore game state from snapshot
+  G.era = snap.era;
+  G.eventIdx = snap.eventIdx;
+  G.turn = snap.turn;
+  G.mandateScore = snap.mandateScore;
+  G._choosing = false;
+  G._inStrategicPhase = false;
+
+  // Deep restore regions
+  for (let k in snap.regions) {
+    const sr = snap.regions[k];
+    G.regions[k] = {prosperity:sr.prosperity, military:sr.military, culture:sr.culture, trade:sr.trade};
+  }
+
+  // Truncate choices and log
+  G.choices = G.choices.slice(0, snap.choicesLength);
+  G.log = G.log.slice(0, snap.logLength);
+
+  // Remove this and all later snapshots (we'll re-record when showEvent runs)
+  const snapIdx = G.snapshots.indexOf(snap);
+  if (snapIdx >= 0) G.snapshots = G.snapshots.slice(0, snapIdx);
+
+  // Rebuild era start snapshot
+  G.eraStartSnapshot = {};
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    G.eraStartSnapshot[k] = {prosperity:r.prosperity, military:r.military, culture:r.culture, trade:r.trade};
+  }
+
+  addLog('\u2694\uFE0F \u56DE\u6EAF\u81F3\uFF1A' + (EVENTS[G.era][G.eventIdx] ? EVENTS[G.era][G.eventIdx].title : eventId));
+  renderAll();
+  showEvent();
+  SFX.eraGong();
+}
+
+function replayFromScratch(eventId) {
+  // Fallback: replay all choices up to target event
+  let targetEra = 0, targetIdx = 0;
+  for (let era = 1; era <= 4; era++) {
+    const idx = EVENTS[era].findIndex(e => e.id === eventId);
+    if (idx >= 0) { targetEra = era; targetIdx = idx; break; }
+  }
+  if (!targetEra) return;
+
+  // Re-init regions
+  initRegions();
+  G.mandateScore = calculateMandateScore();
+  G.snapshots = [];
+
+  // Replay effects for choices before target
+  const replayChoices = G.choices.filter(c => {
+    for (let era = 1; era <= 4; era++) {
+      const eIdx = EVENTS[era].findIndex(e => e.id === c.event);
+      if (eIdx >= 0) {
+        if (era < targetEra || (era === targetEra && eIdx < targetIdx)) return true;
+        return false;
+      }
+    }
+    return false;
+  });
+
+  replayChoices.forEach(ch => {
+    let ev = null;
+    for (let era = 1; era <= 4; era++) {
+      const found = EVENTS[era].find(e => e.id === ch.event);
+      if (found) { ev = found; break; }
+    }
+    if (!ev) return;
+    const choice = ev.choices[ch.choice];
+    if (!choice || !choice.effects) return;
+    for (let region in choice.effects) {
+      const eff = choice.effects[region];
+      if (!G.regions[region]) continue;
+      if (eff.p) G.regions[region].prosperity = clamp(G.regions[region].prosperity + eff.p, 0, 10);
+      if (eff.m) G.regions[region].military = clamp(G.regions[region].military + eff.m, 0, 10);
+      if (eff.c) G.regions[region].culture = clamp(G.regions[region].culture + eff.c, 0, 10);
+      if (eff.t) G.regions[region].trade = clamp(G.regions[region].trade + eff.t, 0, 10);
+    }
+  });
+
+  // Set game state to target
+  G.era = targetEra;
+  G.eventIdx = targetIdx;
+  G.turn = replayChoices.length + 1;
+  G.choices = replayChoices;
+  G.log = G.log.slice(0, replayChoices.length);
+  G.mandateScore = calculateMandateScore();
+  G._choosing = false;
+  G._inStrategicPhase = false;
+
+  G.eraStartSnapshot = {};
+  for (let k in G.regions) {
+    const r = G.regions[k];
+    G.eraStartSnapshot[k] = {prosperity:r.prosperity, military:r.military, culture:r.culture, trade:r.trade};
+  }
+
+  addLog('\u2694\uFE0F \u56DE\u6EAF\u81F3\uFF1A' + (EVENTS[targetEra][targetIdx] ? EVENTS[targetEra][targetIdx].title : eventId));
+  renderAll();
+  showEvent();
+  SFX.eraGong();
 }
 
 // ==================== Region Detail Panel ====================
@@ -5154,6 +5261,7 @@ function loadGame() {
     G.mandateScore = G.mandateScore || 0;
     G.unlockedAchievements = G.unlockedAchievements || [];
     G.eraStartSnapshot = G.eraStartSnapshot || null;
+    G.snapshots = G.snapshots || [];
     G._choosing = false;
     G._inStrategicPhase = false;
 
@@ -5225,15 +5333,12 @@ function showAchievementNotif(ach) {
 function renderTimeline() {
   const dotsContainer = document.getElementById('timeline-dots');
   if (!dotsContainer) return;
+  const choiceLabels = ['\u7532','\u4E59','\u4E19'];
   let html = '';
   let totalEventsAll = 0;
-  let completedAll = 0;
-  const eraCounts = {};
   for (let era = 1; era <= 4; era++) {
-    eraCounts[era] = EVENTS[era].length;
-    totalEventsAll += eraCounts[era];
+    totalEventsAll += EVENTS[era].length;
   }
-  // Calculate position for each event dot
   let idx = 0;
   for (let era = 1; era <= 4; era++) {
     const events = EVENTS[era];
@@ -5241,9 +5346,9 @@ function renderTimeline() {
       const pct = (idx + 0.5) / totalEventsAll * 100;
       let cls = 'future';
       let tooltipText = ev.title;
+      const isTransition = !!ev.isTransformation || !!ev.isFinale;
       if (era < G.era || (era === G.era && ei < G.eventIdx)) {
         cls = 'completed';
-        // Find what choice was made
         const choiceRecord = G.choices.find(c => c.event === ev.id);
         if (choiceRecord) {
           const ch = ev.choices[choiceRecord.choice];
@@ -5252,17 +5357,30 @@ function renderTimeline() {
       } else if (era === G.era && ei === G.eventIdx) {
         cls = 'current';
       }
+      // Era class + transition class
+      let extraCls = ' era-' + era;
+      if (isTransition) extraCls += ' transition-dot';
+      // onclick: completed → confirmRewind, current → scroll, future → teaser
       let onclick = '';
       if (cls === 'completed') {
-        onclick = ' onclick="event.stopPropagation();showEventReview(\'' + ev.id + '\')"';
+        onclick = ' onclick="event.stopPropagation();confirmRewind(\'' + ev.id + '\')"';
       } else if (cls === 'current') {
         onclick = ' onclick="event.stopPropagation();document.getElementById(\'crisis-content\').scrollTop=0"';
       } else {
         onclick = ' onclick="event.stopPropagation();showFutureTeaser()"';
       }
-      // Short label for the dot (first 4 chars of title)
       const dotLabel = ev.title.replace(/[【】]/g,'').slice(0,4);
-      html += '<div class="timeline-dot '+cls+'" style="left:'+pct+'%"'+onclick+' title="'+ev.title+'"><div class="timeline-tooltip">'+tooltipText+'</div><div class="dot-label">'+dotLabel+'</div></div>';
+      // Choice label tag for completed dots
+      let labelTag = '';
+      if (cls === 'completed') {
+        const ch = G.choices.find(c => c.event === ev.id);
+        if (ch !== undefined && ch.choice !== undefined) {
+          labelTag = '<span class="choice-label-tag">' + (choiceLabels[ch.choice] || '') + '</span>';
+        }
+      }
+      // Rewind hint for completed dots
+      let rewindHint = cls === 'completed' ? '<span class="rewind-hint">\u70B9\u51FB\u56DE\u6EAF</span>' : '';
+      html += '<div class="timeline-dot ' + cls + extraCls + '" style="left:' + pct + '%"' + onclick + ' title="' + ev.title + '">' + labelTag + rewindHint + '<div class="timeline-tooltip">' + tooltipText + '</div><div class="dot-label">' + dotLabel + '</div></div>';
       idx++;
     });
   }
@@ -5363,111 +5481,11 @@ function closeHistory() {
   document.getElementById('history-modal').classList.remove('active');
 }
 
-// ==================== 底部可视化时间轴 ====================
-
-function renderBottomTimeline() {
-  const track = document.getElementById('btl-track');
-  if (!track) return;
-  const choiceLabels = ['甲','乙','丙'];
-  let html = '';
-
-  ERA_TIMELINE_META.forEach((eraMeta, eraIdx) => {
-    const eraNum = eraIdx + 1;
-    const events = EVENTS[eraNum];
-    if (!events) return;
-
-    // 纪元分隔线
-    if (eraIdx > 0) html += '<div class="btl-era-sep"></div>';
-    html += '<div class="btl-era-seg" style="--btl-color:' + eraMeta.color + '">';
-    html += '<span class="btl-era-range">' + eraMeta.startYear + '</span>';
-
-    events.forEach((ev, mIdx) => {
-      const isTransition = !!ev.isTransformation || !!ev.isFinale;
-      let stateClass = 'future';
-      if (eraNum < G.era || (eraNum === G.era && mIdx < G.eventIdx)) stateClass = 'completed';
-      else if (eraNum === G.era && mIdx === G.eventIdx) stateClass = 'current';
-
-      // 连线
-      if (mIdx > 0) {
-        const connDone = (stateClass === 'completed' || stateClass === 'current') ? 'done' : '';
-        html += '<div class="btl-connector ' + connDone + '" style="' + (connDone ? 'background:' + eraMeta.color + ';opacity:0.4;' : '') + '"></div>';
-      }
-
-      // 选择标签
-      let label = '';
-      if (stateClass === 'completed') {
-        const ch = G.choices.find(c => c.event === ev.id);
-        if (ch !== undefined && ch.choice !== undefined) label = choiceLabels[ch.choice] || '';
-      }
-
-      // onclick
-      let onclick = '';
-      if (stateClass === 'completed') onclick = ' onclick="showEventReview(\'' + ev.id + '\')"';
-
-      html += '<div class="btl-node ' + stateClass + (isTransition ? ' transition' : '') + '" style="--btl-color:' + eraMeta.color + '" data-btl-name="' + ev.title.replace(/[【】]/g,'') + '" data-btl-era="' + eraIdx + '" data-btl-midx="' + mIdx + '"' + onclick + '>';
-      if (label) html += '<span class="btl-label" style="--btl-color:' + eraMeta.color + '">' + label + '</span>';
-      html += '<div class="btl-node-dot"></div>';
-      html += '</div>';
-    });
-    html += '</div>';
-  });
-
-  track.innerHTML = html;
-
-  // 自动滚动到当前节点
-  requestAnimationFrame(() => {
-    const currentNode = track.querySelector('.btl-node.current');
-    if (currentNode) {
-      const container = document.getElementById('btl-container');
-      const nodeLeft = currentNode.offsetLeft;
-      const containerW = container.clientWidth;
-      container.scrollLeft = nodeLeft - containerW / 2 + currentNode.offsetWidth / 2;
-    }
-  });
-
-  // Tooltip 事件
-  track.querySelectorAll('.btl-node.completed').forEach(node => {
-    node.addEventListener('mouseenter', _showBtlTooltip);
-    node.addEventListener('mouseleave', _hideBtlTooltip);
-  });
-}
-
-let _btlTooltip = null;
-function _showBtlTooltip(e) {
-  const node = e.currentTarget;
-  const name = node.dataset.btlName;
-  const eraIdx = parseInt(node.dataset.btlEra);
-  const mIdx = parseInt(node.dataset.btlMidx);
-  const choiceLabels = ['甲','乙','丙'];
-
-  const ev = EVENTS[eraIdx + 1]?.[mIdx];
-  const ch = ev ? G.choices.find(c => c.event === ev.id) : null;
-  let choiceText = '';
-  if (ch && ev.choices[ch.choice]) {
-    choiceText = choiceLabels[ch.choice] + '·' + ev.choices[ch.choice].text.replace(/<[^>]*>/g,'').slice(0, 20);
-  }
-
-  if (!_btlTooltip) {
-    _btlTooltip = document.createElement('div');
-    _btlTooltip.className = 'btl-tooltip';
-    document.body.appendChild(_btlTooltip);
-  }
-  _btlTooltip.innerHTML = '<div class="btt-title">' + name + '</div>' + (choiceText ? '<div class="btt-choice">' + choiceText + '</div>' : '');
-  const rect = node.getBoundingClientRect();
-  _btlTooltip.style.left = (rect.left + rect.width / 2 - 60) + 'px';
-  _btlTooltip.style.top = (rect.top - 56) + 'px';
-  _btlTooltip.classList.add('visible');
-}
-function _hideBtlTooltip() {
-  if (_btlTooltip) _btlTooltip.classList.remove('visible');
-}
-
 function renderAll() {
   renderMap();
   renderTopBar();
   renderPowerRanking();
   renderTimeline();
-  renderBottomTimeline();
   checkCriticalResources();
   updateMapEraTint();
   updateMapNodeCritical();
@@ -5637,6 +5655,7 @@ function startGame() {
   G._choosing = false;
   G._inStrategicPhase = false;
   G.unlockedAchievements = [];
+  G.snapshots = [];
   // Snapshot for era 1
   G.eraStartSnapshot = {};
   for (let k in G.regions) {
@@ -6641,6 +6660,219 @@ if (_origLoadGame) {
     updateMandateHealthVisual(G.mandateScore);
   };
 }
+</script>
+
+<!-- ==================== 回溯系统 (Rewind/Retry) ==================== -->
+<script>
+// ========== Rewind State ==========
+let _rewindSnapshot = null;
+let _rewindLastMilestone = null;
+let _rewindMandateWarnShown = null;
+let _triedChoices = {};
+let _rewindChoiceOrder = null;
+
+// ========== Hook makeChoice: snapshot before choice ==========
+const _rewindMakeChoice = makeChoice;
+makeChoice = function(idx, evt) {
+  if (!G._choosing) {
+    _rewindSnapshot = JSON.parse(JSON.stringify(G));
+    _rewindLastMilestone = _lastMilestone;
+    _rewindMandateWarnShown = JSON.parse(JSON.stringify(_mandateWarnShown));
+    const ev = EVENTS[G.era][G.eventIdx];
+    if (ev && ev._choiceOrder) {
+      _rewindChoiceOrder = [...ev._choiceOrder];
+    }
+    const eventId = ev ? ev.id : '';
+    if (!_triedChoices[eventId]) _triedChoices[eventId] = new Set();
+    _triedChoices[eventId].add(idx);
+  }
+  _rewindMakeChoice(idx, evt);
+};
+
+// ========== Hook _executeChoice: inject rewind UI ==========
+const _rewindOrigExecuteChoice = _executeChoice;
+_executeChoice = function(idx, ev, choice) {
+  _rewindOrigExecuteChoice(idx, ev, choice);
+
+  // Skip rewind UI for finale endings
+  if (ev.isFinale && choice.ending) return;
+
+  const contBtn = document.getElementById('res-continue');
+  if (!contBtn) return;
+
+  const totalChoices = (ev._allChoices || ev.choices).length;
+  const triedSet = _triedChoices[ev.id] || new Set();
+
+  // Explorer counter
+  const explorer = document.createElement('div');
+  explorer.className = 'rewind-explorer';
+  explorer.textContent = '\uD83D\uDD04 已探索 ' + triedSet.size + '/' + totalChoices + ' 个选项';
+  explorer.style.display = 'none';
+
+  // Rewind button
+  const rewindBtn = document.createElement('button');
+  rewindBtn.className = 'rewind-btn';
+  rewindBtn.textContent = '重新抉择';
+  rewindBtn.style.display = 'none';
+  rewindBtn.addEventListener('click', function() {
+    SFX.click();
+    performRewind();
+  });
+
+  // Container wrapping rewind + continue
+  const container = document.createElement('div');
+  container.className = 'rewind-btn-container';
+  contBtn.parentNode.insertBefore(explorer, contBtn);
+  contBtn.parentNode.insertBefore(container, contBtn);
+  container.appendChild(rewindBtn);
+  container.appendChild(contBtn);
+
+  // Show rewind UI when continue button becomes visible
+  const observer = new MutationObserver(function() {
+    if (!contBtn.classList.contains('hidden')) {
+      rewindBtn.style.display = '';
+      explorer.style.display = '';
+      observer.disconnect();
+    }
+  });
+  observer.observe(contBtn, { attributes: true, attributeFilter: ['class'] });
+};
+
+// ========== performRewind: restore state and re-show event ==========
+function performRewind() {
+  if (!_rewindSnapshot) return;
+
+  // Restore G from snapshot
+  const snapshot = JSON.parse(JSON.stringify(_rewindSnapshot));
+  for (var k in G) {
+    if (!(k in snapshot)) delete G[k];
+  }
+  for (var k in snapshot) {
+    G[k] = snapshot[k];
+  }
+
+  // Restore module-level variables
+  _lastMilestone = _rewindLastMilestone;
+  _mandateWarnShown = JSON.parse(JSON.stringify(_rewindMandateWarnShown));
+  G._choosing = false;
+
+  // Clean up temporary DOM elements
+  cleanupRewindDOM();
+
+  // Re-render all displays
+  renderMap();
+  renderTopBar();
+  renderTimeline();
+  renderPowerRanking();
+  updateScoreDisplay(false);
+  updateRankDisplay();
+  updateJourneyProgress();
+  updateMandateHealthVisual(G.mandateScore);
+
+  // Re-show event with rewind indicators
+  showEventWithRewind();
+}
+
+// ========== cleanupRewindDOM: remove transient notifications ==========
+function cleanupRewindDOM() {
+  document.querySelectorAll(
+    '.floating-score,.streak-badge,.rankup-notif,.score-milestone,.achievement-notif'
+  ).forEach(function(el) { el.remove(); });
+
+  var chainBox = document.getElementById('chain-notifications');
+  if (chainBox) chainBox.innerHTML = '';
+
+  document.querySelectorAll(
+    '.chain-particle,.delta-fly,.map-ripple,.ink-ripple'
+  ).forEach(function(el) { el.remove(); });
+
+  var mapArea = document.getElementById('map-area');
+  if (mapArea) mapArea.classList.remove('shake', 'flash-gold', 'flash-red');
+
+  var glow = document.getElementById('screen-glow');
+  if (glow) { glow.style.display = 'none'; glow.className = ''; }
+}
+
+// ========== showEventWithRewind: re-show event preserving choice order ==========
+function showEventWithRewind() {
+  showEvent();
+
+  // Restore saved choice order so buttons match original layout
+  if (_rewindChoiceOrder) {
+    var ev = EVENTS[G.era] && EVENTS[G.era][G.eventIdx];
+    if (ev) {
+      ev._choiceOrder = _rewindChoiceOrder.slice();
+      var choicesContainer = document.getElementById('ev-choices');
+      if (choicesContainer) {
+        var buttons = Array.from(choicesContainer.querySelectorAll('.choice-btn'));
+        _rewindChoiceOrder.forEach(function(origIdx) {
+          var btn = buttons.find(function(b) {
+            return parseInt(b.getAttribute('data-choice')) === origIdx;
+          });
+          if (btn) choicesContainer.appendChild(btn);
+        });
+        // Keep hint button at the end
+        var hintEl = choicesContainer.querySelector('.hint-reveal-btn');
+        if (hintEl && hintEl.parentElement) choicesContainer.appendChild(hintEl.parentElement);
+      }
+    }
+  }
+
+  applyTriedChoiceIndicators();
+}
+
+// ========== applyTriedChoiceIndicators: mark explored options ==========
+function applyTriedChoiceIndicators() {
+  var ev = EVENTS[G.era] && EVENTS[G.era][G.eventIdx];
+  if (!ev) return;
+  var triedSet = _triedChoices[ev.id];
+  if (!triedSet || triedSet.size === 0) return;
+
+  var totalChoices = (ev._allChoices || ev.choices).length;
+  var choicesContainer = document.getElementById('ev-choices');
+  if (!choicesContainer) return;
+
+  // Progress indicator at top (only insert once)
+  if (!choicesContainer.querySelector('.explore-progress')) {
+    var progress = document.createElement('div');
+    progress.className = 'explore-progress';
+    progress.textContent = '\uD83D\uDD04 已探索 ' + triedSet.size + ' / ' + totalChoices + ' 个选项';
+    choicesContainer.insertBefore(progress, choicesContainer.firstChild);
+  }
+
+  // Mark tried choice buttons
+  var buttons = choicesContainer.querySelectorAll('.choice-btn');
+  buttons.forEach(function(btn) {
+    var origIdx = parseInt(btn.getAttribute('data-choice'));
+    if (triedSet.has(origIdx)) {
+      btn.classList.add('choice-tried');
+      if (!btn.querySelector('.tried-badge')) {
+        var badge = document.createElement('span');
+        badge.className = 'tried-badge';
+        badge.textContent = '\u2713 已探索';
+        btn.appendChild(badge);
+      }
+    }
+  });
+}
+
+// ========== Hook showEvent: apply indicators on regular show ==========
+const _rewindOrigShowEvent = showEvent;
+showEvent = function() {
+  _rewindOrigShowEvent();
+  var ev = EVENTS[G.era] && EVENTS[G.era][G.eventIdx];
+  if (ev && _triedChoices[ev.id]) {
+    applyTriedChoiceIndicators();
+  }
+};
+
+// ========== Hook nextTurn: clear snapshot on advance ==========
+const _rewindOrigNextTurn = nextTurn;
+nextTurn = function() {
+  _rewindSnapshot = null;
+  _rewindChoiceOrder = null;
+  _rewindOrigNextTurn();
+};
 </script>
 </body>
 </html>
