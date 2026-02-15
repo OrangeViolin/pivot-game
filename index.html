@@ -8,12 +8,56 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 @font-face{font-family:'GF';src:local('STKaiti'),local('KaiTi'),local('楷体'),local('serif');}
 :root{
-  --ink:#1a1a2e;--paper:#f0ebe3;--gold:#c9a96e;--bright-gold:#dbb978;
-  --zhongyuan:#b8860b;--caoyuan:#4a7c59;--xiyu:#a0522d;
-  --gaoyuan:#4a6fa5;--xinan:#6b8e6b;--haiyang:#2980b9;--guodu:#8b7355;
-  --red:#8b2500;--shadow:rgba(0,0,0,0.4);
+  /* 基础色：玄黑、宣纸、沉金 */
+  --ink: #1a1a24; /* 玄青 - 比纯黑更有质感的深蓝黑 */
+  --ink-depth: #0f0f14; /* 深邃背景 */
+  --paper: #f4f1e8; /* 宣纸白 */
+  --paper-dim: #e6e2d8;
+  --gold: #d4af37; /* 沉金 - 降低饱和度，更有质感 */
+  --bright-gold: #f0d685; /* 赤金 - 高光 */
+  --gold-shadow: rgba(212, 175, 55, 0.15);
+  
+  /* 区域色：中国传统矿物色 */
+  --zhongyuan: #bf8d28; /* 藤黄/土黄 - 厚重的土地感 */
+  --caoyuan: #5d8353; /* 蔻梢绿 - 草原的生机 */
+  --xiyu: #b56b48; /* 赭石 - 大漠的苍凉 */
+  --gaoyuan: #5b7a9e; /* 黛蓝 - 雪域的高远 */
+  --xinan: #4f8a6f; /* 石绿 - 密林的幽深 */
+  --haiyang: #3b86ba; /* 花青 - 深海的辽阔 */
+  --guodu: #9e836b; /* 驼色 - 交融地带 */
+
+  /* 功能色 */
+  --red: #c93f35; /* 朱砂 - 警示 */
+  --green: #488f63; /* 翠绿 - 正向 */
+  --shadow: rgba(0,0,0,0.6);
+  --glass: rgba(20, 20, 28, 0.75);
+  --glass-border: rgba(212, 175, 55, 0.2);
 }
-body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;overflow:hidden;height:100vh;user-select:none;}
+
+body {
+  font-family: "LXGW WenKai", "STKaiti", "KaiTi", "楷体", serif; /* 优先尝试霞鹜文楷等更有韵味的字体 */
+  background-color: var(--ink-depth);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(50, 50, 70, 0.15), transparent 40%),
+    radial-gradient(circle at 85% 30%, rgba(70, 60, 50, 0.1), transparent 40%);
+  color: #ddd;
+  overflow: hidden;
+  height: 100vh;
+  user-select: none;
+  letter-spacing: 0.05em; /* 增加字间距，提升古籍感 */
+}
+
+/* 全局纹理叠加 - 宣纸噪点 */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+}
 
 /* ========== 开始画面 ========== */
 #start-screen{
@@ -108,9 +152,9 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 
 /* ========== Main Game Area (Map + Crisis Panel) ========== */
 #game-body{
-  grid-column:1/-1;display:grid;
+  grid-column:1/-1;grid-row:4;display:grid;
   grid-template-columns:55% 45%;
-  height:100%;overflow:hidden;position:relative;
+  height:100%;overflow:hidden;position:relative;min-height:0;
 }
 
 /* ========== 左侧：地图区 ========== */
@@ -201,8 +245,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 #crisis-panel.crisis-finale{background:rgba(25,22,10,0.9);}
 
 #crisis-content{
-  flex:1;overflow-y:auto;padding:24px 24px 16px;
-  scrollbar-width:thin;scrollbar-color:rgba(201,169,110,0.2) transparent;
+  flex:1;overflow-y:auto;padding:32px 28px 24px; /* 增加留白 */
+  scrollbar-width:thin;scrollbar-color:rgba(212, 175, 55, 0.2) transparent;
 }
 
 /* Crisis Level Tag */
@@ -212,12 +256,13 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   letter-spacing:1px;margin-bottom:10px;
   border:1px solid;
 }
-.crisis-tag.tag-war{color:#e74c3c;border-color:rgba(231,76,60,0.4);background:rgba(231,76,60,0.08);text-shadow:0 0 8px rgba(231,76,60,0.3);}
-.crisis-tag.tag-gov{color:#dbb978;border-color:rgba(219,185,120,0.4);background:rgba(219,185,120,0.08);text-shadow:0 0 8px rgba(219,185,120,0.3);}
-.crisis-tag.tag-trade{color:#3498db;border-color:rgba(52,152,219,0.4);background:rgba(52,152,219,0.08);text-shadow:0 0 8px rgba(52,152,219,0.3);}
+.crisis-tag.tag-war{color:var(--red);border-color:rgba(201,63,53,0.4);background:rgba(201,63,53,0.08);text-shadow:0 0 8px rgba(201,63,53,0.3);}
+.crisis-tag.tag-gov{color:var(--gold);border-color:rgba(212,175,55,0.4);background:rgba(212,175,55,0.08);text-shadow:0 0 8px rgba(212,175,55,0.3);}
+.crisis-tag.tag-trade{color:var(--haiyang);border-color:rgba(59,134,186,0.4);background:rgba(59,134,186,0.08);text-shadow:0 0 8px rgba(59,134,186,0.3);}
 .crisis-tag.tag-culture{color:#9b59b6;border-color:rgba(155,89,182,0.4);background:rgba(155,89,182,0.08);text-shadow:0 0 8px rgba(155,89,182,0.3);}
-.crisis-tag.tag-transform{color:#f1c40f;border-color:rgba(241,196,15,0.5);background:rgba(241,196,15,0.1);text-shadow:0 0 10px rgba(241,196,15,0.4);animation:transformPulse 2s infinite;}
-.crisis-tag.tag-finale{color:#f1c40f;border-color:rgba(241,196,15,0.6);background:linear-gradient(135deg,rgba(241,196,15,0.1),rgba(201,169,110,0.1));text-shadow:0 0 12px rgba(241,196,15,0.5);animation:finalePulse 1.5s infinite;}
+.crisis-tag.tag-transform{color:var(--bright-gold);border-color:rgba(240,214,133,0.5);background:rgba(240,214,133,0.1);text-shadow:0 0 10px rgba(240,214,133,0.4);animation:transformPulse 2s infinite;}
+.crisis-tag.tag-finale{color:var(--bright-gold);border-color:rgba(240,214,133,0.6);background:linear-gradient(135deg,rgba(240,214,133,0.1),rgba(212,175,55,0.1));text-shadow:0 0 12px rgba(240,214,133,0.5);animation:finalePulse 1.5s infinite;}
+
 @keyframes transformPulse{0%,100%{box-shadow:0 0 4px rgba(241,196,15,0.2);}50%{box-shadow:0 0 16px rgba(241,196,15,0.5);}}
 @keyframes finalePulse{0%,100%{box-shadow:0 0 6px rgba(241,196,15,0.3);}50%{box-shadow:0 0 20px rgba(241,196,15,0.6),0 0 40px rgba(201,169,110,0.2);}}
 
@@ -227,26 +272,82 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 .event-expand-btn{font-size:0.75em;color:rgba(201,169,110,0.5);text-align:center;cursor:pointer;padding:4px 0 10px;letter-spacing:1px;transition:color 0.2s;}
 .event-expand-btn:hover{color:var(--gold);}
 .event-detail-panel{background:rgba(201,169,110,0.03);border-radius:6px;padding:12px;margin-bottom:10px;animation:fadeInUp 0.3s ease;}
+/* Choice Button - 彻底重构为更有质感的样式 */
 .choice-btn{
-  display:block;width:100%;padding:14px 16px 10px;margin-bottom:10px;font-family:inherit;
-  font-size:0.95em;cursor:pointer;background:rgba(201,169,110,0.04);
-  color:#ddd;border:1px solid rgba(201,169,110,0.18);border-radius:8px;
-  text-align:left;transition:all 0.2s cubic-bezier(.4,0,.2,1);line-height:1.4;
-  position:relative;overflow:hidden;
+  display:block;width:100%;
+  padding: 18px 20px 14px 24px; /* 调整内边距 */
+  margin-bottom: 16px;
+  font-family: inherit;
+  font-size: 1em;
+  cursor: pointer;
+  
+  /* 玉石质感背景 */
+  background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.08);
+  border-left: 4px solid rgba(255,255,255,0.15); /* 默认左边框 */
+  border-radius: 4px; /* 稍微方正一点，更有力量感 */
+  
+  color: #ddd;
+  text-align: left;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
-.choice-btn:hover,.choice-btn:active{
-  background:rgba(201,169,110,0.12);border-color:var(--gold);color:#fff;
-  transform:translateX(6px);box-shadow:0 2px 16px rgba(201,169,110,0.2);
+
+/* 风险指示色条优化 */
+.choice-btn.risk-low { border-left-color: var(--green); }
+.choice-btn.risk-medium { border-left-color: var(--zhongyuan); }
+.choice-btn.risk-high { border-left-color: var(--red); }
+
+/* 悬停效果：流光 + 上浮 */
+.choice-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+  transform: skewX(-20deg);
+  transition: none;
 }
-.choice-btn.risk-high{border-left:3px solid rgba(139,37,0,0.6);}
-.choice-btn.risk-medium{border-left:3px solid rgba(184,134,11,0.5);}
-.choice-btn.risk-low{border-left:3px solid rgba(74,124,89,0.5);}
-.choice-btn .choice-label{font-weight:bold;color:var(--bright-gold);font-size:1.05em;display:block;margin-bottom:4px;}
+
+.choice-btn:hover {
+  transform: translateY(-2px) translateX(4px);
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  border-color: var(--gold);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+  color: #fff;
+}
+
+.choice-btn:hover::before {
+  left: 150%;
+  transition: left 0.6s ease-in-out;
+}
+
+.choice-btn .choice-label {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: var(--bright-gold);
+  display: block;
+  margin-bottom: 6px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
 .choice-btn .choice-effects{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
 .choice-btn .ce-region{font-size:0.8em;padding:2px 8px;border-radius:10px;background:rgba(255,255,255,0.06);display:inline-flex;align-items:center;gap:3px;}
 .choice-btn .ce-arrow{font-weight:bold;font-size:0.9em;}
-.ce-arrow.up{color:#6bba6b;}.ce-arrow.down{color:#c56b6b;}
-.choice-btn .choice-risk{font-size:0.72em;color:#888;position:absolute;top:8px;right:10px;letter-spacing:1px;}
+.ce-arrow.up{color:var(--green);}.ce-arrow.down{color:var(--red);}
+
+.choice-btn .choice-risk {
+  font-size: 0.75em;
+  color: rgba(255,255,255,0.4);
+  position: absolute;
+  top: 12px; right: 12px;
+  letter-spacing: 1px;
+  font-family: sans-serif; /* 风险标签用无衬线体对比 */
+  text-transform: uppercase;
+  opacity: 0.7;
+}
 /* Hint system — effects hidden by default */
 .choice-hint-hidden{display:none!important;}
 .hint-reveal-btn{background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);color:#c9a96e;padding:6px 16px;border-radius:16px;cursor:pointer;font-size:0.82em;transition:all 0.3s;}
@@ -315,11 +416,11 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 
 /* ========== 底部栏 ========== */
 #bottom-bar{
-  grid-column:1/-1;
+  grid-column:1/-1;grid-row:5;
   background:linear-gradient(90deg,rgba(13,13,26,0.95),rgba(26,26,48,0.95),rgba(13,13,26,0.95));
   backdrop-filter:blur(12px);
   display:flex;align-items:center;justify-content:center;gap:12px;
-  height:48px;padding:0 16px;border-top:none;position:relative;
+  height:48px;padding:0 16px;border-top:none;position:relative;overflow:hidden;
 }
 #bottom-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(201,169,110,0.1) 15%,rgba(201,169,110,0.4) 50%,rgba(201,169,110,0.1) 85%,transparent 100%);}
 #power-ranking{display:none;}
@@ -556,7 +657,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 
   /* Mobile: tab switching mode */
   #game { grid-template-rows: auto auto auto 1fr auto !important; }
-  #game-body { grid-template-columns: 1fr !important; grid-template-rows: 1fr !important; }
+  #game-body { grid-template-columns: 1fr !important; grid-template-rows: 1fr !important; grid-row: 4 !important; }
+  #bottom-bar { grid-row: 5 !important; }
 
   #timeline-bar { padding: 6px 10px; }
   .timeline-track { height: 24px; }
@@ -849,19 +951,53 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 }
 #start-screen.mandate-shake{animation:subtleShake 0.4s ease-out;}
 
-/* --- 静音按钮 --- */
+/* --- 静音按钮（SVG图标） --- */
 .mute-btn{
   position:relative;z-index:10;
   width:36px;height:36px;
   background:transparent;border:1px solid rgba(201,169,110,0.3);border-radius:50%;
-  color:var(--gold);font-size:1.1em;cursor:pointer;
+  color:var(--gold);cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  transition:all 0.2s;line-height:1;padding:0;
+  transition:all 0.3s;padding:0;
   font-family:inherit;
 }
+.mute-btn svg{width:18px;height:18px;fill:currentColor;transition:opacity 0.3s;}
 .mute-btn:hover{background:rgba(201,169,110,0.1);border-color:var(--gold);}
 .mute-btn:active{transform:scale(0.9);}
+.mute-btn.is-muted{border-color:rgba(201,169,110,0.15);opacity:0.6;}
+.mute-btn.is-muted:hover{opacity:1;}
 #start-mute-btn{position:absolute;top:16px;right:16px;z-index:20;}
+
+/* --- 开屏锣声共振动画 --- */
+@keyframes audioResonance{
+  0%{text-shadow:0 0 30px rgba(201,169,110,0.3);}
+  30%{text-shadow:0 0 60px rgba(201,169,110,0.6),0 0 100px rgba(201,169,110,0.2);}
+  100%{text-shadow:0 0 30px rgba(201,169,110,0.3);}
+}
+.title-area h1.audio-resonance{animation:audioResonance 2.5s ease-out;}
+
+/* --- 地图脉冲涟漪 --- */
+.map-ripple{
+  position:absolute;border-radius:50%;pointer-events:none;
+  border:2px solid var(--gold);opacity:0.8;
+  animation:mapRippleExpand 1s ease-out forwards;
+}
+@keyframes mapRippleExpand{
+  0%{width:16px;height:16px;opacity:0.8;transform:translate(-50%,-50%) scale(1);}
+  100%{width:48px;height:48px;opacity:0;transform:translate(-50%,-50%) scale(3);}
+}
+
+/* --- 连锁反应粒子 --- */
+.chain-particle{
+  position:absolute;width:4px;height:4px;border-radius:50%;
+  pointer-events:none;animation:chainParticleMove 1.2s ease-out forwards;
+}
+.chain-particle.positive{background:var(--bright-gold);box-shadow:0 0 6px rgba(201,169,110,0.8);}
+.chain-particle.negative{background:#c56b6b;box-shadow:0 0 6px rgba(197,107,107,0.8);}
+@keyframes chainParticleMove{
+  0%{opacity:1;transform:translate(0,0) scale(1);}
+  100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0.3);}
+}
 
 /* --- 让 title-area / poem / btn 保持在所有层之上 --- */
 .title-area,.poem,.start-btn,#start-particles{position:relative;z-index:5;}
@@ -1909,7 +2045,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   <!-- 粒子 -->
   <div class="start-particles" id="start-particles"></div>
   <!-- 静音按钮 -->
-  <button class="mute-btn" id="start-mute-btn" title="点击开启音效">&#x1f507;</button>
+  <button class="mute-btn" id="start-mute-btn" title="音效开关"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="currentColor"/><path d="M19 12c0 2.93-1.66 5.47-4.08 6.72l.84 1.44C19.07 18.5 21 15.5 21 12s-1.93-6.5-5.24-8.16l-.84 1.44C17.34 6.53 19 9.07 19 12z" fill="currentColor"/></svg></button>
   <!-- 冲击波 -->
   <div class="title-shockwave" id="title-shockwave"></div>
   <div class="title-area">
@@ -2094,7 +2230,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
     <button class="bottom-btn" onclick="saveGame()">存档</button>
     <button class="bottom-btn" onclick="loadGame()">读档</button>
     <button class="bottom-btn" onclick="showHelp()">指南</button>
-    <button class="mute-btn" id="game-mute-btn" title="音效开关">&#x1f507;</button>
+    <button class="mute-btn" id="game-mute-btn" title="音效开关"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="currentColor"/><path d="M19 12c0 2.93-1.66 5.47-4.08 6.72l.84 1.44C19.07 18.5 21 15.5 21 12s-1.93-6.5-5.24-8.16l-.84 1.44C17.34 6.53 19 9.07 19 12z" fill="currentColor"/></svg></button>
   </div>
 </div>
 
@@ -2140,6 +2276,18 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
         💰 <b>商通四海</b> — 全区商贸总和极高<br>
         ⚖ <b>守成之局</b> — 平庸但稳定<br>
         💀 <b>天下大乱</b> — 总实力过低
+      </div>
+    </div>
+    <div class="help-section">
+      <h3>得分规则</h3>
+      <div class="help-tip">
+        每次选择后根据效果计算得分：<br>
+        · 每项正面效果（如+1）：<b>+20分</b><br>
+        · 每项负面效果（如-1）：<b>-15分</b><br>
+        · 有得有失但正面居多：额外 <b>+30分</b>（风险决策奖励）<br>
+        · 全部正面无负面：额外 <b>+50分</b>（完美决策奖励）<br>
+        · 连锁反应：每次触发额外 <b>+25分</b><br>
+        · 连胜加成：连续2次正分×1.5 · 3次×2 · 5次×3
       </div>
     </div>
     <div class="help-section">
@@ -2199,44 +2347,114 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 <script src="choice-analysis.js"></script>
 <script src="map-world.js"></script>
 <script>
-// ==================== Web Audio API 音效系统 ====================
+// ==================== Web Audio API 音效系统（古典中国风） ====================
 
 const SFX = {
   ctx: null,
-  muted: true,
+  muted: false,
   ambientGain: null,
   ambientOscs: [],
+  ambientNodes: [],
   _initialized: false,
+  _openingPlayed: false,
+  _ambientTimer: null,
+
+  // Master audio nodes
+  _masterGain: null,
+  _masterComp: null,
+  _dryGain: null,
+  _reverbGain: null,
+  _convolver: null,
+
+  // 中国五声音阶 宫(C) 商(D) 角(E) 徽(G) 羽(A)
+  P: {
+    C2:65.41, D2:73.42, E2:82.41, G2:98.00, A2:110.00,
+    C3:130.81, D3:146.83, E3:164.81, G3:196.00, A3:220.00,
+    C4:261.63, D4:293.66, E4:329.63, G4:392.00, A4:440.00,
+    C5:523.25, D5:587.33, E5:659.25, G5:783.99, A5:880.00,
+    C6:1046.50, D6:1174.66, E6:1318.51, G6:1567.98, A6:1760.00
+  },
+
+  REGION_NOTES: {
+    zhongyuan:'C4', caoyuan:'D4', xiyu:'E4',
+    guodu:'G4', gaoyuan:'A4', xinan:'C5', haiyang:'D5'
+  },
 
   init() {
     if (this._initialized) return;
     try {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      // Resume suspended AudioContext (browser autoplay policy)
-      if (this.ctx.state === 'suspended') {
-        this.ctx.resume();
-      }
+      if (this.ctx.state === 'suspended') this.ctx.resume();
+      this._buildMasterChain();
       this._initialized = true;
-      // Restore mute preference
       if (localStorage.getItem('pivot_muted') === '1') {
         this.muted = true;
-        this._updateMuteButtons();
       }
+      this._updateMuteButtons();
     } catch(e) {
       console.warn('Web Audio API not available:', e);
     }
   },
 
-  // Ensure AudioContext is running (call before any playback)
-  _ensureResumed() {
-    if (this.ctx && this.ctx.state === 'suspended') {
-      this.ctx.resume();
+  _buildMasterChain() {
+    const ctx = this.ctx;
+    this._masterComp = ctx.createDynamicsCompressor();
+    this._masterComp.threshold.setValueAtTime(-18, ctx.currentTime);
+    this._masterComp.knee.setValueAtTime(12, ctx.currentTime);
+    this._masterComp.ratio.setValueAtTime(8, ctx.currentTime);
+    this._masterComp.attack.setValueAtTime(0.003, ctx.currentTime);
+    this._masterComp.release.setValueAtTime(0.15, ctx.currentTime);
+    this._masterComp.connect(ctx.destination);
+    this._dryGain = ctx.createGain();
+    this._dryGain.gain.setValueAtTime(0.85, ctx.currentTime);
+    this._dryGain.connect(this._masterComp);
+    this._reverbGain = ctx.createGain();
+    this._reverbGain.gain.setValueAtTime(0.25, ctx.currentTime);
+    this._reverbGain.connect(this._masterComp);
+    this._convolver = ctx.createConvolver();
+    this._convolver.buffer = this._createReverbIR();
+    this._convolver.connect(this._reverbGain);
+    this._masterGain = ctx.createGain();
+    this._masterGain.gain.setValueAtTime(0.7, ctx.currentTime);
+    this._masterGain.connect(this._dryGain);
+    this._masterGain.connect(this._convolver);
+  },
+
+  _createReverbIR() {
+    const ctx = this.ctx;
+    const rate = ctx.sampleRate;
+    const len = rate * 2.5;
+    const buf = ctx.createBuffer(2, len, rate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = buf.getChannelData(ch);
+      for (let i = 0; i < len; i++) {
+        const t = i / rate;
+        const decay = Math.pow(1 - i / len, 2.2);
+        const earlyRef = t < 0.08 ? Math.sin(t * 200) * 0.3 : 0;
+        d[i] = ((Math.random() * 2 - 1) * decay + earlyRef) * 0.5;
+      }
     }
+    return buf;
+  },
+
+  _out() { return this._masterGain; },
+
+  _ensureResumed() {
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
   },
 
   _updateMuteButtons() {
-    const icon = this.muted ? '\u{1F507}' : '\u{1F50A}';
-    document.querySelectorAll('.mute-btn').forEach(btn => { btn.textContent = icon; });
+    document.querySelectorAll('.mute-btn').forEach(btn => {
+      const svg = btn.querySelector('svg');
+      if (!svg) return;
+      if (this.muted) {
+        svg.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/><line x1="23" y1="9" x2="17" y2="15" stroke="currentColor" stroke-width="2"/><line x1="17" y1="9" x2="23" y2="15" stroke="currentColor" stroke-width="2"/>';
+        btn.classList.add('is-muted');
+      } else {
+        svg.innerHTML = '<path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="currentColor"/><path d="M19 12c0 2.93-1.66 5.47-4.08 6.72l.84 1.44C19.07 18.5 21 15.5 21 12s-1.93-6.5-5.24-8.16l-.84 1.44C17.34 6.53 19 9.07 19 12z" fill="currentColor"/>';
+        btn.classList.remove('is-muted');
+      }
+    });
   },
 
   toggleMute() {
@@ -2246,7 +2464,6 @@ const SFX = {
     if (this.muted) {
       this.stopAmbient();
     } else {
-      // Unmuting: resume context and start ambient if in game
       this._ensureResumed();
       if (document.getElementById('game').classList.contains('active')) {
         this.ambient();
@@ -2254,60 +2471,412 @@ const SFX = {
     }
   },
 
-  // --- 开场环境音 ---
+  // ============ 六种乐器合成基元 ============
+
+  _pluck(freq, time, vol, dur) {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = time || ctx.currentTime, v = vol || 0.15, d = dur || 1.2, out = this._out();
+    const nLen = ctx.sampleRate * 0.025;
+    const nBuf = ctx.createBuffer(1, nLen, ctx.sampleRate);
+    const nD = nBuf.getChannelData(0);
+    for (let i = 0; i < nLen; i++) nD[i] = Math.random() * 2 - 1;
+    const ns = ctx.createBufferSource(); ns.buffer = nBuf;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass'; bp.frequency.setValueAtTime(freq, t); bp.Q.setValueAtTime(15, t);
+    const env = ctx.createGain();
+    env.gain.setValueAtTime(v * 1.5, t);
+    env.gain.exponentialRampToValueAtTime(0.001, t + d);
+    ns.connect(bp); bp.connect(env); env.connect(out);
+    ns.start(t); ns.stop(t + 0.025);
+    const osc = ctx.createOscillator(); osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, t);
+    const og = ctx.createGain();
+    og.gain.setValueAtTime(0, t);
+    og.gain.linearRampToValueAtTime(v * 0.5, t + 0.004);
+    og.gain.exponentialRampToValueAtTime(0.001, t + d);
+    osc.connect(og); og.connect(out);
+    osc.start(t); osc.stop(t + d + 0.05);
+    const h = ctx.createOscillator(); h.type = 'sine';
+    h.frequency.setValueAtTime(freq * 2, t);
+    const hg = ctx.createGain();
+    hg.gain.setValueAtTime(0, t);
+    hg.gain.linearRampToValueAtTime(v * 0.15, t + 0.003);
+    hg.gain.exponentialRampToValueAtTime(0.001, t + d * 0.6);
+    h.connect(hg); hg.connect(out);
+    h.start(t); h.stop(t + d * 0.6 + 0.05);
+  },
+
+  _bell(freq, time, vol, dur) {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = time || ctx.currentTime, v = vol || 0.1, d = dur || 2.0, out = this._out();
+    const partials = [1, 2.4, 4.5, 6.8];
+    partials.forEach((ratio, i) => {
+      const osc = ctx.createOscillator(); osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq * ratio, t);
+      const g = ctx.createGain();
+      const pv = v / (1 + i * 0.7);
+      const pd = d / (1 + i * 0.4);
+      g.gain.setValueAtTime(pv, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + pd);
+      osc.connect(g); g.connect(out);
+      osc.start(t); osc.stop(t + pd + 0.05);
+    });
+  },
+
+  _gong(freq, time, vol, dur) {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = time || ctx.currentTime;
+    const v = vol || 0.2, d = dur || 4.0, f = freq || 55, out = this._out();
+    const osc = ctx.createOscillator(); osc.type = 'sine';
+    osc.frequency.setValueAtTime(f * 1.12, t);
+    osc.frequency.exponentialRampToValueAtTime(f, t + 0.25);
+    const shaper = ctx.createWaveShaper();
+    const crv = new Float32Array(256);
+    for (let i = 0; i < 256; i++) { const x = (i/128)-1; crv[i] = Math.tanh(x * 1.4); }
+    shaper.curve = crv;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(v, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + d);
+    osc.connect(shaper); shaper.connect(g); g.connect(out);
+    osc.start(t); osc.stop(t + d + 0.1);
+    [2.3, 3.7, 5.1].forEach((r, i) => {
+      const p = ctx.createOscillator(); p.type = 'sine';
+      p.frequency.setValueAtTime(f * r, t);
+      const pg = ctx.createGain();
+      pg.gain.setValueAtTime(v * 0.25 / (1+i), t);
+      pg.gain.exponentialRampToValueAtTime(0.001, t + d * 0.5);
+      p.connect(pg); pg.connect(out);
+      p.start(t); p.stop(t + d * 0.5 + 0.1);
+    });
+    const nBuf = ctx.createBuffer(1, ctx.sampleRate * 0.04, ctx.sampleRate);
+    const nD = nBuf.getChannelData(0);
+    for (let i = 0; i < nD.length; i++) nD[i] = (Math.random()*2-1) * 0.7;
+    const ns = ctx.createBufferSource(); ns.buffer = nBuf;
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.setValueAtTime(180, t);
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(v * 0.5, t);
+    ng.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    ns.connect(lp); lp.connect(ng); ng.connect(out);
+    ns.start(t);
+  },
+
+  _woodBlock(time, vol) {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = time || ctx.currentTime, v = vol || 0.15, out = this._out();
+    const osc = ctx.createOscillator(); osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, t);
+    osc.frequency.exponentialRampToValueAtTime(400, t + 0.02);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(v, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+    osc.connect(g); g.connect(out);
+    osc.start(t); osc.stop(t + 0.06);
+    const nBuf = ctx.createBuffer(1, ctx.sampleRate * 0.012, ctx.sampleRate);
+    const nD = nBuf.getChannelData(0);
+    for (let i = 0; i < nD.length; i++) nD[i] = Math.random() * 2 - 1;
+    const ns = ctx.createBufferSource(); ns.buffer = nBuf;
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'highpass'; hp.frequency.setValueAtTime(2500, t);
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(v * 0.35, t);
+    ng.gain.exponentialRampToValueAtTime(0.001, t + 0.018);
+    ns.connect(hp); hp.connect(ng); ng.connect(out);
+    ns.start(t);
+  },
+
+  _bambooChime(freq, time, vol) {
+    if (!this.ctx) return;
+    const ctx = this.ctx, t = time || ctx.currentTime, v = vol || 0.1, out = this._out();
+    const osc = ctx.createOscillator(); osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, t);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(v, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    osc.connect(g); g.connect(out);
+    osc.start(t); osc.stop(t + 0.55);
+    const o2 = ctx.createOscillator(); o2.type = 'sine';
+    o2.frequency.setValueAtTime(freq * 2.7, t);
+    const g2 = ctx.createGain();
+    g2.gain.setValueAtTime(v * 0.35, t);
+    g2.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    o2.connect(g2); g2.connect(out);
+    o2.start(t); o2.stop(t + 0.35);
+  },
+
+  _startWind(time) {
+    if (!this.ctx) return null;
+    const ctx = this.ctx, t = time || ctx.currentTime, out = this._out();
+    const bufLen = ctx.sampleRate * 2;
+    const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < bufLen; i++) d[i] = Math.random() * 2 - 1;
+    const ns = ctx.createBufferSource(); ns.buffer = buf; ns.loop = true;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass'; bp.frequency.setValueAtTime(400, t); bp.Q.setValueAtTime(0.5, t);
+    const lfo = ctx.createOscillator(); lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(0.08, t);
+    const lfoG = ctx.createGain(); lfoG.gain.setValueAtTime(250, t);
+    lfo.connect(lfoG); lfoG.connect(bp.frequency);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(0.025, t + 4);
+    ns.connect(bp); bp.connect(g); g.connect(out);
+    ns.start(t); lfo.start(t);
+    return { nodes: [ns, lfo], gain: g };
+  },
+
+  // ============ 音效方法 ============
+
+  openingGong() {
+    if (!this.ctx || this.muted) return;
+    this._ensureResumed();
+    const ctx = this.ctx, t = ctx.currentTime;
+    this._gong(55, t, 0.22, 5);
+    this._bell(this.P.C5, t + 0.3, 0.08, 3);
+    const arp = [this.P.A3, this.P.C4, this.P.E4, this.P.G4, this.P.A4];
+    arp.forEach((f, i) => this._pluck(f, t + 1.0 + i * 0.18, 0.1, 2.0));
+    const drone = ctx.createOscillator(); drone.type = 'sine';
+    drone.frequency.setValueAtTime(this.P.C2, t + 2.5);
+    const dg = ctx.createGain();
+    dg.gain.setValueAtTime(0, t + 2.5);
+    dg.gain.linearRampToValueAtTime(0.06, t + 4.5);
+    dg.gain.exponentialRampToValueAtTime(0.001, t + 7);
+    drone.connect(dg); dg.connect(this._out());
+    drone.start(t + 2.5); drone.stop(t + 7.1);
+    const titleEl = document.getElementById('main-title');
+    if (titleEl) {
+      titleEl.classList.add('audio-resonance');
+      setTimeout(() => titleEl.classList.remove('audio-resonance'), 2500);
+    }
+  },
+
+  gameStartChord() {
+    if (!this.ctx || this.muted) return;
+    this._ensureResumed();
+    const ctx = this.ctx, t = ctx.currentTime;
+    const notes = [this.P.C3, this.P.G3, this.P.C4, this.P.E4, this.P.G4];
+    notes.forEach((f, i) => this._pluck(f, t + i * 0.12, 0.13, 1.8));
+    this._bell(this.P.C5, t + 0.6, 0.07, 1.5);
+    this._gong(80, t + 0.7, 0.1, 1.5);
+  },
+
+  click() {
+    if (!this.ctx || this.muted) return;
+    this._ensureResumed();
+    this._woodBlock(this.ctx.currentTime, 0.12);
+  },
+
+  choiceConfirm() {
+    if (!this.ctx || this.muted) return;
+    this._ensureResumed();
+    const ctx = this.ctx, t = ctx.currentTime;
+    this._bambooChime(this.P.E4, t, 0.1);
+    this._bambooChime(this.P.G4, t + 0.06, 0.08);
+    const nBuf = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate);
+    const nD = nBuf.getChannelData(0);
+    for (let i = 0; i < nD.length; i++) nD[i] = Math.random() * 2 - 1;
+    const ns = ctx.createBufferSource(); ns.buffer = nBuf;
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'highpass'; hp.frequency.setValueAtTime(3000, t);
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(0.03, t + 0.02);
+    ng.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+    ns.connect(hp); hp.connect(ng); ng.connect(this._out());
+    ns.start(t + 0.02);
+  },
+
+  positiveChime() {
+    if (!this.ctx || this.muted) return;
+    this._ensureResumed();
+    const t = this.ctx.currentTime;
+    this._pluck(this.P.C4, t, 0.12, 1.0);
+    this._pluck(this.P.E4, t + 0.1, 0.12, 1.0);
+    this._pluck(this.P.G4, t + 0.2, 0.14, 1.2);
+    this._bell(this.P.G5, t + 0.35, 0.05, 1.5);
+  },
+
+  negativeThud() {
+    if (!this.ctx || this.muted) return;
+    this._ensureResumed();
+    const ctx = this.ctx, t = ctx.currentTime, out = this._out();
+    const osc = ctx.createOscillator(); osc.type = 'sine';
+    osc.frequency.setValueAtTime(80, t);
+    osc.frequency.exponentialRampToValueAtTime(40, t + 0.3);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.2, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+    const lp = ctx.createBiquadFilter();
+    lp.type = 'lowpass'; lp.frequency.setValueAtTime(150, t);
+    osc.connect(lp); lp.connect(g); g.connect(out);
+    osc.start(t); osc.stop(t + 0.55);
+    const nBuf = ctx.createBuffer(1, ctx.sampleRate * 0.02, ctx.sampleRate);
+    const nD = nBuf.getChannelData(0);
+    for (let i = 0; i < nD.length; i++) nD[i] = (Math.random()*2-1);
+    const ns = ctx.createBufferSource(); ns.buffer = nBuf;
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(0.12, t);
+    ng.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+    ns.connect(ng); ng.connect(out);
+    ns.start(t);
+    this._bell(this.P.E4, t + 0.05, 0.06, 1.0);
+    this._bell(277.18, t + 0.08, 0.05, 0.8);
+  },
+
+  trapReveal() {
+    if (!this.ctx || this.muted) return;
+    this._ensureResumed();
+    const ctx = this.ctx, t = ctx.currentTime, out = this._out();
+    this._bell(this.P.E5, t, 0.1, 1.5);
+    const osc = ctx.createOscillator(); osc.type = 'sine';
+    osc.frequency.setValueAtTime(70, t + 0.1);
+    osc.frequency.exponentialRampToValueAtTime(35, t + 0.5);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.18, t + 0.1);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+    osc.connect(g); g.connect(out);
+    osc.start(t + 0.1); osc.stop(t + 0.65);
+    [this.P.G4, this.P.E4, this.P.D4, this.P.C4].forEach((f, i) => {
+      this._pluck(f, t + 0.2 + i * 0.12, 0.08, 0.8);
+    });
+    const dr = ctx.createOscillator(); dr.type = 'sine';
+    dr.frequency.setValueAtTime(this.P.C2, t + 0.5);
+    const dg = ctx.createGain();
+    dg.gain.setValueAtTime(0, t + 0.5);
+    dg.gain.linearRampToValueAtTime(0.05, t + 0.8);
+    dg.gain.exponentialRampToValueAtTime(0.001, t + 2.5);
+    dr.connect(dg); dg.connect(out);
+    dr.start(t + 0.5); dr.stop(t + 2.6);
+  },
+
+  eraGong() {
+    if (!this.ctx || this.muted) return;
+    this._ensureResumed();
+    const t = this.ctx.currentTime;
+    this._gong(50, t, 0.25, 5);
+    [this.P.C4, this.P.E4, this.P.G4].forEach((f, i) => {
+      this._bell(f, t + 0.8 + i * 0.3, 0.08, 2.0);
+    });
+    [this.P.C4, this.P.G4, this.P.C5].forEach((f, i) => {
+      this._pluck(f, t + 2.0 + i * 0.15, 0.1, 1.5);
+    });
+  },
+
+  warRumble() {
+    if (!this.ctx || this.muted) return;
+    this._ensureResumed();
+    const ctx = this.ctx, t = ctx.currentTime, out = this._out();
+    for (let i = 0; i < 6; i++) {
+      const ht = t + i * 0.12;
+      const hv = 0.08 + i * 0.03;
+      const osc = ctx.createOscillator(); osc.type = 'sine';
+      osc.frequency.setValueAtTime(70 + Math.random()*10, ht);
+      osc.frequency.exponentialRampToValueAtTime(35, ht + 0.2);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(hv, ht);
+      g.gain.exponentialRampToValueAtTime(0.001, ht + 0.25);
+      osc.connect(g); g.connect(out);
+      osc.start(ht); osc.stop(ht + 0.3);
+      const nBuf = ctx.createBuffer(1, ctx.sampleRate * 0.015, ctx.sampleRate);
+      const nD = nBuf.getChannelData(0);
+      for (let j = 0; j < nD.length; j++) nD[j] = (Math.random()*2-1);
+      const ns = ctx.createBufferSource(); ns.buffer = nBuf;
+      const ng = ctx.createGain();
+      ng.gain.setValueAtTime(hv * 0.5, ht);
+      ng.gain.exponentialRampToValueAtTime(0.001, ht + 0.02);
+      ns.connect(ng); ng.connect(out);
+      ns.start(ht);
+    }
+    const rumBuf = ctx.createBuffer(1, ctx.sampleRate * 1.5, ctx.sampleRate);
+    const rumD = rumBuf.getChannelData(0);
+    for (let i = 0; i < rumD.length; i++) rumD[i] = Math.random() * 2 - 1;
+    const rum = ctx.createBufferSource(); rum.buffer = rumBuf;
+    const rlp = ctx.createBiquadFilter();
+    rlp.type = 'lowpass'; rlp.frequency.setValueAtTime(80, t); rlp.Q.setValueAtTime(3, t);
+    const rg = ctx.createGain();
+    rg.gain.setValueAtTime(0, t);
+    rg.gain.linearRampToValueAtTime(0.12, t + 0.3);
+    rg.gain.exponentialRampToValueAtTime(0.001, t + 1.5);
+    rum.connect(rlp); rlp.connect(rg); rg.connect(out);
+    rum.start(t); rum.stop(t + 1.6);
+    this._bell(this.P.E5, t + 0.5, 0.06, 0.8);
+  },
+
+  achieveChime() {
+    if (!this.ctx || this.muted) return;
+    this._ensureResumed();
+    const t = this.ctx.currentTime;
+    const notes = [this.P.C5, this.P.D5, this.P.E5, this.P.G5, this.P.A5, this.P.C6];
+    notes.forEach((f, i) => {
+      this._bell(f, t + i * 0.07, 0.08, 1.2);
+    });
+    const ctx = this.ctx, out = this._out();
+    const sh = ctx.createOscillator(); sh.type = 'sine';
+    sh.frequency.setValueAtTime(this.P.C6 * 2, t + 0.42);
+    const sg = ctx.createGain();
+    sg.gain.setValueAtTime(0, t + 0.42);
+    sg.gain.linearRampToValueAtTime(0.03, t + 0.44);
+    sg.gain.exponentialRampToValueAtTime(0.001, t + 0.7);
+    sh.connect(sg); sg.connect(out);
+    sh.start(t + 0.42); sh.stop(t + 0.75);
+  },
+
   ambient() {
     if (!this.ctx || this.muted) return;
-    if (this.ambientOscs.length > 0) return; // already playing
+    if (this.ambientOscs.length > 0) return;
     this._ensureResumed();
-    const ctx = this.ctx;
-    const masterGain = ctx.createGain();
-    masterGain.gain.setValueAtTime(0, ctx.currentTime);
-    masterGain.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 2);
-    masterGain.connect(ctx.destination);
-    this.ambientGain = masterGain;
-
-    // Low pad: two detuned oscillators through a low-pass filter
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(200, ctx.currentTime);
-    filter.Q.setValueAtTime(1, ctx.currentTime);
-    filter.connect(masterGain);
-
-    const freqs = [55, 55.5]; // slightly detuned A1
-    freqs.forEach(freq => {
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0.5, ctx.currentTime);
-      osc.connect(g);
-      g.connect(filter);
-      osc.start();
+    const ctx = this.ctx, t = ctx.currentTime, out = this._out();
+    const ambGain = ctx.createGain();
+    ambGain.gain.setValueAtTime(0, t);
+    ambGain.gain.linearRampToValueAtTime(0.08, t + 3);
+    ambGain.connect(out);
+    this.ambientGain = ambGain;
+    const eraRoots = { 1: this.P.C2, 2: this.P.D2, 3: this.P.E2, 4: this.P.G2 };
+    const rootFreq = eraRoots[typeof G !== 'undefined' ? G.era : 1] || this.P.C2;
+    [rootFreq, rootFreq * 1.003].forEach(f => {
+      const osc = ctx.createOscillator(); osc.type = 'sine';
+      osc.frequency.setValueAtTime(f, t);
+      const g = ctx.createGain(); g.gain.setValueAtTime(0.5, t);
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.setValueAtTime(150, t);
+      osc.connect(lp); lp.connect(g); g.connect(ambGain);
+      osc.start(t);
       this.ambientOscs.push(osc);
     });
-
-    // Add a subtle second harmonic
-    const osc2 = ctx.createOscillator();
-    osc2.type = 'triangle';
-    osc2.frequency.setValueAtTime(110, ctx.currentTime);
-    const g2 = ctx.createGain();
-    g2.gain.setValueAtTime(0.15, ctx.currentTime);
-    osc2.connect(g2);
-    g2.connect(filter);
-    osc2.start();
-    this.ambientOscs.push(osc2);
+    const h = ctx.createOscillator(); h.type = 'triangle';
+    h.frequency.setValueAtTime(rootFreq * 3, t);
+    const hg = ctx.createGain(); hg.gain.setValueAtTime(0.08, t);
+    h.connect(hg); hg.connect(ambGain);
+    h.start(t);
+    this.ambientOscs.push(h);
+    const wind = this._startWind(t);
+    if (wind) {
+      wind.gain.connect(ambGain);
+      wind.nodes.forEach(n => this.ambientOscs.push(n));
+    }
+    const ghostNotes = [this.P.C4, this.P.D4, this.P.E4, this.P.G4, this.P.A4, this.P.C5];
+    const scheduleGhost = () => {
+      if (this.ambientOscs.length === 0) return;
+      const delay = 8000 + Math.random() * 4000;
+      this._ambientTimer = setTimeout(() => {
+        if (!this.ctx || this.muted || this.ambientOscs.length === 0) return;
+        const note = ghostNotes[Math.floor(Math.random() * ghostNotes.length)];
+        this._bell(note, this.ctx.currentTime, 0.03, 3.0);
+        scheduleGhost();
+      }, delay);
+    };
+    scheduleGhost();
   },
 
   fadeOutAmbient(duration) {
     if (!this.ambientGain || !this.ctx) return;
-    const ctx = this.ctx;
-    this.ambientGain.gain.linearRampToValueAtTime(0, ctx.currentTime + (duration || 1.5));
+    const d = duration || 1.5;
+    this.ambientGain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + d);
     const oscs = this.ambientOscs;
-    setTimeout(() => {
-      oscs.forEach(o => { try { o.stop(); } catch(e){} });
-    }, (duration || 1.5) * 1000 + 100);
+    setTimeout(() => { oscs.forEach(o => { try { o.stop(); } catch(e){} }); }, d * 1000 + 100);
     this.ambientOscs = [];
     this.ambientGain = null;
+    if (this._ambientTimer) { clearTimeout(this._ambientTimer); this._ambientTimer = null; }
   },
 
   stopAmbient() {
@@ -2316,347 +2885,50 @@ const SFX = {
       this.ambientOscs = [];
       this.ambientGain = null;
     }
+    if (this._ambientTimer) { clearTimeout(this._ambientTimer); this._ambientTimer = null; }
   },
 
-  // --- 开场洪钟/号角声 (first interaction) ---
-  openingGong() {
+  // ============ 新增音效 ============
+
+  chainReaction(type) {
     if (!this.ctx || this.muted) return;
     this._ensureResumed();
-    const ctx = this.ctx;
-    // Deep gong
-    const osc1 = ctx.createOscillator();
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(50, ctx.currentTime);
-    const g1 = ctx.createGain();
-    g1.gain.setValueAtTime(0.25, ctx.currentTime);
-    g1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3.5);
-    osc1.connect(g1); g1.connect(ctx.destination);
-    osc1.start(); osc1.stop(ctx.currentTime + 3.7);
-    // Mid resonance
-    const osc2 = ctx.createOscillator();
-    osc2.type = 'triangle';
-    osc2.frequency.setValueAtTime(100, ctx.currentTime);
-    const g2 = ctx.createGain();
-    g2.gain.setValueAtTime(0.12, ctx.currentTime);
-    g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.5);
-    osc2.connect(g2); g2.connect(ctx.destination);
-    osc2.start(); osc2.stop(ctx.currentTime + 2.7);
-    // Impact noise
-    const bufSize = ctx.sampleRate * 0.08;
-    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.4;
-    const noise = ctx.createBufferSource();
-    noise.buffer = buf;
-    const nf = ctx.createBiquadFilter();
-    nf.type = 'lowpass'; nf.frequency.setValueAtTime(150, ctx.currentTime);
-    const ng = ctx.createGain();
-    ng.gain.setValueAtTime(0.2, ctx.currentTime);
-    ng.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
-    noise.connect(nf); nf.connect(ng); ng.connect(ctx.destination);
-    noise.start();
-  },
-
-  // --- 游戏开始：上升和弦 ---
-  gameStartChord() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    // Rising chord: D3, A3, D4, F#4, A4
-    const notes = [146.83, 220, 293.66, 369.99, 440];
-    notes.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      osc.type = i < 2 ? 'triangle' : 'sine';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.15);
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.15);
-      gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + i * 0.15 + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 1.5);
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + i * 0.15);
-      osc.stop(ctx.currentTime + i * 0.15 + 1.6);
-    });
-    // Shimmer at the peak
-    setTimeout(() => {
-      if (!this.ctx || this.muted) return;
-      const shimmer = ctx.createOscillator();
-      shimmer.type = 'sine';
-      shimmer.frequency.setValueAtTime(880, ctx.currentTime);
-      const sg = ctx.createGain();
-      sg.gain.setValueAtTime(0.05, ctx.currentTime);
-      sg.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
-      shimmer.connect(sg); sg.connect(ctx.destination);
-      shimmer.start(); shimmer.stop(ctx.currentTime + 0.9);
-    }, 700);
-  },
-
-  // --- 按钮点击音 ---
-  click() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    const osc = ctx.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(150, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.08);
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.12);
-  },
-
-  // --- 选择确认音 ---
-  choiceConfirm() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    // Fundamental
-    const osc1 = ctx.createOscillator();
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(220, ctx.currentTime);
-    const gain1 = ctx.createGain();
-    gain1.gain.setValueAtTime(0.18, ctx.currentTime);
-    gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
-    osc1.connect(gain1);
-    gain1.connect(ctx.destination);
-    osc1.start();
-    osc1.stop(ctx.currentTime + 0.35);
-
-    // Octave harmonic
-    const osc2 = ctx.createOscillator();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(440, ctx.currentTime);
-    const gain2 = ctx.createGain();
-    gain2.gain.setValueAtTime(0.08, ctx.currentTime);
-    gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
-    osc2.connect(gain2);
-    gain2.connect(ctx.destination);
-    osc2.start();
-    osc2.stop(ctx.currentTime + 0.3);
-  },
-
-  // --- 正面效果音 ---
-  positiveChime() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
-    notes.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
-      gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + i * 0.1 + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.15);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + i * 0.1);
-      osc.stop(ctx.currentTime + i * 0.1 + 0.2);
-
-      // Subtle harmonic
-      const h = ctx.createOscillator();
-      h.type = 'sine';
-      h.frequency.setValueAtTime(freq * 2, ctx.currentTime);
-      const hg = ctx.createGain();
-      hg.gain.setValueAtTime(0, ctx.currentTime + i * 0.1);
-      hg.gain.linearRampToValueAtTime(0.04, ctx.currentTime + i * 0.1 + 0.02);
-      hg.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.12);
-      h.connect(hg);
-      hg.connect(ctx.destination);
-      h.start(ctx.currentTime + i * 0.1);
-      h.stop(ctx.currentTime + i * 0.1 + 0.15);
-    });
-  },
-
-  // --- 负面效果音 ---
-  negativeThud() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    const osc = ctx.createOscillator();
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(200, ctx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.3);
-
-    // WaveShaper distortion
-    const shaper = ctx.createWaveShaper();
-    const curve = new Float32Array(256);
-    for (let i = 0; i < 256; i++) {
-      const x = (i / 128) - 1;
-      curve[i] = (Math.PI + 3) * x / (Math.PI + 3 * Math.abs(x));
+    const t = this.ctx.currentTime;
+    if (type === 'positive') {
+      this._bell(this.P.G5, t, 0.06, 1.2);
+    } else {
+      this._bell(this.P.C3, t, 0.06, 0.8);
+      this._bell(138.59, t + 0.03, 0.04, 0.6);
     }
-    shaper.curve = curve;
-    shaper.oversample = '2x';
-
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.2, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(300, ctx.currentTime);
-
-    osc.connect(shaper);
-    shaper.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.4);
   },
 
-  // --- 陷阱揭示音（不和谐下降音） ---
-  trapReveal() {
+  mapPulse(regionKey) {
     if (!this.ctx || this.muted) return;
     this._ensureResumed();
-    const ctx = this.ctx;
-    // Dissonant descending chord
-    [200, 253, 300].forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      osc.type = 'sawtooth';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(freq * 0.3, ctx.currentTime + 0.8);
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0.12, ctx.currentTime + i * 0.05);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.0);
-      const f = ctx.createBiquadFilter();
-      f.type = 'lowpass';
-      f.frequency.setValueAtTime(800, ctx.currentTime);
-      f.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.8);
-      osc.connect(f); f.connect(g); g.connect(ctx.destination);
-      osc.start(ctx.currentTime + i * 0.05);
-      osc.stop(ctx.currentTime + 1.1);
-    });
+    const noteKey = this.REGION_NOTES[regionKey];
+    if (!noteKey) return;
+    this._bell(this.P[noteKey], this.ctx.currentTime, 0.04, 1.0);
   },
 
-  // --- 时代过渡音（锣声） ---
-  eraGong() {
+  tradeRoute() {
     if (!this.ctx || this.muted) return;
     this._ensureResumed();
-    const ctx = this.ctx;
-    // Low fundamental
-    const osc1 = ctx.createOscillator();
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(65, ctx.currentTime);
-    const g1 = ctx.createGain();
-    g1.gain.setValueAtTime(0.2, ctx.currentTime);
-    g1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 3);
-    osc1.connect(g1);
-    g1.connect(ctx.destination);
-    osc1.start();
-    osc1.stop(ctx.currentTime + 3.2);
-
-    // High harmonic shimmer
-    const osc2 = ctx.createOscillator();
-    osc2.type = 'sine';
-    osc2.frequency.setValueAtTime(520, ctx.currentTime);
-    osc2.frequency.exponentialRampToValueAtTime(490, ctx.currentTime + 2);
-    const g2 = ctx.createGain();
-    g2.gain.setValueAtTime(0.06, ctx.currentTime);
-    g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2);
-    osc2.connect(g2);
-    g2.connect(ctx.destination);
-    osc2.start();
-    osc2.stop(ctx.currentTime + 2.2);
-
-    // Mid-tone body
-    const osc3 = ctx.createOscillator();
-    osc3.type = 'triangle';
-    osc3.frequency.setValueAtTime(130, ctx.currentTime);
-    const g3 = ctx.createGain();
-    g3.gain.setValueAtTime(0.12, ctx.currentTime);
-    g3.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.5);
-    osc3.connect(g3);
-    g3.connect(ctx.destination);
-    osc3.start();
-    osc3.stop(ctx.currentTime + 2.7);
-
-    // Noise burst for attack
-    const bufSize = ctx.sampleRate * 0.05;
-    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1) * 0.3;
-    const noise = ctx.createBufferSource();
-    noise.buffer = buf;
+    const ctx = this.ctx, t = ctx.currentTime, out = this._out();
+    const nBuf = ctx.createBuffer(1, ctx.sampleRate * 0.3, ctx.sampleRate);
+    const nD = nBuf.getChannelData(0);
+    for (let i = 0; i < nD.length; i++) nD[i] = Math.random() * 2 - 1;
+    const ns = ctx.createBufferSource(); ns.buffer = nBuf;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass'; bp.frequency.setValueAtTime(1000, t); bp.Q.setValueAtTime(0.3, t);
     const ng = ctx.createGain();
-    ng.gain.setValueAtTime(0.15, ctx.currentTime);
-    ng.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-    const nf = ctx.createBiquadFilter();
-    nf.type = 'bandpass';
-    nf.frequency.setValueAtTime(200, ctx.currentTime);
-    nf.Q.setValueAtTime(2, ctx.currentTime);
-    noise.connect(nf);
-    nf.connect(ng);
-    ng.connect(ctx.destination);
-    noise.start();
-  },
-
-  // --- 屏幕震动音 ---
-  warRumble() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    const bufSize = ctx.sampleRate * 0.5;
-    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
-    const noise = ctx.createBufferSource();
-    noise.buffer = buf;
-
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(120, ctx.currentTime);
-    filter.Q.setValueAtTime(5, ctx.currentTime);
-
-    const gain = ctx.createGain();
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-
-    noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-    noise.start();
-    noise.stop(ctx.currentTime + 0.55);
-  },
-
-  // --- 成就音 ---
-  achieveChime() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    // Rising arpeggio: C5, E5, G5, C6
-    const notes = [523.25, 659.25, 783.99, 1046.5];
-    notes.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      const gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.08);
-      gain.gain.linearRampToValueAtTime(0.12, ctx.currentTime + i * 0.08 + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.3);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(ctx.currentTime + i * 0.08);
-      osc.stop(ctx.currentTime + i * 0.08 + 0.35);
-    });
-    // Shimmer high harmonic
-    const shimmer = ctx.createOscillator();
-    shimmer.type = 'sine';
-    shimmer.frequency.setValueAtTime(2093, ctx.currentTime + 0.3);
-    const sg = ctx.createGain();
-    sg.gain.setValueAtTime(0, ctx.currentTime + 0.3);
-    sg.gain.linearRampToValueAtTime(0.04, ctx.currentTime + 0.32);
-    sg.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-    shimmer.connect(sg);
-    sg.connect(ctx.destination);
-    shimmer.start(ctx.currentTime + 0.3);
-    shimmer.stop(ctx.currentTime + 0.55);
+    ng.gain.setValueAtTime(0.02, t);
+    ng.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    ns.connect(bp); bp.connect(ng); ng.connect(out);
+    ns.start(t);
+    this._pluck(this.P.E4, t + 0.05, 0.04, 0.6);
   }
 };
+
 
 // ==================== 游戏数据 ====================
 
@@ -2732,8 +3004,10 @@ const ADVISOR_COMMENTS = {
   e1_2:{legalist:'礼乐虽美，不如刑律严明。文武并举方为正道。',confucian:'礼乐乃文明根基，严格推行方可化人心、定秩序。',strategist:'因地制宜最为务实，各族自治可减少冲突，以时间换空间。',recs:[2,0,1]},
   e1_3:{legalist:'修筑防线，以工事克骑兵，此乃万世之基。',confucian:'东迁保文明火种，留得青山在，不怕没柴烧。',strategist:'和亲通商，化敌为友，不战而屈人之兵。',recs:[0,1,2]},
   e1_4:{legalist:'各国变法，优胜劣汰，强者自然胜出。',confucian:'会盟和平，止戈为武，天下苍生免受战火。',strategist:'扶持霸主维持秩序，借他人之力行己之事。',recs:[1,2,0]},
+  e1_4b:{legalist:'旧瓶装不下新酒。礼乐已死，唯有法术势才能重建秩序。',confucian:'礼崩乐坏，人心不古！必须正名分，哪怕是螳臂当车也要守住这口气。',strategist:'什么礼不礼的？乱世就是大洗牌的机会。谁能打破规矩，谁就能抢占先机。',recs:[2,0,1]},
   e1_5:{legalist:'以法为本！商鞅之术可富国强兵，这才是乱世生存之道。',confucian:'独尊儒术，以仁义治天下，方能让文明薪火相传。',strategist:'百家共存最为高明，各取所长，方能应对万变之局。',recs:[2,0,1]},
   e1_6:{legalist:'全面法治！废旧制、立新法，国力必然暴增。代价？值得。',confucian:'渐进改革，兼顾传统，方不伤民本。急功近利终非善策。',strategist:'以德为先可安内部，但列国虎视，不可不防。折中为上。',recs:[0,1,2]},
+  e1_6b:{legalist:'和平？那是给弱者准备的安眠药。只有统一，没有均势。',confucian:'如果各国能信守承诺，这就是天下大同的雏形啊！善哉善哉。',strategist:'利用和谈麻痹对手，暗中积蓄力量。当他们以为和平降临时，就是动手的最好时机。',recs:[1,0,2]},
   e1_7:{legalist:'连横！结盟强者，各个击破，统一进程不可逆。',confucian:'独善其身，发展经济，以不变应万变。',strategist:'合纵对抗强秦，以弱胜强，联盟之术在此一举。',recs:[1,2,0]},
   e1_8:{legalist:'设置都护府，以军事保障贸易，掌控西域命脉。',confucian:'以商通商，和平交流，文明互鉴才是长久之道。',strategist:'深度介入西域，既得商路之利，又可牵制草原。',recs:[0,1,0]},
   e1_T:{legalist:'严刑峻法！大一统需要铁腕，秦之强在于法度森严。',confucian:'儒法并用，刚柔相济，方能长治久安。单用严法必招反噬。',strategist:'郡国并行最为灵活，给地方自主权可减缓整合阵痛。',recs:[0,1,2]},
@@ -2745,6 +3019,9 @@ const ADVISOR_COMMENTS = {
   e2_6:{legalist:'不惜代价全线贯通！大运河乃国之命脉。',confucian:'分段修建，减轻百姓负担，仁者爱人。',strategist:'放弃大工程，发展海运，另辟蹊径。',recs:[0,1,2]},
   e2_7:{legalist:'依靠内部力量平叛，外力介入后患无穷。',confucian:'南迁保存实力，经济中心南移亦为大势所趋。',strategist:'借回纥兵是最快平叛之策，虽有代价但止血要紧。',recs:[1,2,0]},
   e2_8:{legalist:'全面推行科举，废除门荫！人才选拔必须公平。',confucian:'科举是千古善政，让天下读书人皆有出路。',strategist:'科举与门荫并行，渐进过渡最为稳妥。',recs:[0,0,1]},
+  e2_9:{legalist:'强干弱枝！必须派文官监军，兵权收归中央，否则必生大乱。',confucian:'用人不疑。若朝廷施仁政，将领自然效忠，何必严防死守？',strategist:'节度使是把双刃剑。用其力御外侮，但需以利害牵制，不可令其坐大。',recs:[1,0,2]},
+  e2_10:{legalist:'国库粮草乃军国之本，岂能资敌？封锁边境，严阵以待！',confucian:'邻有难，不救不祥。赈济灾民，既是仁德，也能化解刀兵。',strategist:'此乃天赐良机！趁其病要其命，或以粮食换取马匹人口，通过贸易分化各部。',recs:[1,0,2]},
+  e2_11:{legalist:'普天之下莫非王土。豪强兼并土地是挖国家墙角，必须严禁买卖，强行均田！',confucian:'君子爱财取之有道。应教化豪强行善，减租减息，不可强夺民产引发动荡。',strategist:'均田已难以为继。不如承认庄园现状，向豪强征收重税以充国库，顺势而为。',recs:[0,1,2]},
   e2_T:{legalist:'文武并重，内外平衡，方能立于不败之地。',confucian:'重文轻武，发展经济文化，方为盛世之道。',strategist:'积极开拓海洋！面向世界才有未来。',recs:[1,0,2]},
   e3_1:{legalist:'拒绝和谈！花钱买和平是软骨头行为。',confucian:'签约换百年和平，百姓安居乐业才是正道。',strategist:'联合西夏三方制衡，外交博弈方显高明。',recs:[1,0,2]},
   e3_2:{legalist:'全面推行新法！不破不立，国家财政必须改革。',confucian:'选择性改革，稳步推进，不可操之过急。',strategist:'保守路线风险最小，但积弊日深…… 难。',recs:[0,1,2]},
@@ -4038,6 +4315,45 @@ function _executeChoice(idx, ev, choice) {
   if (typeof _injectEventInsight === 'function') {
     setTimeout(_injectEventInsight, totalRevealTime + 300);
   }
+
+  // ===== Scoring (integrated, not via hook) =====
+  if (typeof calculateEventScore === 'function') {
+    const scoreResult = calculateEventScore(effectTags, chains);
+    const oldScore = G.score || 0;
+    G.score = Math.max(0, oldScore + scoreResult.finalScore);
+    G._totalEventsCompleted = (typeof getCompletedEventCount === 'function') ? getCompletedEventCount() : (G._totalEventsCompleted||0)+1;
+
+    // Rank change
+    if (typeof getHeroRank === 'function') {
+      const oldRank = getHeroRank(oldScore);
+      const newRank = getHeroRank(G.score);
+      if (newRank.title !== oldRank.title) {
+        setTimeout(() => showRankUpNotification(oldRank.title, newRank.title), 800);
+      }
+    }
+
+    // Floating score
+    if (typeof showFloatingScore === 'function') showFloatingScore(scoreResult.finalScore);
+
+    // Streak badge
+    if (scoreResult.streak >= 2 && scoreResult.isPositive && typeof showStreakBadge === 'function') {
+      setTimeout(() => showStreakBadge(scoreResult.streak, scoreResult.multiplier), 400);
+    }
+
+    // Inject score into result panel
+    if (typeof injectEventScoreDisplay === 'function') injectEventScoreDisplay(scoreResult);
+
+    // Update displays
+    if (typeof updateScoreDisplay === 'function') updateScoreDisplay(true);
+    if (typeof updateRankDisplay === 'function') updateRankDisplay();
+    if (typeof updateJourneyProgress === 'function') updateJourneyProgress();
+    if (typeof checkScoreMilestone === 'function') checkScoreMilestone();
+
+    // Mandate health visual
+    setTimeout(() => {
+      if (typeof updateMandateHealthVisual === 'function') updateMandateHealthVisual(G.mandateScore);
+    }, 600);
+  }
 }
 
 function pulseMapNode(regionKey) {
@@ -4051,6 +4367,17 @@ function pulseMapNode(regionKey) {
       void circle.offsetWidth;
       circle.classList.add('pulse');
     }
+    // SVG ripple effect
+    const node = nodes[idx];
+    const ripple = document.createElement('div');
+    ripple.className = 'map-ripple';
+    ripple.style.left = '50%';
+    ripple.style.top = '50%';
+    node.style.position = 'relative';
+    node.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 1000);
+    // Play region-specific pentatonic note
+    SFX.mapPulse(regionKey);
   }
 }
 
@@ -4210,9 +4537,42 @@ function showChainNotifications(chains) {
       container.appendChild(notif);
       highlightConnection(ch.from, ch.to);
       pulseMapNode(ch.to);
+      // Chain reaction sound: positive if "+", negative otherwise
+      const isPositive = /\+/.test(ch.text);
+      SFX.chainReaction(isPositive ? 'positive' : 'negative');
+      // Spawn particles along connection
+      _spawnChainParticles(ch.from, ch.to, isPositive);
       setTimeout(() => notif.remove(), 2600);
     }, i * 500);
   });
+}
+
+function _spawnChainParticles(fromKey, toKey, positive) {
+  const fromM = REGION_META[fromKey], toM = REGION_META[toKey];
+  if (!fromM || !toM) return;
+  const mapArea = document.getElementById('map-area');
+  if (!mapArea) return;
+  const svg = document.getElementById('map-svg');
+  if (!svg) return;
+  const rect = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const sx = rect.width / (vb.width || 600);
+  const sy = rect.height / (vb.height || 450);
+  for (let i = 0; i < 5; i++) {
+    const p = document.createElement('div');
+    p.className = 'chain-particle ' + (positive ? 'positive' : 'negative');
+    const startX = rect.left - mapArea.getBoundingClientRect().left + fromM.x * sx;
+    const startY = rect.top - mapArea.getBoundingClientRect().top + fromM.y * sy;
+    const dx = (toM.x - fromM.x) * sx + (Math.random() * 20 - 10);
+    const dy = (toM.y - fromM.y) * sy + (Math.random() * 20 - 10);
+    p.style.left = startX + 'px';
+    p.style.top = startY + 'px';
+    p.style.setProperty('--dx', dx + 'px');
+    p.style.setProperty('--dy', dy + 'px');
+    p.style.animationDelay = (i * 0.1) + 's';
+    mapArea.appendChild(p);
+    setTimeout(() => p.remove(), 1500);
+  }
 }
 
 function highlightConnection(fromKey, toKey) {
@@ -4233,6 +4593,7 @@ function highlightConnection(fromKey, toKey) {
     const matchB = (Math.abs(x2-fromM.x)<15 && Math.abs(y2-fromM.y)<15 && Math.abs(x1-toM.x)<15 && Math.abs(y1-toM.y)<15);
     if (matchA || matchB) {
       line.classList.add('chain-active');
+      SFX.tradeRoute();
       setTimeout(() => line.classList.remove('chain-active'), 1200);
     }
   });
@@ -4312,20 +4673,24 @@ function nextEra() {
   trans.classList.remove('era-to-2','era-to-3','era-to-4');
   if (G.era >= 2 && G.era <= 4) trans.classList.add('era-to-' + G.era);
   trans.classList.add('active');
+  // eraGong: 重锣(t=0) → 编钟序列(t=0.8) → 古筝短句(t=2.0)
   SFX.eraGong();
+  // Restart ambient with new era root note
+  SFX.stopAmbient();
   addLog(`═══ 进入${ERA_NAMES[G.era]} ═══`);
 
-  // Phase 1: Summary (0.5s)
+  // Visual phases synced to eraGong audio:
+  // Phase 1: Summary at 0.5s (gong still resonating)
   setTimeout(() => { summary.style.transition = 'opacity 0.8s'; summary.style.opacity = '1'; }, 500);
-  // Phase 2: Title with letter-spacing collapse (1.5s)
-  setTimeout(() => { title.style.transition = 'opacity 1s, letter-spacing 1.2s'; title.style.opacity = '1'; title.style.letterSpacing = '8px'; }, 1500);
-  // Phase 3: Line expand (2.8s)
-  setTimeout(() => { line.style.width = '200px'; }, 2800);
-  // Phase 4: Description (3.5s)
-  setTimeout(() => { desc.style.transition = 'opacity 0.8s'; desc.style.opacity = '1'; }, 3500);
-  // Phase 5: Intro background text (4.2s)
-  setTimeout(() => { intro.style.transition = 'opacity 1s'; intro.style.opacity = '1'; }, 4200);
-  // Phase 6: Continue button (5.5s)
+  // Phase 2: Title at 1.0s (synced with bell sequence start at 0.8s)
+  setTimeout(() => { title.style.transition = 'opacity 1s, letter-spacing 1.2s'; title.style.opacity = '1'; title.style.letterSpacing = '8px'; }, 1000);
+  // Phase 3: Line expand at 2.0s (synced with guzheng phrase)
+  setTimeout(() => { line.style.width = '200px'; }, 2000);
+  // Phase 4: Description at 3.0s
+  setTimeout(() => { desc.style.transition = 'opacity 0.8s'; desc.style.opacity = '1'; }, 3000);
+  // Phase 5: Intro background text at 4.0s
+  setTimeout(() => { intro.style.transition = 'opacity 1s'; intro.style.opacity = '1'; }, 4000);
+  // Phase 6: Continue button at 5.5s + restart ambient
   setTimeout(() => { preview.style.transition = 'opacity 0.6s'; preview.style.opacity = '1'; }, 5500);
 
   // Click to continue (replaces auto-close)
@@ -4337,6 +4702,7 @@ function nextEra() {
     renderTimeline();
     updateMapEraTint();
     updateMapNodeCritical();
+    if (!SFX.muted) SFX.ambient();
     showEvent();
   };
   preview.addEventListener('click', closeTrans);
@@ -5590,24 +5956,44 @@ function initStartScreen() {
 
   // Continue button is now dynamically created in makeChoice()
 
-  // Bind mute buttons — default state is MUTED (🔇), click to enable
+  // Restore mute state from localStorage (default: unmuted)
+  if (localStorage.getItem('pivot_muted') === '1') {
+    SFX.muted = true;
+  } else {
+    SFX.muted = false;
+  }
+  SFX._openingPlayed = false;
+
+  // First click anywhere on screen → init AudioContext + play opening sequence
+  const onFirstInteraction = (e) => {
+    document.removeEventListener('click', onFirstInteraction);
+    document.removeEventListener('touchstart', onFirstInteraction);
+    if (!SFX._initialized) SFX.init();
+    SFX._ensureResumed();
+    SFX._updateMuteButtons();
+    if (!SFX.muted && !SFX._openingPlayed) {
+      SFX.openingGong();
+      SFX._openingPlayed = true;
+      SFX.ambient();
+    }
+  };
+  document.addEventListener('click', onFirstInteraction);
+  document.addEventListener('touchstart', onFirstInteraction);
+
+  // Bind mute buttons
   document.querySelectorAll('.mute-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      // Init audio context on first interaction
       if (!SFX._initialized) SFX.init();
       SFX.toggleMute();
-      // Play sounds when unmuting
       if (!SFX.muted) {
         SFX.click();
-        // On start screen: also play opening gong + ambient
         if (!SFX._openingPlayed && document.getElementById('start-screen').style.display !== 'none') {
           SFX.openingGong();
           SFX._openingPlayed = true;
           SFX.ambient();
         }
-        // In game: start ambient
         if (document.getElementById('game').classList.contains('active')) {
           SFX.ambient();
         }
@@ -5615,30 +6001,15 @@ function initStartScreen() {
     });
   });
 
-  // Restore mute state from localStorage (default: muted)
-  if (localStorage.getItem('pivot_muted') === '0') {
-    SFX.muted = false;
-    document.querySelectorAll('.mute-btn').forEach(btn => { btn.textContent = '\u{1F50A}'; });
-  }
-
-  // Start screen ambient — only fires if user has unmuted
-  const startScreen = document.getElementById('start-screen');
-  SFX._openingPlayed = false;
+  // Set initial button state
+  SFX._updateMuteButtons();
 }
 
 function startGame() {
   // Init audio on first user interaction
   if (!SFX._initialized) SFX.init();
-  // If user hasn't explicitly muted, auto-enable sound on game start
-  if (SFX.muted && localStorage.getItem('pivot_muted') !== '1') {
-    SFX.muted = false;
-    SFX._updateMuteButtons();
-  }
-  // Play opening sounds if not muted
-  if (!SFX._openingPlayed && !SFX.muted) {
-    SFX.openingGong();
-    SFX._openingPlayed = true;
-  }
+  SFX._ensureResumed();
+  // Play game start chord + fade out opening ambient
   if (!SFX.muted) {
     SFX.gameStartChord();
   }
@@ -5646,6 +6017,12 @@ function startGame() {
 
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('game').classList.add('active');
+
+  // Start in-game ambient after transition (with new era root)
+  setTimeout(() => {
+    if (!SFX.muted) SFX.ambient();
+  }, 2000);
+
   initRegions();
   G.turn = 1;
   G.era = 1;
@@ -6479,71 +6856,7 @@ startGame = function() {
   setTimeout(() => showPrologue(), 800);
 };
 
-// ==================== Hook into _executeChoice for scoring ====================
-const _origExecuteChoice = _executeChoice;
-_executeChoice = function(idx, ev, choice) {
-  // Snapshot before execution to compute our own effect tags
-  const beforeStats = {};
-  for (let k in G.regions) {
-    const r = G.regions[k];
-    beforeStats[k] = {prosperity:r.prosperity, military:r.military, culture:r.culture, trade:r.trade};
-  }
-
-  // Call original
-  _origExecuteChoice(idx, ev, choice);
-
-  // Compute effect tags from the before/after difference
-  const effectTags = [];
-  for (let k in G.regions) {
-    const r = G.regions[k];
-    const b = beforeStats[k];
-    if (!b) continue;
-    const dp = r.prosperity - b.prosperity;
-    const dm = r.military - b.military;
-    const dc = r.culture - b.culture;
-    const dt = r.trade - b.trade;
-    if (dp !== 0) effectTags.push({region:REGION_META[k].name, regionKey:k, stat:'\u5174', val:dp});
-    if (dm !== 0) effectTags.push({region:REGION_META[k].name, regionKey:k, stat:'\u6B66', val:dm});
-    if (dc !== 0) effectTags.push({region:REGION_META[k].name, regionKey:k, stat:'\u6587', val:dc});
-    if (dt !== 0) effectTags.push({region:REGION_META[k].name, regionKey:k, stat:'\u5546', val:dt});
-  }
-
-  // Get chain reactions (already applied, just count them)
-  const chains = []; // We approximate — chains were already applied
-
-  // Calculate score
-  const scoreResult = calculateEventScore(effectTags, chains);
-  const oldScore = G.score;
-  G.score = Math.max(0, G.score + scoreResult.finalScore);
-  G._totalEventsCompleted = getCompletedEventCount();
-
-  // Check rank change
-  const oldRank = getHeroRank(oldScore);
-  const newRank = getHeroRank(G.score);
-  if (newRank.title !== oldRank.title) {
-    setTimeout(() => showRankUpNotification(oldRank.title, newRank.title), 800);
-  }
-
-  // Show floating score
-  showFloatingScore(scoreResult.finalScore);
-
-  // Show streak badge (if streak >= 2)
-  if (scoreResult.streak >= 2 && scoreResult.isPositive) {
-    setTimeout(() => showStreakBadge(scoreResult.streak, scoreResult.multiplier), 400);
-  }
-
-  // Inject score display into the result panel
-  injectEventScoreDisplay(scoreResult);
-
-  // Update displays
-  updateScoreDisplay(true);
-  updateRankDisplay();
-  updateJourneyProgress();
-  checkScoreMilestone();
-
-  // Update mandate health visual
-  setTimeout(() => updateMandateHealthVisual(G.mandateScore), 600);
-};
+// (Scoring is now integrated directly into _executeChoice — no hook needed)
 
 // ==================== Inject Score Display Into Result Panel ====================
 function injectEventScoreDisplay(scoreResult) {
