@@ -968,6 +968,34 @@ body::after {
 .mute-btn.is-muted:hover{opacity:1;}
 #start-mute-btn{position:absolute;top:16px;right:16px;z-index:20;}
 
+/* --- 点击进入遮罩 --- */
+#start-entry-overlay{
+  position:absolute;inset:0;z-index:50;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  background:radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%);
+  transition:opacity 0.8s ease;
+}
+#start-entry-overlay.hidden{opacity:0;pointer-events:none;}
+.entry-prompt{
+  color:var(--gold);font-size:1.3em;letter-spacing:12px;
+  opacity:0;animation:entryPromptPulse 2.5s ease-in-out infinite;
+  animation-delay:0.5s;
+  text-shadow:0 0 20px rgba(201,169,110,0.4);
+  padding:12px 32px;
+  border:1px solid rgba(201,169,110,0.2);border-radius:4px;
+  user-select:none;
+}
+@keyframes entryPromptPulse{
+  0%{opacity:0;}10%{opacity:0.9;}50%{opacity:1;}90%{opacity:0.9;}100%{opacity:0;}
+}
+/* 遮罩存在时隐藏标题/诗句/按钮 */
+#start-screen:not(.content-visible) .title-area,
+#start-screen:not(.content-visible) .poem,
+#start-screen:not(.content-visible) .start-btn{
+  opacity:0 !important;visibility:hidden;
+}
+
 /* --- 开屏锣声共振动画 --- */
 @keyframes audioResonance{
   0%{text-shadow:0 0 30px rgba(201,169,110,0.3);}
@@ -2046,6 +2074,10 @@ body::after {
   <div class="start-particles" id="start-particles"></div>
   <!-- 静音按钮 -->
   <button class="mute-btn" id="start-mute-btn" title="音效开关"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="currentColor"/><path d="M19 12c0 2.93-1.66 5.47-4.08 6.72l.84 1.44C19.07 18.5 21 15.5 21 12s-1.93-6.5-5.24-8.16l-.84 1.44C17.34 6.53 19 9.07 19 12z" fill="currentColor"/></svg></button>
+  <!-- 点击进入遮罩 -->
+  <div id="start-entry-overlay">
+    <div class="entry-prompt">点 击 进 入</div>
+  </div>
   <!-- 冲击波 -->
   <div class="title-shockwave" id="title-shockwave"></div>
   <div class="title-area">
@@ -5897,66 +5929,20 @@ function initStartScreen() {
     }
   }
 
-  // Title animation with shockwave
+  // Prepare elements (hidden until overlay click)
   const mainTitle = document.getElementById('main-title');
   const mainSubtitle = document.getElementById('main-subtitle');
-  if (mainTitle) {
-    mainTitle.style.opacity = '0';
-    mainTitle.style.letterSpacing = '40px';
-    setTimeout(() => {
-      mainTitle.classList.add('animate-in');
-      // Trigger shockwave when title appears
-      setTimeout(() => {
-        const sw = document.getElementById('title-shockwave');
-        if (sw) sw.classList.add('active');
-      }, 600);
-    }, 200);
-  }
-  if (mainSubtitle) {
-    mainSubtitle.style.opacity = '0';
-    setTimeout(() => {
-      mainSubtitle.classList.add('animate-in');
-      // Trigger gold line after subtitle appears
-      setTimeout(() => {
-        const gl = document.getElementById('title-gold-line');
-        if (gl) gl.classList.add('expand');
-      }, 400);
-    }, 1200);
-  }
+  if (mainTitle) { mainTitle.style.opacity = '0'; mainTitle.style.letterSpacing = '40px'; }
+  if (mainSubtitle) { mainSubtitle.style.opacity = '0'; }
 
-  // Staggered poem lines
-  const poemLines = document.querySelectorAll('.poem-line');
-  poemLines.forEach((line, i) => {
-    const delay = 1800 + i * 700;
-    // Last line (gold) has extra delay + mandate shake
-    const extra = line.classList.contains('gold-line') ? 500 : 0;
-    setTimeout(() => {
-      line.classList.add('visible');
-      // "天命在手" shake
-      if (line.classList.contains('gold-line')) {
-        const screen = document.getElementById('start-screen');
-        screen.classList.add('mandate-shake');
-        setTimeout(() => screen.classList.remove('mandate-shake'), 500);
-      }
-    }, delay + extra);
-  });
-
-  // Show start button after poems
   const startBtn = document.getElementById('start-btn');
   if (startBtn) {
     startBtn.style.opacity = '0';
     startBtn.style.transition = 'opacity 0.8s ease';
-    setTimeout(() => { startBtn.style.opacity = '1'; }, 1800 + poemLines.length * 700 + 600);
-  }
-
-  // Bind start button click
-  if (startBtn) {
     startBtn.addEventListener('click', startGame);
   }
 
-  // Continue button is now dynamically created in makeChoice()
-
-  // Restore mute state from localStorage (default: unmuted)
+  // Restore mute state
   if (localStorage.getItem('pivot_muted') === '1') {
     SFX.muted = true;
   } else {
@@ -5964,21 +5950,76 @@ function initStartScreen() {
   }
   SFX._openingPlayed = false;
 
-  // First click anywhere on screen → init AudioContext + play opening sequence
-  const onFirstInteraction = (e) => {
-    document.removeEventListener('click', onFirstInteraction);
-    document.removeEventListener('touchstart', onFirstInteraction);
-    if (!SFX._initialized) SFX.init();
-    SFX._ensureResumed();
-    SFX._updateMuteButtons();
-    if (!SFX.muted && !SFX._openingPlayed) {
-      SFX.openingGong();
-      SFX._openingPlayed = true;
-      SFX.ambient();
-    }
-  };
-  document.addEventListener('click', onFirstInteraction);
-  document.addEventListener('touchstart', onFirstInteraction);
+  // ===== "点击进入" overlay: click → init audio + synced opening sequence =====
+  const overlay = document.getElementById('start-entry-overlay');
+  const screen = document.getElementById('start-screen');
+  if (overlay) {
+    const launchOpening = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      overlay.removeEventListener('click', launchOpening);
+      overlay.removeEventListener('touchstart', launchOpening);
+      // Fade out overlay
+      overlay.classList.add('hidden');
+      setTimeout(() => overlay.remove(), 900);
+      // Show content layer
+      screen.classList.add('content-visible');
+
+      // Init audio + play opening gong
+      if (!SFX._initialized) SFX.init();
+      SFX._ensureResumed();
+      SFX._updateMuteButtons();
+      if (!SFX.muted) {
+        SFX.openingGong();  // audio timeline: gong@0, bell@0.3, arpeggio@1.0-1.9, drone@2.5-7
+        SFX._openingPlayed = true;
+      }
+
+      // ---- 文字动画与音频同步 ----
+      // t=0.2s: 标题"枢纽"开始字间距收缩（匹配大锣冲击）
+      setTimeout(() => {
+        if (mainTitle) mainTitle.classList.add('animate-in');
+      }, 200);
+      // t=0.8s: 冲击波（匹配编钟泛音 @0.3s 扩散）
+      setTimeout(() => {
+        const sw = document.getElementById('title-shockwave');
+        if (sw) sw.classList.add('active');
+      }, 800);
+      // t=1.2s: 副标题"天下之道"（匹配古筝琶音起始 @1.0s）
+      setTimeout(() => {
+        if (mainSubtitle) mainSubtitle.classList.add('animate-in');
+      }, 1200);
+      // t=1.8s: 金色横线（匹配琶音中段）
+      setTimeout(() => {
+        const gl = document.getElementById('title-gold-line');
+        if (gl) gl.classList.add('expand');
+      }, 1800);
+      // t=2.5s+: 诗句逐行展现（匹配drone渐入 @2.5s）
+      const poemLines = document.querySelectorAll('.poem-line');
+      poemLines.forEach((line, i) => {
+        const delay = 2500 + i * 800;
+        const extra = line.classList.contains('gold-line') ? 600 : 0;
+        setTimeout(() => {
+          line.classList.add('visible');
+          // "天命在手" 震动
+          if (line.classList.contains('gold-line')) {
+            screen.classList.add('mandate-shake');
+            setTimeout(() => screen.classList.remove('mandate-shake'), 500);
+          }
+        }, delay + extra);
+      });
+      // 诗句结束后显示开始按钮
+      const totalPoemTime = 2500 + poemLines.length * 800 + 600 + 800;
+      setTimeout(() => {
+        if (startBtn) startBtn.style.opacity = '1';
+      }, totalPoemTime);
+      // 启动氛围音（在诗句展示期间，与drone融合）
+      if (!SFX.muted) {
+        setTimeout(() => SFX.ambient(), 3000);
+      }
+    };
+    overlay.addEventListener('click', launchOpening);
+    overlay.addEventListener('touchstart', launchOpening);
+  }
 
   // Bind mute buttons
   document.querySelectorAll('.mute-btn').forEach(btn => {
@@ -5989,11 +6030,6 @@ function initStartScreen() {
       SFX.toggleMute();
       if (!SFX.muted) {
         SFX.click();
-        if (!SFX._openingPlayed && document.getElementById('start-screen').style.display !== 'none') {
-          SFX.openingGong();
-          SFX._openingPlayed = true;
-          SFX.ambient();
-        }
         if (document.getElementById('game').classList.contains('active')) {
           SFX.ambient();
         }
@@ -6001,7 +6037,6 @@ function initStartScreen() {
     });
   });
 
-  // Set initial button state
   SFX._updateMuteButtons();
 }
 
