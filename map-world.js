@@ -1,503 +1,403 @@
-// ============================================================
-// map-world.js
-// "枢纽：天下之道" — 地图世界观数据
-// 为 SVG 地图（viewBox 0 0 600 450）提供四个时代的建筑、
-// 地标、人口、文化、动态元素与旗帜数据，以及关键事件场景增强。
-// ============================================================
+/**
+ * MAP_WORLD - Rich visual world data for the Pivot historical strategy game.
+ *
+ * Coordinates target a 700x520 SVG viewBox.
+ * Region centers (approximate):
+ *   zhongyuan (500, 270)  -  Central Plains
+ *   caoyuan   (420, 150)  -  Northern Steppes
+ *   xiyu      (250, 230)  -  Western Regions
+ *   gaoyuan   (300, 340)  -  Tibetan Plateau
+ *   xinan     (400, 400)  -  Southwest
+ *   haiyang   (620, 350)  -  Coastal / Ocean
+ *   guodu     (550, 340)  -  Transition Zone (Southeast)
+ */
 
-const MAP_WORLD_DATA = {
+const MAP_WORLD = {
 
-  // ──────────────────────────────────────────────
-  // 四大时代
-  // ──────────────────────────────────────────────
+  // ---------------------------------------------------------------------------
+  //  ERA-SPECIFIC WORLD STATE
+  // ---------------------------------------------------------------------------
   eras: {
 
-    // ============================================
-    // 时代一：封建时代 ~1046-221 BC
-    // ============================================
+    // =========================================================================
+    //  ERA 1 - 封建时代  (~1046-221 BC)
+    // =========================================================================
     1: {
       name: '封建时代',
-      weather: 'clear',
-      season: 'spring',
-      skyGradient: ['#1a1a2e', '#16213e'],
+      period: '约前1046-前221',
 
-      buildings: [
-        { x: 280, y: 215, type: 'palace', label: '镐京', region: 'zhongyuan' },
-        { x: 320, y: 200, type: 'city', label: '洛邑', region: 'zhongyuan' },
-        { x: 345, y: 195, type: 'city', label: '曲阜', region: 'zhongyuan' },
-        { x: 370, y: 190, type: 'city', label: '临淄', region: 'zhongyuan' },
-        { x: 260, y: 225, type: 'city', label: '咸阳', region: 'zhongyuan' },
-        { x: 335, y: 225, type: 'city', label: '新郑', region: 'zhongyuan' },
-        { x: 305, y: 240, type: 'city', label: '宛城', region: 'zhongyuan' },
-        { x: 360, y: 210, type: 'city', label: '邯郸', region: 'zhongyuan' },
-        { x: 310, y: 165, type: 'fort', label: '雁门关', region: 'guodu' },
-        { x: 300, y: 115, type: 'camp', label: '匈奴王庭', region: 'caoyuan' },
-        { x: 120, y: 165, type: 'market', label: '楼兰', region: 'xiyu' },
-        { x: 240, y: 340, type: 'city', label: '巴蜀', region: 'xinan' },
-        { x: 430, y: 280, type: 'port', label: '琅琊', region: 'haiyang' },
-        { x: 260, y: 230, type: 'academy', label: '稷下学宫', region: 'zhongyuan' },
+      weatherEffects: [
+        { type: 'cloud',  regions: ['caoyuan', 'xiyu'],             opacity: 0.15, count: 3, drift: 'east',  speed: 0.3 },
+        { type: 'dust',   regions: ['xiyu', 'gaoyuan'],             opacity: 0.10, count: 5, drift: 'east',  speed: 0.5 },
+        { type: 'mist',   regions: ['xinan', 'guodu'],              opacity: 0.08, count: 4, drift: 'south', speed: 0.2 },
+        { type: 'snow',   regions: ['gaoyuan'],                     opacity: 0.12, count: 3, drift: 'south', speed: 0.4 },
+        { type: 'rain',   regions: ['zhongyuan'],                   opacity: 0.06, count: 2, drift: 'east',  speed: 0.6 },
       ],
 
       landmarks: [
-        { x: 250, y: 160, type: 'mountain', label: '太行山' },
-        { x: 220, y: 270, type: 'mountain', label: '秦岭' },
-        { x: 170, y: 300, type: 'mountain', label: '岷山' },
-        { x: 200, y: 200, type: 'river', path: 'M150,190 Q250,210 400,230', label: '黄河' },
-        { x: 220, y: 300, type: 'river', path: 'M180,290 Q280,310 420,320', label: '长江' },
-        { x: 100, y: 120, type: 'desert', label: '戈壁' },
-        { x: 300, y: 90, type: 'grassland', label: '漠南草原' },
-        { x: 350, y: 175, type: 'pass', label: '函谷关' },
+        { id: 'fenghuo',    name: '烽火台',     x: 510, y: 250, icon: '🏯', region: 'zhongyuan', tooltip: '周天子的烽火台，一旦点燃，诸侯来援' },
+        { id: 'haojing',    name: '镐京',       x: 440, y: 270, icon: '🏛️', region: 'zhongyuan', tooltip: '西周都城镐京，宗法制度的中心' },
+        { id: 'luoyi',      name: '洛邑',       x: 500, y: 280, icon: '🏛️', region: 'zhongyuan', tooltip: '东周都城洛邑，春秋争霸的舞台' },
+        { id: 'qincheng',   name: '秦关城墙',   x: 430, y: 255, icon: '🏰', region: 'zhongyuan', tooltip: '早期城墙防御，函谷关天险，后发展为长城' },
+        { id: 'qufu',       name: '曲阜学宫',   x: 545, y: 265, icon: '📜', region: 'zhongyuan', tooltip: '孔子讲学之地，儒学发源地' },
+        { id: 'yinxu',      name: '殷墟',       x: 510, y: 245, icon: '🗿', region: 'zhongyuan', tooltip: '商朝故都，甲骨文出土之地' },
+        { id: 'xiongnu_t',  name: '匈奴帐落',   x: 400, y: 130, icon: '⛺', region: 'caoyuan',   tooltip: '草原上的游牧部落，与中原时战时和' },
+        { id: 'kunlun',     name: '昆仑祭坛',   x: 270, y: 290, icon: '⛰️', region: 'gaoyuan',   tooltip: '传说中西王母所居之地' },
+        { id: 'dian',       name: '滇国',       x: 390, y: 410, icon: '🏘️', region: 'xinan',     tooltip: '西南边陲的古滇国，青铜文明独特' },
+        { id: 'yuegang',    name: '越人渔港',   x: 610, y: 370, icon: '🎣', region: 'haiyang',   tooltip: '百越先民的渔猎聚落' },
       ],
 
-      populations: [
-        { region: 'zhongyuan', density: 'high', icon: '🏘️' },
-        { region: 'caoyuan', density: 'low', icon: '🏕️' },
-        { region: 'xiyu', density: 'low', icon: '🏕️' },
-        { region: 'gaoyuan', density: 'low', icon: '🏕️' },
-        { region: 'xinan', density: 'low', icon: '🛖' },
-        { region: 'haiyang', density: 'low', icon: '🛖' },
-        { region: 'guodu', density: 'medium', icon: '🏘️' },
-      ],
-
-      cultures: [
-        { region: 'zhongyuan', items: ['礼乐', '周制', '百家争鸣'] },
-        { region: 'caoyuan', items: ['骑射', '游牧'] },
-        { region: 'xiyu', items: ['绿洲农耕', '驼队贸易'] },
-        { region: 'gaoyuan', items: ['羌人部落', '高山祭祀'] },
-        { region: 'xinan', items: ['巴蜀巫术', '稻作'] },
-        { region: 'haiyang', items: ['渔猎', '航海初萌'] },
-        { region: 'guodu', items: ['戎狄杂居', '边关贸易'] },
-      ],
+      populations: {
+        zhongyuan: { density: 'high',   icon: '👥', count: 8 },
+        caoyuan:   { density: 'low',    icon: '🐎', count: 3 },
+        xiyu:      { density: 'sparse', icon: '🐪', count: 2 },
+        gaoyuan:   { density: 'sparse', icon: '🏔️', count: 2 },
+        xinan:     { density: 'low',    icon: '🌿', count: 3 },
+        haiyang:   { density: 'sparse', icon: '⛵', count: 1 },
+        guodu:     { density: 'medium', icon: '🏘️', count: 5 },
+      },
 
       ambientElements: [
-        { type: 'caravan', fromX: 120, fromY: 170, toX: 280, toY: 210, label: '西域商旅' },
-        { type: 'army', x: 260, y: 220, size: 'medium', label: '秦师' },
-        { type: 'nomads', x: 300, y: 90, size: 'medium', label: '匈奴骑兵' },
-        { type: 'scholars', x: 365, y: 195, label: '稷下学士' },
-        { type: 'bird_flock', x: 200, y: 100, direction: 'east' },
-        { type: 'fishing_boats', x: 430, y: 290 },
-        { type: 'army', x: 310, y: 170, size: 'small', label: '戍卒' },
-        { type: 'caravan', fromX: 240, fromY: 340, toX: 290, toY: 230, label: '巴蜀盐商' },
+        { type: 'caravan',   path: 'zhongyuan-guodu',   icon: '🐂', speed: 'slow',   tooltip: '牛车商队运送盐铁' },
+        { type: 'army',      path: 'zhongyuan-caoyuan',  icon: '⚔️', speed: 'medium', tooltip: '诸侯征伐，烽烟四起' },
+        { type: 'merchant',  path: 'zhongyuan-xinan',    icon: '🏮', speed: 'slow',   tooltip: '巴蜀商人南下贸易' },
+        { type: 'nomad',     path: 'caoyuan-zhongyuan',  icon: '🐎', speed: 'fast',   tooltip: '匈奴骑兵南下劫掠' },
+        { type: 'scholar',   path: 'zhongyuan-guodu',    icon: '📜', speed: 'slow',   tooltip: '游士周游列国' },
       ],
 
-      banners: [
-        { x: 280, y: 200, text: '周', color: '#c9a96e' },
-        { x: 260, y: 220, text: '秦', color: '#2a2a2a' },
-        { x: 370, y: 185, text: '齐', color: '#5b8c5a' },
-        { x: 345, y: 190, text: '鲁', color: '#8b6914' },
-      ],
+      borderStyle: 'dotted',
+      borderColor: 'rgba(120,100,60,0.35)',
+      mapTint: 'rgba(180,160,100,0.03)',
+      mapLabel: '春秋战国',
     },
 
-    // ============================================
-    // 时代二：帝国时代 ~221 BC - 907 AD
-    // ============================================
+    // =========================================================================
+    //  ERA 2 - 帝国时代  (221 BC - 907 AD)
+    // =========================================================================
     2: {
       name: '帝国时代',
-      weather: 'clear',
-      season: 'autumn',
-      skyGradient: ['#0f0c29', '#302b63'],
+      period: '前221-907',
 
-      buildings: [
-        { x: 270, y: 220, type: 'palace', label: '长安', region: 'zhongyuan' },
-        { x: 320, y: 205, type: 'palace', label: '洛阳', region: 'zhongyuan' },
-        { x: 390, y: 280, type: 'city', label: '建康', region: 'haiyang' },
-        { x: 160, y: 170, type: 'city', label: '敦煌', region: 'xiyu' },
-        { x: 100, y: 155, type: 'market', label: '龟兹', region: 'xiyu' },
-        { x: 75, y: 145, type: 'market', label: '疏勒', region: 'xiyu' },
-        { x: 420, y: 310, type: 'port', label: '广州', region: 'haiyang' },
-        { x: 350, y: 200, type: 'city', label: '邺城', region: 'zhongyuan' },
-        { x: 305, y: 245, type: 'city', label: '襄阳', region: 'zhongyuan' },
-        { x: 240, y: 335, type: 'city', label: '成都', region: 'xinan' },
-        { x: 300, y: 155, type: 'wall', label: '长城', region: 'guodu' },
-        { x: 370, y: 165, type: 'fort', label: '渔阳', region: 'guodu' },
-        { x: 200, y: 180, type: 'fort', label: '玉门关', region: 'xiyu' },
-        { x: 140, y: 290, type: 'temple', label: '吐蕃王宫', region: 'gaoyuan' },
-        { x: 450, y: 275, type: 'port', label: '泉州', region: 'haiyang' },
+      weatherEffects: [
+        { type: 'cloud',     regions: ['caoyuan', 'zhongyuan'],      opacity: 0.12, count: 4, drift: 'east',  speed: 0.3 },
+        { type: 'sandstorm', regions: ['xiyu'],                      opacity: 0.18, count: 3, drift: 'east',  speed: 0.7 },
+        { type: 'mist',      regions: ['xinan', 'guodu', 'haiyang'], opacity: 0.10, count: 5, drift: 'south', speed: 0.2 },
+        { type: 'snow',      regions: ['gaoyuan', 'caoyuan'],        opacity: 0.14, count: 4, drift: 'south', speed: 0.4 },
       ],
 
       landmarks: [
-        { x: 250, y: 160, type: 'mountain', label: '太行山' },
-        { x: 220, y: 270, type: 'mountain', label: '秦岭' },
-        { x: 200, y: 200, type: 'river', path: 'M150,190 Q250,210 400,230', label: '黄河' },
-        { x: 220, y: 300, type: 'river', path: 'M180,290 Q280,310 420,320', label: '长江' },
-        { x: 90, y: 110, type: 'desert', label: '塔克拉玛干' },
-        { x: 300, y: 85, type: 'grassland', label: '漠北草原' },
-        { x: 130, y: 250, type: 'mountain', label: '昆仑山' },
-        { x: 470, y: 350, type: 'sea', label: '南海' },
+        { id: 'changcheng', name: '万里长城',    x: 460, y: 195, icon: '🏯', region: 'zhongyuan', tooltip: '秦始皇连接各国长城，北拒匈奴，绵延万里' },
+        { id: 'changan',    name: '长安城',       x: 445, y: 268, icon: '🏛️', region: 'zhongyuan', tooltip: '汉唐帝都，百万人口的世界最大城市' },
+        { id: 'luoyang',    name: '洛阳',         x: 500, y: 275, icon: '🏛️', region: 'zhongyuan', tooltip: '东汉都城，丝路东端起点之一' },
+        { id: 'sichou',     name: '丝绸之路驿站', x: 280, y: 235, icon: '🛤️', region: 'xiyu',      tooltip: '张骞凿空，连通东西方的伟大贸易通道' },
+        { id: 'dunhuang',   name: '敦煌莫高窟',   x: 310, y: 225, icon: '🕌', region: 'xiyu',      tooltip: '千佛洞开凿于此，东西文明在此交汇' },
+        { id: 'bingma',     name: '兵马俑',       x: 448, y: 278, icon: '🗿', region: 'zhongyuan', tooltip: '秦始皇的地下军团，守护帝陵' },
+        { id: 'xiongnu_c',  name: '匈奴王庭',     x: 410, y: 120, icon: '👑', region: 'caoyuan',   tooltip: '冒顿单于统一草原，与汉帝国并立' },
+        { id: 'tubo',       name: '吐蕃王宫',     x: 290, y: 350, icon: '🏰', region: 'gaoyuan',   tooltip: '松赞干布统一高原，文成公主入藏' },
+        { id: 'nanzhao',    name: '南诏国',       x: 385, y: 405, icon: '🏘️', region: 'xinan',     tooltip: '西南大国南诏，连通东南亚' },
+        { id: 'guangzhou',  name: '广州港',       x: 570, y: 380, icon: '⚓', region: 'guodu',     tooltip: '海上丝路始发港，番商云集' },
       ],
 
-      populations: [
-        { region: 'zhongyuan', density: 'high', icon: '🏘️' },
-        { region: 'caoyuan', density: 'medium', icon: '🏕️' },
-        { region: 'xiyu', density: 'medium', icon: '🏘️' },
-        { region: 'gaoyuan', density: 'low', icon: '🏕️' },
-        { region: 'xinan', density: 'medium', icon: '🏘️' },
-        { region: 'haiyang', density: 'medium', icon: '🏘️' },
-        { region: 'guodu', density: 'medium', icon: '🏘️' },
-      ],
-
-      cultures: [
-        { region: 'zhongyuan', items: ['儒学正统', '科举萌芽', '佛道并行'] },
-        { region: 'caoyuan', items: ['突厥汗国', '铁骑文化'] },
-        { region: 'xiyu', items: ['丝路贸易', '佛教东传', '胡旋舞'] },
-        { region: 'gaoyuan', items: ['吐蕃崛起', '苯教'] },
-        { region: 'xinan', items: ['南诏', '茶马古道'] },
-        { region: 'haiyang', items: ['海上丝路', '番坊'] },
-        { region: 'guodu', items: ['长城防线', '互市'] },
-      ],
+      populations: {
+        zhongyuan: { density: 'very-high', icon: '👥', count: 12 },
+        caoyuan:   { density: 'medium',    icon: '🐎', count: 5 },
+        xiyu:      { density: 'low',       icon: '🐪', count: 4 },
+        gaoyuan:   { density: 'low',       icon: '🏔️', count: 3 },
+        xinan:     { density: 'medium',    icon: '🌿', count: 5 },
+        haiyang:   { density: 'low',       icon: '⛵', count: 3 },
+        guodu:     { density: 'high',      icon: '🏘️', count: 8 },
+      },
 
       ambientElements: [
-        { type: 'caravan', fromX: 75, fromY: 150, toX: 270, toY: 220, label: '丝路驼队' },
-        { type: 'ships', x: 440, y: 320, label: '番舶' },
-        { type: 'army', x: 300, y: 155, size: 'large', label: '长城戍军' },
-        { type: 'monks', x: 160, y: 175, label: '西行求法僧' },
-        { type: 'nomads', x: 310, y: 85, size: 'large', label: '突厥骑兵' },
-        { type: 'bird_flock', x: 350, y: 120, direction: 'south' },
-        { type: 'fishing_boats', x: 450, y: 285 },
-        { type: 'caravan', fromX: 240, fromY: 335, toX: 140, toY: 290, label: '茶马商队' },
-        { type: 'scholars', x: 275, y: 225, label: '太学生' },
+        { type: 'silkroad',  path: 'xiyu-zhongyuan',    icon: '🐫', speed: 'slow',   tooltip: '丝路驼队，满载丝绸香料' },
+        { type: 'fleet',     path: 'haiyang-guodu',      icon: '⛵', speed: 'medium', tooltip: '海上商船往来南洋' },
+        { type: 'envoy',     path: 'zhongyuan-gaoyuan',  icon: '🏳️', speed: 'slow',   tooltip: '和亲使团远赴高原' },
+        { type: 'army',      path: 'zhongyuan-caoyuan',  icon: '🐎', speed: 'fast',   tooltip: '汉骑兵出征漠北' },
+        { type: 'monk',      path: 'xiyu-zhongyuan',     icon: '🙏', speed: 'slow',   tooltip: '西域高僧东来传法' },
       ],
 
-      banners: [
-        { x: 270, y: 205, text: '汉', color: '#b22222' },
-        { x: 320, y: 190, text: '唐', color: '#daa520' },
-        { x: 140, y: 280, text: '吐蕃', color: '#4a6741' },
-        { x: 310, y: 80, text: '突厥', color: '#708090' },
-      ],
+      borderStyle: 'solid',
+      borderColor: 'rgba(140,80,40,0.4)',
+      mapTint: 'rgba(160,120,60,0.04)',
+      mapLabel: '秦汉唐',
     },
 
-    // ============================================
-    // 时代三：转型时代 ~907 - 1644 AD
-    // ============================================
+    // =========================================================================
+    //  ERA 3 - 变革时代  (907-1840 AD)
+    // =========================================================================
     3: {
-      name: '转型时代',
-      weather: 'rain',
-      season: 'summer',
-      skyGradient: ['#1a1a1a', '#2c3e50'],
+      name: '变革时代',
+      period: '907-1840',
 
-      buildings: [
-        { x: 330, y: 200, type: 'palace', label: '开封', region: 'zhongyuan' },
-        { x: 380, y: 270, type: 'palace', label: '杭州', region: 'haiyang' },
-        { x: 360, y: 175, type: 'palace', label: '大都', region: 'guodu' },
-        { x: 450, y: 280, type: 'port', label: '泉州', region: 'haiyang' },
-        { x: 420, y: 305, type: 'port', label: '广州', region: 'haiyang' },
-        { x: 230, y: 330, type: 'city', label: '大理', region: 'xinan' },
-        { x: 250, y: 340, type: 'city', label: '成都', region: 'xinan' },
-        { x: 300, y: 210, type: 'city', label: '洛阳', region: 'zhongyuan' },
-        { x: 140, y: 285, type: 'temple', label: '拉萨', region: 'gaoyuan' },
-        { x: 310, y: 90, type: 'palace', label: '上都', region: 'caoyuan' },
-        { x: 110, y: 160, type: 'market', label: '撒马尔罕', region: 'xiyu' },
-        { x: 285, y: 225, type: 'city', label: '长安', region: 'zhongyuan' },
-        { x: 390, y: 245, type: 'market', label: '扬州', region: 'haiyang' },
-        { x: 345, y: 235, type: 'city', label: '鄂州', region: 'zhongyuan' },
-        { x: 460, y: 270, type: 'lighthouse', label: '刺桐灯塔', region: 'haiyang' },
+      weatherEffects: [
+        { type: 'cloud',   regions: ['zhongyuan', 'guodu'],              opacity: 0.10, count: 4, drift: 'east',  speed: 0.3 },
+        { type: 'monsoon', regions: ['haiyang', 'guodu', 'xinan'],       opacity: 0.15, count: 5, drift: 'north', speed: 0.6 },
+        { type: 'dust',    regions: ['xiyu', 'caoyuan'],                 opacity: 0.12, count: 3, drift: 'east',  speed: 0.5 },
+        { type: 'snow',    regions: ['gaoyuan', 'caoyuan'],              opacity: 0.16, count: 5, drift: 'south', speed: 0.3 },
+        { type: 'fog',     regions: ['xinan'],                           opacity: 0.08, count: 3, drift: 'east',  speed: 0.1 },
       ],
 
       landmarks: [
-        { x: 250, y: 160, type: 'mountain', label: '太行山' },
-        { x: 200, y: 200, type: 'river', path: 'M150,190 Q250,210 400,230', label: '黄河' },
-        { x: 220, y: 300, type: 'river', path: 'M180,290 Q280,310 420,320', label: '长江' },
-        { x: 360, y: 240, type: 'river', path: 'M330,200 Q350,250 380,270', label: '大运河' },
-        { x: 300, y: 85, type: 'grassland', label: '蒙古草原' },
-        { x: 470, y: 360, type: 'sea', label: '南海' },
-        { x: 490, y: 250, type: 'sea', label: '东海' },
-        { x: 130, y: 250, type: 'mountain', label: '昆仑山' },
+        { id: 'kaifeng',   name: '开封汴梁',   x: 515, y: 265, icon: '🏯', region: 'zhongyuan', tooltip: '北宋都城，清明上河图中的繁华都市' },
+        { id: 'hangzhou',  name: '临安城',      x: 575, y: 310, icon: '🏛️', region: 'guodu',     tooltip: '南宋行在，"上有天堂下有苏杭"' },
+        { id: 'beijing',   name: '大都/北京',   x: 530, y: 210, icon: '🏯', region: 'zhongyuan', tooltip: '元大都到明清紫禁城，天子脚下' },
+        { id: 'zhenghe',   name: '郑和船厂',    x: 565, y: 295, icon: '🚢', region: 'guodu',     tooltip: '龙江船厂造宝船，七下西洋' },
+        { id: 'quanzhou',  name: '泉州港',      x: 590, y: 355, icon: '⚓', region: 'guodu',     tooltip: '宋元第一大港，"刺桐城"名扬海外' },
+        { id: 'mongol',    name: '蒙古大帐',    x: 420, y: 115, icon: '⛺', region: 'caoyuan',   tooltip: '成吉思汗的金帐，草原帝国的起点' },
+        { id: 'potala',    name: '布达拉宫',    x: 295, y: 345, icon: '🏰', region: 'gaoyuan',   tooltip: '藏传佛教圣地，高原上的宫殿' },
+        { id: 'dali',      name: '大理古城',    x: 375, y: 395, icon: '🏘️', region: 'xinan',     tooltip: '大理国都城，白族文化中心' },
+        { id: 'yumen',     name: '玉门关',      x: 300, y: 220, icon: '🚪', region: 'xiyu',      tooltip: '"春风不度玉门关"，丝路咽喉要道' },
+        { id: 'mazu',      name: '妈祖庙',      x: 615, y: 345, icon: '⛩️', region: 'haiyang',   tooltip: '海上守护神，庇佑万千渔民商旅' },
       ],
 
-      populations: [
-        { region: 'zhongyuan', density: 'high', icon: '🏘️' },
-        { region: 'caoyuan', density: 'medium', icon: '🏕️' },
-        { region: 'xiyu', density: 'medium', icon: '🏘️' },
-        { region: 'gaoyuan', density: 'low', icon: '🏕️' },
-        { region: 'xinan', density: 'medium', icon: '🏘️' },
-        { region: 'haiyang', density: 'high', icon: '🏘️' },
-        { region: 'guodu', density: 'medium', icon: '🏘️' },
-      ],
-
-      cultures: [
-        { region: 'zhongyuan', items: ['理学', '科举', '活字印刷'] },
-        { region: 'caoyuan', items: ['蒙古帝国', '驿站制度'] },
-        { region: 'xiyu', items: ['伊斯兰传入', '回鹘文明'] },
-        { region: 'gaoyuan', items: ['藏传佛教', '政教合一'] },
-        { region: 'xinan', items: ['大理佛国', '土司制度'] },
-        { region: 'haiyang', items: ['海上贸易', '市舶司', '瓷器外销'] },
-        { region: 'guodu', items: ['辽金并立', '南北对峙'] },
-      ],
+      populations: {
+        zhongyuan: { density: 'very-high', icon: '👥', count: 14 },
+        caoyuan:   { density: 'medium',    icon: '🐎', count: 6 },
+        xiyu:      { density: 'low',       icon: '🐪', count: 3 },
+        gaoyuan:   { density: 'low',       icon: '🏔️', count: 3 },
+        xinan:     { density: 'medium',    icon: '🌿', count: 6 },
+        haiyang:   { density: 'medium',    icon: '⛵', count: 5 },
+        guodu:     { density: 'very-high', icon: '🏘️', count: 12 },
+      },
 
       ambientElements: [
-        { type: 'ships', x: 460, y: 285, label: '远洋商船' },
-        { type: 'ships', x: 480, y: 340, label: '郑和宝船' },
-        { type: 'caravan', fromX: 110, fromY: 165, toX: 300, toY: 210, label: '回回商人' },
-        { type: 'army', x: 310, y: 95, size: 'large', label: '蒙古铁骑' },
-        { type: 'fishing_boats', x: 440, y: 295 },
-        { type: 'scholars', x: 335, y: 205, label: '太学诸生' },
-        { type: 'monks', x: 145, y: 290, label: '藏地僧侣' },
-        { type: 'caravan', fromX: 250, fromY: 340, toX: 380, toY: 270, label: '茶商' },
-        { type: 'bird_flock', x: 400, y: 250, direction: 'south' },
+        { type: 'treasure-fleet', path: 'guodu-haiyang',      icon: '🚢', speed: 'medium', tooltip: '郑和宝船舰队，浩浩荡荡下西洋' },
+        { type: 'tea-trade',      path: 'xinan-guodu',        icon: '🍵', speed: 'slow',   tooltip: '茶马古道上的马帮' },
+        { type: 'mongol-cavalry', path: 'caoyuan-zhongyuan',  icon: '🏇', speed: 'fast',   tooltip: '蒙古铁骑横扫天下' },
+        { type: 'merchant-junk',  path: 'haiyang-guodu',      icon: '⛵', speed: 'medium', tooltip: '商船满载瓷器茶叶' },
+        { type: 'canal-barge',    path: 'zhongyuan-guodu',    icon: '🛶', speed: 'slow',   tooltip: '大运河漕运，南粮北调' },
       ],
 
-      banners: [
-        { x: 330, y: 185, text: '宋', color: '#c41e3a' },
-        { x: 360, y: 160, text: '元', color: '#1c3d6e' },
-        { x: 380, y: 255, text: '南宋', color: '#8b0000' },
-        { x: 310, y: 85, text: '蒙古', color: '#4682b4' },
-        { x: 230, y: 325, text: '大理', color: '#daa520' },
-      ],
+      borderStyle: 'solid',
+      borderColor: 'rgba(100,80,60,0.4)',
+      mapTint: 'rgba(120,140,100,0.04)',
+      mapLabel: '宋元明清',
     },
 
-    // ============================================
-    // 时代四：开放时代 ~1644 - 近现代
-    // ============================================
+    // =========================================================================
+    //  ERA 4 - 觉醒时代  (1840 - 现代)
+    // =========================================================================
     4: {
-      name: '开放时代',
-      weather: 'fog',
-      season: 'winter',
-      skyGradient: ['#0a0a0a', '#1a1a2e'],
+      name: '觉醒时代',
+      period: '1840-现代',
 
-      buildings: [
-        { x: 360, y: 175, type: 'palace', label: '北京', region: 'guodu' },
-        { x: 420, y: 310, type: 'port', label: '广州', region: 'haiyang' },
-        { x: 430, y: 260, type: 'port', label: '上海', region: 'haiyang' },
-        { x: 415, y: 320, type: 'port', label: '澳门', region: 'haiyang' },
-        { x: 425, y: 315, type: 'port', label: '香港', region: 'haiyang' },
-        { x: 280, y: 220, type: 'city', label: '西安', region: 'zhongyuan' },
-        { x: 320, y: 205, type: 'city', label: '洛阳', region: 'zhongyuan' },
-        { x: 340, y: 230, type: 'city', label: '武汉', region: 'zhongyuan' },
-        { x: 250, y: 335, type: 'city', label: '成都', region: 'xinan' },
-        { x: 220, y: 350, type: 'city', label: '昆明', region: 'xinan' },
-        { x: 140, y: 285, type: 'temple', label: '拉萨', region: 'gaoyuan' },
-        { x: 110, y: 155, type: 'city', label: '伊犁', region: 'xiyu' },
-        { x: 90, y: 170, type: 'fort', label: '喀什', region: 'xiyu' },
-        { x: 395, y: 175, type: 'port', label: '天津', region: 'guodu' },
-        { x: 460, y: 275, type: 'port', label: '福州', region: 'haiyang' },
+      weatherEffects: [
+        { type: 'smog',  regions: ['zhongyuan', 'guodu'],            opacity: 0.10, count: 4, drift: 'east',  speed: 0.2 },
+        { type: 'cloud', regions: ['caoyuan', 'xiyu', 'gaoyuan'],    opacity: 0.10, count: 3, drift: 'east',  speed: 0.3 },
+        { type: 'rain',  regions: ['xinan', 'guodu', 'haiyang'],     opacity: 0.12, count: 4, drift: 'south', speed: 0.5 },
+        { type: 'dust',  regions: ['xiyu'],                          opacity: 0.08, count: 2, drift: 'east',  speed: 0.4 },
       ],
 
       landmarks: [
-        { x: 250, y: 160, type: 'mountain', label: '太行山' },
-        { x: 200, y: 200, type: 'river', path: 'M150,190 Q250,210 400,230', label: '黄河' },
-        { x: 220, y: 300, type: 'river', path: 'M180,290 Q280,310 420,320', label: '长江' },
-        { x: 300, y: 85, type: 'grassland', label: '蒙古草原' },
-        { x: 470, y: 360, type: 'sea', label: '南海' },
-        { x: 490, y: 240, type: 'sea', label: '东海' },
-        { x: 90, y: 110, type: 'desert', label: '塔克拉玛干' },
-        { x: 130, y: 250, type: 'mountain', label: '喜马拉雅' },
+        { id: 'tiananmen', name: '天安门',        x: 530, y: 215, icon: '🏛️', region: 'zhongyuan', tooltip: '1949年开国大典，新中国诞生' },
+        { id: 'shanghai',  name: '上海外滩',      x: 585, y: 290, icon: '🏙️', region: 'guodu',     tooltip: '十里洋场到东方明珠，中国现代化的窗口' },
+        { id: 'tielu',     name: '京汉铁路',      x: 510, y: 255, icon: '🚂', region: 'zhongyuan', tooltip: '中国早期铁路干线，近代化的钢铁动脉' },
+        { id: 'huangpu',   name: '黄埔军校',      x: 575, y: 375, icon: '🎖️', region: 'guodu',     tooltip: '"升官发财请走别路"，革命军官摇篮' },
+        { id: 'gangkou',   name: '香港/广州港',   x: 580, y: 390, icon: '🚢', region: 'haiyang',   tooltip: '鸦片战争后被迫开放，中西碰撞之地' },
+        { id: 'gongchang', name: '汉阳铁厂',      x: 490, y: 305, icon: '🏭', region: 'zhongyuan', tooltip: '张之洞创办，中国近代重工业先驱' },
+        { id: 'yanan',     name: '延安宝塔',      x: 440, y: 245, icon: '🗼', region: 'zhongyuan', tooltip: '革命圣地延安，抗战时期的指挥中心' },
+        { id: 'lasa_mod',  name: '青藏铁路',      x: 310, y: 330, icon: '🚂', region: 'gaoyuan',   tooltip: '天路通高原，世界最高铁路' },
+        { id: 'shenzhen',  name: '深圳特区',      x: 578, y: 385, icon: '🏙️', region: 'guodu',     tooltip: '改革开放试验田，从小渔村到世界都市' },
+        { id: 'jiuquan',   name: '酒泉卫星基地',  x: 310, y: 210, icon: '🚀', region: 'xiyu',      tooltip: '中国航天发射中心，飞天梦圆' },
       ],
 
-      populations: [
-        { region: 'zhongyuan', density: 'high', icon: '🏘️' },
-        { region: 'caoyuan', density: 'medium', icon: '🏕️' },
-        { region: 'xiyu', density: 'medium', icon: '🏘️' },
-        { region: 'gaoyuan', density: 'low', icon: '🏕️' },
-        { region: 'xinan', density: 'medium', icon: '🏘️' },
-        { region: 'haiyang', density: 'high', icon: '🏙️' },
-        { region: 'guodu', density: 'high', icon: '🏙️' },
-      ],
-
-      cultures: [
-        { region: 'zhongyuan', items: ['经世致用', '洋务运动'] },
-        { region: 'caoyuan', items: ['盟旗制度', '藏传佛教'] },
-        { region: 'xiyu', items: ['伊斯兰文化', '屯垦戍边'] },
-        { region: 'gaoyuan', items: ['达赖制度', '金瓶掣签'] },
-        { region: 'xinan', items: ['改土归流', '滇越铁路'] },
-        { region: 'haiyang', items: ['通商口岸', '买办文化', '洋行'] },
-        { region: 'guodu', items: ['八旗驻防', '满汉交融'] },
-      ],
+      populations: {
+        zhongyuan: { density: 'extreme',   icon: '👥', count: 18 },
+        caoyuan:   { density: 'medium',    icon: '🐎', count: 5 },
+        xiyu:      { density: 'low',       icon: '🏘️', count: 4 },
+        gaoyuan:   { density: 'low',       icon: '🏔️', count: 3 },
+        xinan:     { density: 'high',      icon: '🌿', count: 8 },
+        haiyang:   { density: 'high',      icon: '🚢', count: 7 },
+        guodu:     { density: 'extreme',   icon: '🏙️', count: 16 },
+      },
 
       ambientElements: [
-        { type: 'ships', x: 470, y: 300, label: '英国炮舰' },
-        { type: 'ships', x: 440, y: 270, label: '商船' },
-        { type: 'caravan', fromX: 90, fromY: 170, toX: 280, toY: 220, label: '茶叶商队' },
-        { type: 'army', x: 360, y: 180, size: 'large', label: '八旗军' },
-        { type: 'army', x: 420, y: 315, size: 'small', label: '洋枪队' },
-        { type: 'scholars', x: 430, y: 265, label: '留学生' },
-        { type: 'fishing_boats', x: 455, y: 290 },
-        { type: 'monks', x: 145, y: 290, label: '转世活佛' },
-        { type: 'nomads', x: 300, y: 90, size: 'medium', label: '蒙古牧民' },
-        { type: 'bird_flock', x: 200, y: 150, direction: 'west' },
+        { type: 'train',     path: 'zhongyuan-guodu',    icon: '🚂', speed: 'fast',   tooltip: '火车汽笛声响彻大地' },
+        { type: 'steamship', path: 'haiyang-guodu',      icon: '🚢', speed: 'medium', tooltip: '西方炮舰与商船' },
+        { type: 'airplane',  path: 'zhongyuan-xiyu',     icon: '✈️', speed: 'fast',   tooltip: '现代航线连通东西' },
+        { type: 'truck',     path: 'xinan-zhongyuan',    icon: '🚛', speed: 'medium', tooltip: '公路运输网络' },
+        { type: 'highspeed', path: 'zhongyuan-guodu',    icon: '🚄', speed: 'fast',   tooltip: '高铁时代，千里一日还' },
       ],
 
-      banners: [
-        { x: 360, y: 160, text: '清', color: '#ffd700' },
-        { x: 420, y: 300, text: '粤', color: '#c41e3a' },
-        { x: 430, y: 250, text: '沪', color: '#4169e1' },
-        { x: 110, y: 150, text: '新疆', color: '#2e8b57' },
-        { x: 140, y: 275, text: '藏', color: '#8b4513' },
-      ],
+      borderStyle: 'solid',
+      borderColor: 'rgba(60,60,80,0.45)',
+      mapTint: 'rgba(80,100,140,0.04)',
+      mapLabel: '近现代',
     },
   },
 
-  // ──────────────────────────────────────────────
-  // 关键事件场景增强
-  // 为最具视觉冲击力的 12-15 个事件提供额外地图元素
-  // ──────────────────────────────────────────────
-  eventScenes: {
+  // ---------------------------------------------------------------------------
+  //  REGION DECORATIONS  (era-independent, always visible)
+  // ---------------------------------------------------------------------------
+  regionDecorations: {
 
-    // --- 时代一：封建时代 ---
-
-    // 封建制度 vs 中央集权
-    'e1_1': {
-      extraBuildings: [
-        { x: 260, y: 230, type: 'academy', label: '稷下学宫' },
+    zhongyuan: {
+      terrain: [
+        {
+          type: 'river', name: '黄河',
+          path: 'M365,215 Q400,220 440,225 Q470,230 500,228 Q530,232 555,240 Q575,248 590,260',
+          color: '#b8a060', width: 2.5, opacity: 0.6,
+          label: { text: '黄河', x: 470, y: 222, fontSize: 8 },
+        },
+        {
+          type: 'river', name: '长江',
+          path: 'M350,325 Q390,318 430,315 Q470,310 510,308 Q545,312 570,320 Q590,328 605,335',
+          color: '#5a8aaa', width: 3, opacity: 0.6,
+          label: { text: '长江', x: 480, y: 306, fontSize: 8 },
+        },
+        { type: 'mountain', name: '泰山',     x: 545, y: 245, scale: 0.8, icon: '山' },
+        { type: 'mountain', name: '华山',     x: 445, y: 275, scale: 0.7, icon: '山' },
+        { type: 'plain',    name: '华北平原', x: 520, y: 240, width: 60, height: 30 },
       ],
-      extraAmbient: [
-        { type: 'scholars', x: 270, y: 240, label: '百家论战' },
-      ],
+      flora: '🌾',
+      floorColor: 'rgba(200,180,100,0.06)',
     },
 
-    // 商鞅变法
-    'e1_2': {
-      extraBuildings: [
-        { x: 255, y: 218, type: 'palace', label: '咸阳宫' },
-        { x: 250, y: 235, type: 'farm', label: '秦田' },
+    caoyuan: {
+      terrain: [
+        { type: 'steppe', name: '蒙古高原',   x: 400, y: 130, width: 130, height: 50, color: 'rgba(180,190,120,0.08)' },
+        { type: 'desert', name: '戈壁',       x: 360, y: 160, width: 50,  height: 25, color: 'rgba(200,180,130,0.10)' },
+        {
+          type: 'river', name: '额尔古纳河',
+          path: 'M480,110 Q490,130 495,150',
+          color: '#6a9aba', width: 1.5, opacity: 0.4,
+        },
       ],
-      extraAmbient: [
-        { type: 'army', x: 260, y: 225, size: 'medium', label: '新军操练' },
-      ],
+      flora: '🌿',
+      floorColor: 'rgba(160,180,100,0.05)',
     },
 
-    // 合纵连横
-    'e1_3': {
-      extraBuildings: [
-        { x: 340, y: 210, type: 'city', label: '大梁' },
+    xiyu: {
+      terrain: [
+        { type: 'desert',   name: '塔克拉玛干', x: 220, y: 240, width: 90, height: 45, color: 'rgba(210,190,140,0.12)' },
+        { type: 'oasis',    name: '敦煌绿洲',   x: 310, y: 230, scale: 0.6, color: 'rgba(100,160,80,0.15)' },
+        { type: 'mountain', name: '天山',       x: 240, y: 205, scale: 1.0, icon: '山' },
+        {
+          type: 'route', name: '丝绸之路',
+          path: 'M210,235 Q250,230 290,228 Q330,230 370,240 Q410,250 445,265',
+          color: 'rgba(180,140,60,0.25)', width: 1.5, dasharray: '4,3',
+        },
       ],
-      extraAmbient: [
-        { type: 'caravan', fromX: 345, fromY: 195, toX: 260, toY: 225, label: '纵横策士' },
-        { type: 'army', x: 280, y: 215, size: 'large', label: '秦军东出' },
-      ],
+      flora: '🌵',
+      floorColor: 'rgba(210,190,140,0.06)',
     },
 
-    // 秦灭六国
-    'e1_4': {
-      extraBuildings: [
-        { x: 275, y: 210, type: 'wall', label: '万里长城' },
+    gaoyuan: {
+      terrain: [
+        { type: 'mountain', name: '喜马拉雅山脉', x: 270, y: 365, scale: 1.3, icon: '山' },
+        { type: 'mountain', name: '唐古拉山',     x: 320, y: 325, scale: 0.9, icon: '山' },
+        { type: 'lake',     name: '青海湖',       x: 345, y: 300, radius: 8,  color: '#4a7aaa' },
+        { type: 'lake',     name: '纳木错',       x: 295, y: 335, radius: 5,  color: '#4a7aaa' },
       ],
-      extraAmbient: [
-        { type: 'army', x: 290, y: 200, size: 'large', label: '秦始皇兵马' },
-        { type: 'army', x: 350, y: 195, size: 'small', label: '六国残兵' },
-      ],
+      flora: '❄️',
+      floorColor: 'rgba(180,190,200,0.06)',
     },
 
-    // --- 时代二：帝国时代 ---
-
-    // 汉武帝开拓
-    'e2_1': {
-      extraBuildings: [
-        { x: 200, y: 180, type: 'fort', label: '玉门关' },
-        { x: 170, y: 175, type: 'fort', label: '阳关' },
+    xinan: {
+      terrain: [
+        { type: 'jungle',   name: '云南雨林',   x: 375, y: 410, width: 55, height: 35, color: 'rgba(60,140,60,0.10)' },
+        { type: 'mountain', name: '横断山脉',   x: 365, y: 380, scale: 0.9, icon: '山' },
+        {
+          type: 'river', name: '澜沧江',
+          path: 'M355,355 Q365,375 370,395 Q375,415 380,430',
+          color: '#5a8aaa', width: 1.5, opacity: 0.5,
+        },
+        {
+          type: 'route', name: '茶马古道',
+          path: 'M370,395 Q400,380 430,365 Q450,350 470,330',
+          color: 'rgba(120,80,40,0.2)', width: 1, dasharray: '3,4',
+        },
       ],
-      extraAmbient: [
-        { type: 'army', x: 180, y: 175, size: 'large', label: '汉军西征' },
-        { type: 'caravan', fromX: 80, fromY: 150, toX: 270, toY: 220, label: '张骞出使' },
-      ],
+      flora: '🌴',
+      floorColor: 'rgba(80,150,80,0.05)',
     },
 
-    // 佛教东传
-    'e2_2': {
-      extraBuildings: [
-        { x: 315, y: 210, type: 'temple', label: '白马寺' },
-        { x: 165, y: 168, type: 'temple', label: '莫高窟' },
+    haiyang: {
+      terrain: [
+        { type: 'waves',   count: 8, region: 'haiyang', color: 'rgba(60,120,180,0.08)' },
+        { type: 'island',  name: '台湾', x: 625, y: 340, width: 10, height: 25, color: 'rgba(100,160,80,0.15)' },
+        { type: 'island',  name: '海南', x: 565, y: 420, width: 12, height: 14, color: 'rgba(100,160,80,0.12)' },
+        {
+          type: 'current', name: '黑潮',
+          path: 'M645,300 Q650,330 648,360 Q640,390 630,420',
+          color: 'rgba(40,80,160,0.15)', width: 2, dasharray: '6,3',
+        },
       ],
-      extraAmbient: [
-        { type: 'monks', x: 130, y: 170, label: '西域僧人' },
-        { type: 'monks', x: 310, y: 215, label: '译经僧' },
-      ],
+      flora: '🌊',
+      floorColor: 'rgba(60,120,180,0.04)',
     },
 
-    // 五胡乱华
-    'e2_3': {
-      extraBuildings: [
-        { x: 385, y: 275, type: 'palace', label: '建康宫' },
+    guodu: {
+      terrain: [
+        { type: 'hills', name: '武夷山', x: 565, y: 335, scale: 0.7, icon: '山' },
+        { type: 'hills', name: '南岭',   x: 530, y: 360, scale: 0.6, icon: '山' },
+        {
+          type: 'river', name: '珠江',
+          path: 'M500,370 Q530,375 555,380 Q570,385 580,390',
+          color: '#5a8aaa', width: 2, opacity: 0.5,
+          label: { text: '珠江', x: 540, y: 372, fontSize: 7 },
+        },
+        {
+          type: 'route', name: '大运河',
+          path: 'M530,215 Q535,240 540,260 Q548,280 560,295 Q570,305 575,310',
+          color: 'rgba(60,100,160,0.2)', width: 1.5, dasharray: '5,3',
+        },
       ],
-      extraAmbient: [
-        { type: 'nomads', x: 320, y: 140, size: 'large', label: '五胡铁骑' },
-        { type: 'army', x: 340, y: 210, size: 'small', label: '衣冠南渡' },
-      ],
+      flora: '🎋',
+      floorColor: 'rgba(120,160,100,0.05)',
     },
+  },
 
-    // 大唐盛世
-    'e2_4': {
-      extraBuildings: [
-        { x: 265, y: 215, type: 'palace', label: '大明宫' },
-        { x: 275, y: 230, type: 'market', label: '西市' },
-      ],
-      extraAmbient: [
-        { type: 'caravan', fromX: 75, fromY: 150, toX: 265, toY: 220, label: '胡商万里' },
-        { type: 'scholars', x: 270, y: 225, label: '诗人雅集' },
-        { type: 'ships', x: 430, y: 315, label: '遣唐使' },
-      ],
+  // ---------------------------------------------------------------------------
+  //  STAT-BASED VISUAL THRESHOLDS
+  // ---------------------------------------------------------------------------
+  statVisuals: {
+    prosperity: {
+      high: { above: 7, effect: 'golden-glow', icon: '✨', label: '繁荣', color: 'rgba(255,215,0,0.15)',   pulseSpeed: 2   },
+      low:  { below: 3, effect: 'barren',       icon: '💀', label: '凋零', color: 'rgba(80,60,40,0.12)',    pulseSpeed: 0   },
     },
-
-    // --- 时代三：转型时代 ---
-
-    // 宋代商业革命
-    'e3_1': {
-      extraBuildings: [
-        { x: 335, y: 195, type: 'market', label: '东京汴梁夜市' },
-        { x: 385, y: 265, type: 'market', label: '临安市坊' },
-      ],
-      extraAmbient: [
-        { type: 'ships', x: 455, y: 280, label: '海商巨舶' },
-        { type: 'scholars', x: 340, y: 200, label: '清明上河' },
-      ],
+    military: {
+      high: { above: 7, effect: 'fortress',     icon: '🏰', label: '铁壁', color: 'rgba(100,100,120,0.12)', pulseSpeed: 0   },
+      low:  { below: 3, effect: 'burning',       icon: '🔥', label: '战火', color: 'rgba(200,60,30,0.12)',   pulseSpeed: 1.5 },
     },
-
-    // 蒙古西征
-    'e3_2': {
-      extraBuildings: [
-        { x: 305, y: 85, type: 'camp', label: '成吉思汗大帐' },
-      ],
-      extraAmbient: [
-        { type: 'army', x: 300, y: 95, size: 'large', label: '蒙古西征大军' },
-        { type: 'army', x: 120, y: 155, size: 'medium', label: '西域征伐' },
-        { type: 'nomads', x: 280, y: 100, size: 'large', label: '万马奔腾' },
-      ],
+    culture: {
+      high: { above: 7, effect: 'enlightened',   icon: '📚', label: '文昌', color: 'rgba(120,80,200,0.10)',  pulseSpeed: 3   },
+      low:  { below: 3, effect: 'dark',           icon: '🌑', label: '蒙昧', color: 'rgba(30,30,40,0.10)',   pulseSpeed: 0   },
     },
-
-    // 郑和下西洋
-    'e3_3': {
-      extraBuildings: [
-        { x: 400, y: 290, type: 'port', label: '太仓刘家港' },
-      ],
-      extraAmbient: [
-        { type: 'ships', x: 470, y: 350, label: '郑和宝船队' },
-        { type: 'ships', x: 490, y: 380, label: '远航舰队' },
-      ],
+    trade: {
+      high: { above: 7, effect: 'trade-hub',     icon: '🏪', label: '通商', color: 'rgba(60,160,120,0.12)',  pulseSpeed: 2   },
+      low:  { below: 3, effect: 'isolated',       icon: '🚫', label: '闭塞', color: 'rgba(100,100,100,0.08)', pulseSpeed: 0  },
     },
+  },
 
-    // --- 时代四：开放时代 ---
+  // ---------------------------------------------------------------------------
+  //  AMBIENT ANIMATION PATHS  (waypoints for moving elements, SVG coords)
+  // ---------------------------------------------------------------------------
+  ambientPaths: {
+    'xiyu-zhongyuan':    { waypoints: [[250,230],[310,235],[370,250],[440,265],[500,270]], duration: 12000 },
+    'zhongyuan-caoyuan': { waypoints: [[500,270],[480,240],[460,210],[440,180],[420,150]], duration: 8000  },
+    'zhongyuan-guodu':   { waypoints: [[500,270],[520,290],[540,310],[550,330],[555,340]], duration: 7000  },
+    'zhongyuan-xinan':   { waypoints: [[500,270],[470,300],[440,340],[420,370],[400,400]], duration: 10000 },
+    'zhongyuan-gaoyuan': { waypoints: [[500,270],[440,280],[380,300],[340,320],[300,340]], duration: 11000 },
+    'zhongyuan-xiyu':    { waypoints: [[500,270],[440,265],[370,250],[310,235],[250,230]], duration: 12000 },
+    'guodu-haiyang':     { waypoints: [[550,340],[570,345],[590,350],[610,355],[620,360]], duration: 6000  },
+    'haiyang-guodu':     { waypoints: [[620,350],[600,345],[580,342],[560,340],[550,338]], duration: 6000  },
+    'caoyuan-zhongyuan': { waypoints: [[420,150],[430,170],[450,200],[470,230],[500,270]], duration: 7000  },
+    'xinan-guodu':       { waypoints: [[400,400],[430,385],[460,365],[500,350],[550,340]], duration: 9000  },
+    'xinan-zhongyuan':   { waypoints: [[400,400],[420,370],[440,340],[470,300],[500,270]], duration: 10000 },
+  },
 
-    // 鸦片战争
-    'e4_1': {
-      extraBuildings: [
-        { x: 425, y: 312, type: 'fort', label: '虎门炮台' },
-      ],
-      extraAmbient: [
-        { type: 'ships', x: 470, y: 310, label: '英国远征舰队' },
-        { type: 'army', x: 420, y: 310, size: 'medium', label: '清军守卫' },
-      ],
-    },
-
-    // 洋务运动
-    'e4_2': {
-      extraBuildings: [
-        { x: 435, y: 258, type: 'city', label: '江南制造局' },
-        { x: 390, y: 180, type: 'city', label: '天津机器局' },
-      ],
-      extraAmbient: [
-        { type: 'ships', x: 450, y: 265, label: '北洋水师' },
-        { type: 'scholars', x: 430, y: 260, label: '同文馆学生' },
-      ],
-    },
-
-    // 辛亥革命
-    'e4_3': {
-      extraBuildings: [
-        { x: 345, y: 235, type: 'fort', label: '武昌起义' },
-      ],
-      extraAmbient: [
-        { type: 'army', x: 340, y: 230, size: 'medium', label: '革命军' },
-        { type: 'army', x: 360, y: 180, size: 'medium', label: '清廷禁军' },
-      ],
-    },
+  // ---------------------------------------------------------------------------
+  //  LEGEND / MAP KEY ICONS
+  // ---------------------------------------------------------------------------
+  legendIcons: {
+    river:    { icon: '〰️',  label: '河流' },
+    mountain: { icon: '⛰️', label: '山脉' },
+    desert:   { icon: '🏜️', label: '沙漠' },
+    lake:     { icon: '🔵',  label: '湖泊' },
+    route:    { icon: '- -', label: '古道' },
+    capital:  { icon: '🏛️', label: '都城' },
+    port:     { icon: '⚓',  label: '港口' },
+    fortress: { icon: '🏰',  label: '要塞' },
   },
 };

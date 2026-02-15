@@ -102,6 +102,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 #map-area{
   background:radial-gradient(ellipse at 50% 50%,#1a1a28 0%,#121218 70%);
   position:relative;overflow:hidden;
+  perspective:800px;perspective-origin:50% 40%;
 }
 
 /* Game particles */
@@ -109,8 +110,14 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 .game-particle{position:absolute;width:2px;height:2px;background:rgba(201,169,110,0.15);border-radius:50%;animation:gameParticleDrift linear infinite;}
 @keyframes gameParticleDrift{0%{transform:translateY(0) translateX(0);opacity:0;}10%{opacity:0.6;}90%{opacity:0.6;}100%{transform:translateY(-100vh) translateX(30px);opacity:0;}}
 
-/* SVG 地图 */
-#map-svg{width:100%;height:100%;position:relative;z-index:1;}
+/* Depth gradient overlay for 3D feel */
+#map-depth-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:linear-gradient(180deg,rgba(0,0,0,0.15) 0%,transparent 30%,transparent 70%,rgba(0,0,0,0.08) 100%);}
+
+/* SVG 地图 — 3D tilt */
+#map-svg{width:100%;height:100%;position:relative;z-index:1;
+  transform:rotateX(15deg);transform-style:preserve-3d;transform-origin:center 60%;
+  filter:drop-shadow(0 8px 20px rgba(0,0,0,0.3));}
 .region-path{cursor:pointer;stroke:rgba(201,169,110,0.2);stroke-width:1;transition:all 0.6s ease;opacity:0.7;}
 .region-path:hover{filter:brightness(1.3);stroke:rgba(201,169,110,0.6);stroke-width:1.5;opacity:0.9;}
 .region-path.selected{stroke:var(--bright-gold);stroke-width:2;opacity:0.95;filter:brightness(1.4);}
@@ -225,6 +232,21 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 .choice-btn .ce-arrow{font-weight:bold;font-size:0.9em;}
 .ce-arrow.up{color:#6bba6b;}.ce-arrow.down{color:#c56b6b;}
 .choice-btn .choice-risk{font-size:0.72em;color:#888;position:absolute;top:8px;right:10px;letter-spacing:1px;}
+/* Hint system — effects hidden by default */
+.choice-hint-hidden{display:none!important;}
+.hint-reveal-btn{background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.2);color:#c9a96e;padding:6px 16px;border-radius:16px;cursor:pointer;font-size:0.82em;transition:all 0.3s;}
+.hint-reveal-btn:hover{background:rgba(201,169,110,0.15);border-color:var(--gold);}
+/* Choice analysis section */
+.choice-analysis-section{margin:14px 0;padding:12px;background:rgba(201,169,110,0.04);border-radius:8px;border:1px solid rgba(201,169,110,0.1);}
+.analysis-choice{padding:10px;margin:8px 0;border-radius:6px;border-left:3px solid rgba(201,169,110,0.2);background:rgba(255,255,255,0.02);}
+.analysis-choice.was-selected{border-left-color:#c9a96e;background:rgba(201,169,110,0.06);}
+.analysis-choice.was-trap{border-left-color:#c04040;background:rgba(220,60,60,0.04);}
+.analysis-choice .ac-title{font-weight:bold;font-size:0.9em;margin-bottom:4px;}
+.analysis-choice .ac-good{color:#6a9a6a;font-size:0.82em;line-height:1.6;}
+.analysis-choice .ac-bad{color:#b07070;font-size:0.82em;line-height:1.6;}
+.analysis-choice .ac-parallel{color:#8ab4d0;font-size:0.8em;font-style:italic;margin-top:4px;}
+.analysis-choice .ac-rating{display:inline-block;color:#dbb978;font-size:0.8em;margin-left:8px;}
+.analysis-key-insight{margin-top:10px;padding:8px 12px;background:rgba(201,169,110,0.06);border-radius:6px;color:#c9a96e;font-size:0.85em;line-height:1.7;font-style:italic;}
 .auto-advance-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--gold);border-radius:2px;animation:autoAdvance 2.5s linear forwards;}
 @keyframes autoAdvance{from{width:0}to{width:100%}}
 
@@ -450,11 +472,12 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 @keyframes hegemonyPop{0%{opacity:0;transform:translateX(-50%) scale(0.8);}10%{opacity:1;transform:translateX(-50%) scale(1.05);}20%{transform:translateX(-50%) scale(1);}80%{opacity:1;}100%{opacity:0;}}
 
 /* ========== 时代过渡升级 ========== */
-.era-trans-content{text-align:center;max-width:520px;}
+.era-trans-content{text-align:center;max-width:620px;overflow-y:auto;max-height:90vh;padding:20px;}
 .era-trans-summary{color:#8a7a5a;font-size:0.9em;line-height:1.8;margin-bottom:20px;opacity:0;}
 .era-trans-content h2{font-size:2.5em;color:var(--gold);letter-spacing:20px;margin-bottom:12px;opacity:0;}
 .era-trans-line{width:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:12px auto;transition:width 0.8s;}
 .era-trans-content p{font-size:1.1em;color:#8a7a5a;letter-spacing:3px;opacity:0;}
+.era-trans-intro{color:#aaa;font-size:0.85em;line-height:1.9;text-align:left;margin:20px 0;padding:16px 20px;background:rgba(201,169,110,0.04);border-radius:8px;border-left:3px solid rgba(201,169,110,0.2);opacity:0;white-space:pre-line;max-height:45vh;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(201,169,110,0.2) transparent;}
 .era-trans-preview{color:#6a5a3a;font-size:0.85em;margin-top:16px;opacity:0;letter-spacing:2px;}
 
 /* ========== 属性浮动数字 ========== */
@@ -536,7 +559,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   .resources { gap: 6px; flex-shrink: 1; overflow: hidden; }
   .res-item { font-size: 0.75em; white-space: nowrap; }
 
-  #map-area { min-height: 0; }
+  #map-area { min-height: 0; perspective: 1200px; }
+  #map-svg { transform: rotateX(8deg); }
   #map-tooltip { display: none !important; } /* Use tap instead on mobile */
 
   #crisis-panel::before { display: none; }
@@ -558,9 +582,10 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   .bottom-btn { padding: 8px 14px; font-size: 0.82em; min-height: 36px; flex-shrink: 0; }
 
   #era-transition { padding: 20px; }
-  .era-trans-content { max-width: 90vw; }
+  .era-trans-content { max-width: 90vw; max-height: 85vh; }
   .era-trans-content h2 { font-size: 1.8em; letter-spacing: 12px; }
   .era-trans-summary { font-size: 0.82em; }
+  .era-trans-intro { font-size: 0.82em; line-height: 1.8; padding: 12px 14px; }
 
   #ending-screen { padding: 20px; }
   #ending-screen h1 { font-size: 2em; letter-spacing: 6px; }
@@ -993,8 +1018,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 /* ========== Map Scene Overlays ========== */
 #map-scene-layer{pointer-events:none;}
 .scene-label{font-family:'GF','STKaiti','KaiTi',serif;fill-opacity:0;animation:sceneLabelIn 0.6s ease forwards;}
-.scene-label.size-large{font-size:14px;font-weight:bold;letter-spacing:2px;}
-.scene-label.size-medium{font-size:11px;font-weight:bold;}
+.scene-label.size-large{font-size:18px;font-weight:bold;letter-spacing:3px;filter:drop-shadow(0 0 8px currentColor);}
+.scene-label.size-medium{font-size:14px;font-weight:bold;}
 .scene-label.size-small{font-size:9px;}
 .scene-label.style-fading{fill-opacity:0.4 !important;}
 .scene-label.style-glowing{filter:drop-shadow(0 0 6px currentColor);}
@@ -1002,12 +1027,12 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 @keyframes sceneLabelIn{0%{fill-opacity:0;transform:translateY(8px);}100%{fill-opacity:0.9;transform:translateY(0);}}
 
 .scene-arrow{stroke-dasharray:6 4;stroke-dashoffset:60;animation:sceneDash 1.5s linear forwards;}
-.scene-arrow.type-military{stroke:#c56b6b;stroke-width:2;}
-.scene-arrow.type-trade{stroke:#dbb978;stroke-width:1.5;}
-.scene-arrow.type-culture{stroke:#9b7ed8;stroke-width:1.5;}
-.scene-arrow.type-alliance{stroke:#6bba6b;stroke-width:2;stroke-dasharray:4 3;}
-.scene-arrow.type-migration{stroke:#5b9bd5;stroke-width:1.5;}
-.scene-arrow.type-expansion{stroke:#d4944a;stroke-width:2;}
+.scene-arrow.type-military{stroke:#e85c5c;stroke-width:3;filter:drop-shadow(0 0 6px rgba(232,92,92,0.5));}
+.scene-arrow.type-trade{stroke:#f0c860;stroke-width:2.5;filter:drop-shadow(0 0 5px rgba(240,200,96,0.5));}
+.scene-arrow.type-culture{stroke:#b48ae8;stroke-width:2.5;filter:drop-shadow(0 0 5px rgba(180,138,232,0.5));}
+.scene-arrow.type-alliance{stroke:#7cd47c;stroke-width:3;stroke-dasharray:4 3;}
+.scene-arrow.type-migration{stroke:#6bb8e8;stroke-width:2.5;}
+.scene-arrow.type-expansion{stroke:#e8a050;stroke-width:3;filter:drop-shadow(0 0 5px rgba(232,160,80,0.5));}
 @keyframes sceneDash{0%{stroke-dashoffset:60;opacity:0.3;}100%{stroke-dashoffset:0;opacity:1;}}
 
 .scene-arrowhead{fill-opacity:0;animation:sceneFadeIn 0.5s 0.8s ease forwards;}
@@ -1018,8 +1043,10 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 @keyframes sceneIconPop{0%{fill-opacity:0;transform:scale(0.3);}60%{transform:scale(1.2);}100%{fill-opacity:0.85;transform:scale(1);}}
 
 /* Region event highlight */
-.region-path.scene-highlight{animation:sceneHighlight 2s ease-in-out infinite;}
-@keyframes sceneHighlight{0%,100%{stroke:rgba(201,169,110,0.3);stroke-width:1;}50%{stroke:rgba(201,169,110,0.7);stroke-width:2.5;}}
+.region-path.scene-highlight{animation:sceneHighlight 2s ease-in-out infinite;filter:brightness(1.4) drop-shadow(0 0 8px currentColor) !important;}
+@keyframes sceneHighlight{0%,100%{stroke:rgba(201,169,110,0.4);stroke-width:1.5;}50%{stroke:rgba(201,169,110,0.9);stroke-width:3;}}
+/* Dimmed non-highlight region during scene */
+.region-path.scene-dimmed{opacity:0.25 !important;filter:saturate(0.3) brightness(0.6) !important;transition:all 0.6s ease;}
 
 /* Before/After delta fly animation */
 .delta-fly{position:absolute;font-size:1.2em;font-weight:bold;pointer-events:none;z-index:20;animation:deltaFlyUp 1.8s ease-out forwards;}
@@ -1027,13 +1054,26 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 .delta-fly.neg{color:#c56b6b;text-shadow:0 0 8px rgba(197,107,107,0.4);}
 @keyframes deltaFlyUp{0%{opacity:0;transform:translateY(10px) scale(0.7);}20%{opacity:1;transform:translateY(0) scale(1.1);}40%{transform:translateY(-8px) scale(1);}100%{opacity:0;transform:translateY(-30px) scale(0.8);}}
 
+/* ========== Outcome Visualization on Map ========== */
+.region-path.outcome-positive{animation:outcomePosRing 1s ease-in-out 2;stroke:#6bba6b !important;stroke-width:3 !important;}
+.region-path.outcome-negative{animation:outcomeNegRing 1s ease-in-out 2;stroke:#c56b6b !important;stroke-width:3 !important;}
+@keyframes outcomePosRing{0%,100%{filter:brightness(1);}50%{filter:brightness(1.6) drop-shadow(0 0 12px rgba(107,186,107,0.6));}}
+@keyframes outcomeNegRing{0%,100%{filter:brightness(1);}50%{filter:brightness(1.4) drop-shadow(0 0 12px rgba(197,107,107,0.6));}}
+.outcome-theme-icon{opacity:0;transform-origin:center;transform-box:fill-box;animation:outcomeIconIn 0.6s ease forwards;}
+@keyframes outcomeIconIn{0%{opacity:0;transform:scale(0.3);}60%{opacity:0.9;transform:scale(1.2);}100%{opacity:0.7;transform:scale(1);}}
+.outcome-shockwave{fill:none;stroke-width:2;}
+.outcome-chain-line{stroke-dasharray:6 3;stroke-dashoffset:60;fill:none;animation:chainFlowDash 1s linear forwards;}
+@keyframes chainFlowDash{0%{stroke-dashoffset:60;opacity:0;}50%{opacity:0.8;}100%{stroke-dashoffset:0;opacity:0.5;}}
+/* Flowing dot on arrows */
+.arrow-flow-dot{opacity:0.8;filter:drop-shadow(0 0 3px currentColor);}
+
 /* Scene atmosphere overlays */
-#map-area.atmo-war::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 55% 40%,rgba(180,40,40,0.08) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
-#map-area.atmo-crisis::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(160,80,20,0.08) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
-#map-area.atmo-trade::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 45% 55%,rgba(220,190,60,0.06) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
-#map-area.atmo-culture::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(120,80,200,0.06) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
-#map-area.atmo-peace::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(107,186,107,0.05) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
-#map-area.atmo-transformation::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(201,169,110,0.1) 0%,transparent 50%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-war::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 55% 40%,rgba(180,40,40,0.18) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-crisis::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(200,100,20,0.16) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-trade::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 45% 55%,rgba(220,190,60,0.14) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-culture::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(120,80,200,0.14) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-peace::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(107,186,107,0.10) 0%,transparent 60%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
+#map-area.atmo-transformation::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(201,169,110,0.22) 0%,transparent 50%);pointer-events:none;z-index:5;animation:atmoFade 0.8s ease;}
 @keyframes atmoFade{0%{opacity:0;}100%{opacity:1;}}
 
 /* ========== Map Era Tinting ========== */
@@ -1041,53 +1081,29 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 #map-area.era-2{background:radial-gradient(ellipse at 50% 50%,rgba(139,37,0,0.08),rgba(18,18,24,1) 70%) !important;}
 #map-area.era-3{background:radial-gradient(ellipse at 50% 50%,rgba(43,79,140,0.08),rgba(18,18,24,1) 70%) !important;}
 #map-area.era-4{background:radial-gradient(ellipse at 50% 50%,rgba(27,107,58,0.08),rgba(18,18,24,1) 70%) !important;}
+/* Weather particles */
+.weather-particle{position:absolute;pointer-events:none;animation:weatherDrift linear infinite;z-index:3;}
+@keyframes weatherDrift{0%{transform:translateX(0) translateY(0);}50%{transform:translateX(30px) translateY(10px);}100%{transform:translateX(60px) translateY(-5px);}}
+/* World sparkle animation */
+.world-sparkle{animation:sparkle 2s ease-in-out infinite;}
+@keyframes sparkle{0%,100%{opacity:0.3;}50%{opacity:0.7;}}
+.world-landmark,.world-building{transition:opacity 0.5s;}
+#map-world-layer{pointer-events:none;}
 
 /* ========== Map World Layer: Living World ========== */
-#map-world-layer{pointer-events:none;opacity:0.9;}
-/* Buildings */
-.world-building{font-size:7px;fill:#c9a96e;opacity:0;animation:worldFadeIn 0.8s ease forwards;}
-.world-building.type-palace{font-size:10px;fill:#e8c060;}
-.world-building.type-city{font-size:8px;fill:#c9a96e;}
-.world-building.type-fort{font-size:7px;fill:#c07050;}
-.world-building.type-temple{font-size:8px;fill:#9b7ed8;}
-.world-building.type-market{font-size:7px;fill:#dbb978;}
-.world-building.type-port{font-size:8px;fill:#5b9bd5;}
-.world-building.type-wall{font-size:6px;fill:#8b7355;}
-.world-building.type-camp{font-size:7px;fill:#6b8e6b;}
-.world-building.type-academy{font-size:8px;fill:#7b9fc7;}
-.world-building-label{font-size:5px;fill:rgba(201,169,110,0.6);font-family:serif;}
-/* Landmarks */
-.world-landmark{opacity:0.2;fill:none;stroke:rgba(201,169,110,0.25);stroke-width:0.5;}
-.world-landmark-label{font-size:4.5px;fill:rgba(201,169,110,0.35);font-family:serif;letter-spacing:1px;}
-.world-river{fill:none;stroke:rgba(80,140,200,0.15);stroke-width:1.5;stroke-linecap:round;}
-.world-mountain{fill:rgba(160,140,110,0.08);stroke:rgba(160,140,110,0.15);stroke-width:0.5;}
-/* Population */
+#map-world-layer{pointer-events:none;opacity:0.85;}
+.world-cloud{fill:rgba(200,200,220,0.06);animation:cloudDrift 30s linear infinite;}
+.world-snow{fill:rgba(220,230,250,0.4);animation:snowFall 8s linear infinite;}
+.world-sand{fill:rgba(210,180,120,0.3);animation:sandBlow 6s ease-in-out infinite;}
+.world-wave{fill:none;stroke:rgba(80,140,200,0.15);stroke-width:1;animation:waveDrift 4s ease-in-out infinite;}
+.world-building{font-size:8px;opacity:0.5;transition:opacity 0.5s;}
 .world-pop-dot{fill:rgba(201,169,110,0.3);animation:popPulse 3s ease-in-out infinite;}
-.world-pop-cluster{opacity:0.4;}
-/* Weather */
-.world-cloud{fill:rgba(200,200,220,0.04);animation:cloudDrift 35s linear infinite;}
-.world-snow{fill:rgba(220,230,250,0.5);animation:snowFall 6s linear infinite;}
-.world-sand{fill:rgba(210,180,120,0.35);animation:sandBlow 5s ease-in-out infinite;}
-.world-rain{fill:rgba(100,150,220,0.3);animation:rainFall 1.5s linear infinite;}
-.world-wave{fill:none;stroke:rgba(80,140,200,0.12);stroke-width:0.8;animation:waveDrift 4s ease-in-out infinite;}
-/* Ambient elements */
-.world-caravan{opacity:0;animation:caravanMove 12s linear infinite;}
-.world-bird{opacity:0;animation:birdFly 8s ease-in-out infinite;}
-.world-boat{opacity:0;animation:boatFloat 10s ease-in-out infinite;}
-.world-banner{font-size:8px;opacity:0.6;animation:bannerWave 2s ease-in-out infinite;}
-.world-culture-tag{font-size:4px;fill:rgba(201,169,110,0.4);font-family:serif;letter-spacing:0.5px;}
-/* Animations */
-@keyframes worldFadeIn{0%{opacity:0;transform:translateY(3px);}100%{opacity:0.7;transform:translateY(0);}}
-@keyframes cloudDrift{0%{transform:translateX(-20px);}100%{transform:translateX(40px);}}
-@keyframes snowFall{0%{transform:translateY(-5px);opacity:0.5;}100%{transform:translateY(20px);opacity:0;}}
-@keyframes sandBlow{0%,100%{transform:translateX(0);opacity:0.15;}50%{transform:translateX(12px);opacity:0.4;}}
-@keyframes rainFall{0%{transform:translateY(-3px);opacity:0.4;}100%{transform:translateY(15px);opacity:0;}}
-@keyframes waveDrift{0%,100%{transform:translateY(0);}50%{transform:translateY(2px);}}
-@keyframes popPulse{0%,100%{r:1.5;opacity:0.25;}50%{r:2.5;opacity:0.5;}}
-@keyframes caravanMove{0%{opacity:0;transform:translate(var(--cx,0),var(--cy,0));}15%{opacity:0.5;}85%{opacity:0.5;}100%{opacity:0;transform:translate(var(--tx,30px),var(--ty,0));}}
-@keyframes birdFly{0%{opacity:0;transform:translate(0,0);}20%{opacity:0.4;}80%{opacity:0.4;}100%{opacity:0;transform:translate(var(--bx,60px),var(--by,-20px));}}
-@keyframes boatFloat{0%{opacity:0;transform:translate(0,0);}20%{opacity:0.5;}80%{opacity:0.5;}100%{opacity:0;transform:translate(var(--sx,20px),var(--sy,5px));}}
-@keyframes bannerWave{0%,100%{transform:rotate(-3deg);}50%{transform:rotate(3deg);}}
+.world-terrain-mark{opacity:0.12;fill:none;stroke:rgba(201,169,110,0.2);stroke-width:0.5;}
+@keyframes cloudDrift{0%{transform:translateX(0);}100%{transform:translateX(40px);}}
+@keyframes snowFall{0%{transform:translateY(0);opacity:0.6;}100%{transform:translateY(30px);opacity:0;}}
+@keyframes sandBlow{0%,100%{transform:translateX(0);opacity:0.2;}50%{transform:translateX(15px);opacity:0.4;}}
+@keyframes waveDrift{0%,100%{transform:translateY(0);}50%{transform:translateY(3px);}}
+@keyframes popPulse{0%,100%{r:1.5;opacity:0.3;}50%{r:2.5;opacity:0.6;}}
 
 /* ========== Map Node Critical Pulse ========== */
 @keyframes nodeCriticalPulse{0%,100%{filter:brightness(1);stroke-opacity:0.7;}50%{filter:brightness(1.8) drop-shadow(0 0 12px #c56b6b);stroke-opacity:1;}}
@@ -1467,7 +1483,12 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 .se-stat-label{font-size:0.85em;color:#aaa;}
 .se-reason{color:#ccc;font-size:0.9em;line-height:1.7;margin:10px 0;padding:10px 12px;background:rgba(201,169,110,0.05);border-radius:6px;border-left:3px solid rgba(201,169,110,0.2);}
 .se-consequence{color:#999;font-size:0.85em;line-height:1.6;margin:8px 0;padding:8px 12px;background:rgba(255,255,255,0.02);border-radius:6px;}
-.se-knowledge{margin-top:10px;padding:10px 12px;background:rgba(201,169,110,0.04);border-radius:6px;}
+.se-knowledge-details{margin-top:10px;}
+.se-knowledge-toggle{color:rgba(201,169,110,0.5);font-size:0.8em;cursor:pointer;padding:4px 0;letter-spacing:1px;list-style:none;}
+.se-knowledge-toggle::-webkit-details-marker{display:none;}
+.se-knowledge-toggle:hover{color:var(--gold);}
+.se-knowledge-details[open] .se-knowledge-toggle{color:var(--gold);margin-bottom:6px;}
+.se-knowledge{padding:10px 12px;background:rgba(201,169,110,0.04);border-radius:6px;}
 .se-knowledge div{font-size:0.82em;line-height:1.6;margin-bottom:6px;}
 .se-knowledge .se-insight{color:#c9a96e;font-style:italic;}
 .se-knowledge .se-dilemma{color:#c07060;}
@@ -1850,7 +1871,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   <!-- 粒子 -->
   <div class="start-particles" id="start-particles"></div>
   <!-- 静音按钮 -->
-  <button class="mute-btn" id="start-mute-btn" title="音效开关">&#x1f50a;</button>
+  <button class="mute-btn" id="start-mute-btn" title="点击开启音效">&#x1f507;</button>
   <!-- 冲击波 -->
   <div class="title-shockwave" id="title-shockwave"></div>
   <div class="title-area">
@@ -1875,6 +1896,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
     <h2 id="era-trans-title"></h2>
     <div class="era-trans-line" id="era-trans-line"></div>
     <p id="era-trans-desc"></p>
+    <div class="era-trans-intro" id="era-trans-intro"></div>
     <div class="era-trans-preview" id="era-trans-preview"></div>
   </div>
 </div>
@@ -1936,6 +1958,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
     <div id="map-area">
       <div id="game-particles"></div>
       <div id="chain-notifications"></div>
+      <div id="map-depth-overlay"></div>
       <svg id="map-svg" viewBox="0 0 600 450">
         <defs>
           <radialGradient id="terrainGrad" cx="50%" cy="45%" r="55%">
@@ -2033,7 +2056,7 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
     <button class="bottom-btn" onclick="saveGame()">存档</button>
     <button class="bottom-btn" onclick="loadGame()">读档</button>
     <button class="bottom-btn" onclick="showHelp()">指南</button>
-    <button class="mute-btn" id="game-mute-btn" title="音效开关">&#x1f50a;</button>
+    <button class="mute-btn" id="game-mute-btn" title="音效开关">&#x1f507;</button>
   </div>
 </div>
 
@@ -2133,15 +2156,16 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
 <script src="deep-knowledge.js"></script>
 <script src="effect-reasons.js"></script>
 <script src="map-scenes.js"></script>
-<script src="map-world.js"></script>
 <script src="historical-outcomes.js"></script>
 <script src="trap-choices.js"></script>
+<script src="choice-analysis.js"></script>
+<script src="map-world.js"></script>
 <script>
 // ==================== Web Audio API 音效系统 ====================
 
 const SFX = {
   ctx: null,
-  muted: false,
+  muted: true,
   ambientGain: null,
   ambientOscs: [],
   _initialized: false,
@@ -2150,19 +2174,10 @@ const SFX = {
     if (this._initialized) return;
     try {
       this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const ctx = this.ctx;
       // Resume suspended AudioContext (browser autoplay policy)
-      if (ctx.state === 'suspended') {
-        ctx.resume();
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
       }
-      // iOS/Safari unlock trick: play a silent buffer to activate the context
-      try {
-        const silentBuf = ctx.createBuffer(1, 1, ctx.sampleRate);
-        const src = ctx.createBufferSource();
-        src.buffer = silentBuf;
-        src.connect(ctx.destination);
-        src.start();
-      } catch(e2) {}
       this._initialized = true;
       // Restore mute preference
       if (localStorage.getItem('pivot_muted') === '1') {
@@ -2193,9 +2208,11 @@ const SFX = {
     if (this.muted) {
       this.stopAmbient();
     } else {
-      // Unmuting: resume context and restart ambient
+      // Unmuting: resume context and start ambient if in game
       this._ensureResumed();
-      this.ambient(); // ambient() already checks if already playing
+      if (document.getElementById('game').classList.contains('active')) {
+        this.ambient();
+      }
     }
   },
 
@@ -2600,92 +2617,6 @@ const SFX = {
     sg.connect(ctx.destination);
     shimmer.start(ctx.currentTime + 0.3);
     shimmer.stop(ctx.currentTime + 0.55);
-  },
-
-  // --- Map scene sounds (triggered by map changes) ---
-  mapWar() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    // Distant war drums
-    [0, 0.2, 0.4].forEach(t => {
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(60, ctx.currentTime + t);
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0.12, ctx.currentTime + t);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.18);
-      osc.connect(g); g.connect(ctx.destination);
-      osc.start(ctx.currentTime + t); osc.stop(ctx.currentTime + t + 0.2);
-    });
-  },
-
-  mapTrade() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    // Gentle bell-like tones (market sounds)
-    [440, 554, 660].forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime);
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
-      g.gain.linearRampToValueAtTime(0.06, ctx.currentTime + i * 0.12 + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.12 + 0.3);
-      osc.connect(g); g.connect(ctx.destination);
-      osc.start(ctx.currentTime + i * 0.12); osc.stop(ctx.currentTime + i * 0.12 + 0.35);
-    });
-  },
-
-  mapCulture() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    // Gentle wind-chime (pentatonic)
-    [262, 294, 330, 392, 440].forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.15);
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(0.04, ctx.currentTime + i * 0.15);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.5);
-      osc.connect(g); g.connect(ctx.destination);
-      osc.start(ctx.currentTime + i * 0.15); osc.stop(ctx.currentTime + i * 0.15 + 0.55);
-    });
-  },
-
-  mapPeace() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    // Soft sustained pad note
-    const osc = ctx.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(220, ctx.currentTime);
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0, ctx.currentTime);
-    g.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.3);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5);
-    osc.connect(g); g.connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime + 1.6);
-  },
-
-  mapCrisis() {
-    if (!this.ctx || this.muted) return;
-    this._ensureResumed();
-    const ctx = this.ctx;
-    // Ominous low rumble + dissonant tone
-    const osc1 = ctx.createOscillator();
-    osc1.type = 'sawtooth';
-    osc1.frequency.setValueAtTime(55, ctx.currentTime);
-    const f = ctx.createBiquadFilter();
-    f.type = 'lowpass'; f.frequency.setValueAtTime(100, ctx.currentTime);
-    const g1 = ctx.createGain();
-    g1.gain.setValueAtTime(0.1, ctx.currentTime);
-    g1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.8);
-    osc1.connect(f); f.connect(g1); g1.connect(ctx.destination);
-    osc1.start(); osc1.stop(ctx.currentTime + 0.9);
   }
 };
 
@@ -2703,6 +2634,21 @@ const REGION_META = {
 
 const ERA_NAMES = ['','第一纪 · 封建社会','第二纪 · 豪族社会','第三纪 · 古代平民社会','第四纪 · 现代转型'];
 const ERA_DESCS = ['','周天子分封天下，礼乐教化，诸侯并立','大一统帝国崛起，豪族门阀把持朝政','科举取士，商业繁荣，却也暗藏内卷危机','三千年未有之大变局，何去何从？'];
+
+const ERA_INTROS = [
+  '',
+  // Era 1 — 不需要（游戏开始即第一纪）
+  '',
+
+  // Era 2 — 豪族社会（秦汉至隋唐）
+  '施展在《枢纽》中提出一个核心观点：中国从来不只是"中原"。秦统一六国后，帝国第一次必须同时面对多个空间的挑战——北方草原的匈奴、西域的绿洲城邦、南方的百越山林。如何将这些截然不同的地理空间整合进一个体系，成为此后两千年的核心命题。\n\n秦的回答是郡县制和标准化，但它只维持了十五年。汉代继承了大一统的框架，却发展出一套远比秦朝精巧的治理机器。钱穆指出，汉代的核心设计是"皇权"与"相权"的分立：皇帝是国家元首，丞相才是实际的政府首脑。丞相开府办事，下辖十三曹处理全国政务，与皇帝的私人秘书班子（六尚）并立运转。这不是独裁，而是一套有内在制衡的权力结构。\n\n但帝国需要人来运转这架机器。汉代发明了察举制：每郡每年必须向朝廷推举一位"孝廉"，再加上京师太学的毕业考试，构成了一条从平民到官员的上升通道。问题在于，推举权掌握在地方长官手中，久而久之，同一批家族反复被推举，豪族门阀就此崛起——他们控制土地、垄断仕途，成为皇帝不得不依赖又无法驾驭的力量。\n\n经济上，汉代实行了一套精心设计的双轨财政。钱穆特别强调：田赋极轻，仅三十税一（约3.3%），由大司农收入国库充当国家财政；而盐铁山泽之利归少府，作为皇帝私人收入。汉武帝为了征匈奴，将盐铁收归国营，从皇帝私库转入国库——这实质上是中国最早的"国有化改革"。军事上，每个男丁23岁起必须服三重兵役：在京师当一年卫兵、到边境戍守三天（可花300钱免除）、每年在本郡操练一个月。这是全民皆兵的体制，帝国用它撑起了对匈奴的战争。\n\n与此同时，中原与草原的博弈进入全新阶段。施展指出，中原与草原不是"文明vs野蛮"，而是两种生产方式的共生——中原需要马匹，草原需要粮食和铁器，长城与其说是防线，不如说是贸易谈判的筹码。和亲、征伐、互市，本质上都是在寻找两个空间共处的方式。\n\n到了唐代，治理机器升级为更精密的"三省六部制"。钱穆将其称为中国古代最成熟的立法流程：中书省七八位官员各自独立起草诏令（"五花判事"），中书令从中择优呈皇帝画"敕"字；门下省审查，如有不妥可直接退回（"涂归"），未经门下副署的诏书被视为违法，甚至连皇帝自己绕过门下发出的"斜封墨敕"都会被朝野视为耻辱；尚书省只管执行，无权质疑。这套流程的精髓在于：皇帝提不了议案，门下省握有否决权——这是一千三百年前的权力制衡。\n\n选人方面，科举制取代了察举制。钱穆指出科举的革命性在于：任何"身家清白"之人都可自行报名参加考试，不需要任何人推荐。进士和明经两个科目，让寒门子弟第一次有了制度化的上升通道。税制上，唐代的租庸调比汉代更轻：田税仅四十税一，徭役减为每年20天（汉代是30天），体现了"为民制产"的理念。\n\n然而，帝国的边疆管理留下了致命隐患。节度使从临时监察官变成常设军政长官，集军权、财权、人事权于一身。安史之乱后，藩镇割据让帝国的多空间整合几乎崩溃。张骞凿空西域打通的丝绸之路仍在运转，佛教沿丝路东来，造纸术沿丝路西传——但帝国内部的裂痕已无法掩盖。施展所说的"枢纽"角色，在这一时期既辉煌又脆弱。',
+
+  // Era 3 — 古代平民社会（宋元明清）
+  '施展将唐宋之变视为中国历史最深刻的结构性转型。门阀士族消亡，科举制全面铺开，中国从"贵族共治"转向了"皇帝与平民官僚"的直接博弈。这意味着一个根本性变化：任何人，只要读书考试，就能参与治理天下。社会流动的闸门打开了，但权力结构的逻辑也随之剧变。\n\n钱穆对宋代制度的分析令人印象深刻：宋太祖刻意将宰相的权力切成三块——军事归枢密院，财政归三司（户部司、盐铁司、度支司），人事归审官院。宰相名义上还在，实际上只剩下一个空壳。更深层的变化在于决策流程：唐代的诏令由宰相主导起草、皇帝只有同意权；到了宋代，变成皇帝主动下令、宰相只能照办。从"同意权"到"决策权"，皇帝实现了安静的夺权。\n\n军事制度更体现了宋代的核心焦虑。钱穆指出，宋代实行"兵将分离"——士兵每一两年就要换防一次（更戍法），将领固定不动，确保将不知兵、兵不知将，从根本上杜绝兵变。代价是巨大的：和平时期的换防开销等于战时动员，士兵从20岁服役到60岁（只有20-30岁有战斗力），加上首都开封坐落于平原毫无天险可守、燕云十六州和河套养马地尽失——重文轻武的制度选择，直接注定了靖康之耻的结局。\n\n施展特别指出，这一时期"中国"的空间格局发生了根本变化。草原不再只是边患，而是直接成了统治者——辽、金、元，游牧民族深度参与了中国的政治运转。蒙古建立的元朝更是将中国纳入横跨欧亚的世界帝国，强行打通了草原、中原、西域乃至海洋的联系。这恰恰印证了施展的核心论点：中国的历史，从来不是某一个空间的独角戏，而是多个空间碰撞融合的过程。\n\n明朝推翻元朝后，做了一件前所未有的事：洪武十三年（1380年），朱元璋永久废除了延续一千五百年的宰相制度。钱穆评价这是中国政治史上的"大倒退"——六部尚书各自为政，直接对皇帝负责，再无一个统摄全局的行政首脑。后来出现的内阁大学士，法律上只是五品秘书，实际上却不得不承担宰相的工作，形成了"有实无名"的尴尬局面。明代的卫所制号称"养百万兵不费百姓一粒米"——士兵分田自耕自足，战时由皇帝临时派将领统兵，战后交还兵权。但两百年和平之后，"铁锈了、线朽了"，卫所军完全丧失战斗力。科举演化出八股文，格式标准化到可以客观评分，但钱穆称之为"毁才"——它能选出会写文章的人，却选不出能治国的人。\n\n清朝入主中原后，治理逻辑发生了质变。钱穆毫不客气地将其定性为"部族政权"：政治权力由满族垄断，汉人只能参与执行。他进一步指出，清代没有真正的"制度"，只有"法术"——制度是公开的、有章可循的；法术是私密的、不受约束的。最典型的就是密折制度：雍正设立军机处（不过是南书房后面一间小屋），通过"寄信上谕"绕过六部直接给地方官下达密令，其他部门无权过问。六部实行满汉双领导，每部六个头（满汉尚书各一、满汉侍郎各二），尚书不能指挥侍郎，六个人都直接向皇帝汇报——互相牵制的目的只有一个：让所有权力回到皇帝手中。更令人深思的是学校里的"卧碑"制度：明令禁止学生讨论国事、禁止结社、禁止出版。帝制中国走到极端，连士人议政的传统都被扼杀了。\n\n气候也在暗中推动历史。南宋至元初进入寒冷期，北方草场退化，游牧民族南下压力陡增。明中叶后"小冰期"降临，北方旱灾频发、粮食减产，明末的百万流民相当一部分是被气候逼出来的饥民。海禁政策切断了宋元以来蓬勃的海洋贸易。施展认为，这不是某个皇帝的昏庸，而是大一统体制的内在逻辑——朝廷始终担心沿海商人势力脱离控制，宁可牺牲经济活力也要维持政治稳定。从宋代的制度精巧到清代的密折政治，制度在不断"进化"，却始终朝着一个方向：把所有权力集中到一个人手里。',
+
+  // Era 4 — 现代转型（1840至今）
+  '1840年鸦片战争，施展称之为"三千年未有之大变局"的起点。此前中国面对的挑战——草原骑兵、西域商队、南方山民——都是体系内部的博弈，中国始终是这个体系的中心。但西方的到来彻底改变了游戏规则：这是一个中国从未遭遇过的、完全外部的文明体系，它带着蒸汽机、铁甲舰和一整套现代国际秩序，把中国从"天下之中"变成了"世界边缘"。\n\n此后近百年的挣扎，本质上都是在回答一个问题：中国在这个新的世界体系中，应该处于什么位置？洋务运动试过"中体西用"——只学技术不换制度，但甲午一战证明这行不通。戊戌变法想改制度，被旧势力扼杀。辛亥革命推翻帝制，但共和制在军阀割据中沦为空壳。\n\n钱穆对此有极为深刻的诊断：问题不在于某个皇帝昏庸或某个大臣无能，而在于两千年制度演化积累的惯性。从汉代皇权与相权的精巧制衡，到唐代三省六部的立法分权，到宋代宰相权力被切成三块，到明代干脆废除宰相，再到清代用密折制度把一切变成皇帝的私人事务——这条制度演化的曲线，每一步都有当时的合理性，但最终走向了一个死胡同：极端的中央集权、窒息的秘密政治、被扼杀的社会活力。当西方带着议会、宪法和公民社会叩响国门时，中国面对的不只是坚船利炮的差距，更是整套治理逻辑的根本冲突。\n\n施展在《枢纽》中给出了他的答案框架：中国的体量和复杂性决定了它不可能简单复制任何一个西方模式。中国内部本身就是一个"体系"——中原的农耕、草原的游牧、西域的商贸、海洋的开放——这些空间的多元性，正是中国成为"枢纽"的基础。\n\n现代中国的转型印证了这一点。1978年改革开放后，中国利用自身庞大的空间纵深和人口规模，承接全球产业转移。七大空间各自发挥比较优势：沿海开放引领出口，中原提供劳动力腹地，西部蕴藏资源和战略纵深。施展指出：近代中国的核心命题不是"学西方还是保传统"的二选一，而是找到"枢纽"——在古与今、中与西、开放与自主之间，走出一条只有中国这种超大规模文明体才能走的路。两千年制度演化的经验与教训，都是这条路上的路标。',
+];
 
 // ==================== 事件数据（从 events-hard.js 加载） ====================
 
@@ -3008,6 +2954,9 @@ function renderMap() {
 
   // Update trade routes
   updateTradeRoutes();
+
+  // Render living world elements
+  renderMapWorld();
 }
 
 function updateTradeRoutes() {
@@ -3041,6 +2990,180 @@ function updateTradeRoutes() {
   if (dotsG) dotsG.innerHTML = dotsHtml;
 }
 
+// ==================== Map World Rendering (Living World) ====================
+
+let _worldAnimationFrame = null;
+let _worldAmbientEls = [];
+
+function renderMapWorld() {
+  const layer = document.getElementById('map-world-layer');
+  if (!layer) return;
+  const mw = (typeof MAP_WORLD !== 'undefined') ? MAP_WORLD : null;
+  if (!mw || !mw.eras || !mw.eras[G.era]) return;
+
+  const era = mw.eras[G.era];
+  let html = '';
+
+  // MAP_WORLD uses 700×520 coords, SVG viewBox is 600×450 — transform
+  const MW_W = 700, MW_H = 520, SVG_W = 600, SVG_H = 450;
+  const sX = SVG_W / MW_W, sY = SVG_H / MW_H;
+  const mwX = x => +(x * sX).toFixed(1);
+  const mwY = y => +(y * sY).toFixed(1);
+  const mwPath = path => path.replace(
+    /(-?\d+\.?\d*)\s*,\s*(-?\d+\.?\d*)/g,
+    (_, x, y) => `${(parseFloat(x)*sX).toFixed(1)},${(parseFloat(y)*sY).toFixed(1)}`
+  );
+
+  // --- Region decorations (terrain, rivers, mountains — era-independent) ---
+  if (mw.regionDecorations) {
+    for (const rk in mw.regionDecorations) {
+      const dec = mw.regionDecorations[rk];
+      if (!dec.terrain) continue;
+      dec.terrain.forEach(t => {
+        if (t.type === 'river' || t.type === 'current') {
+          html += `<path d="${mwPath(t.path)}" fill="none" stroke="${t.color || '#5a8aaa'}" stroke-width="${t.width || 2}" opacity="${t.opacity || 0.4}" stroke-linecap="round"${t.dasharray ? ` stroke-dasharray="${t.dasharray}"` : ''}/>`;
+          if (t.label) html += `<text x="${mwX(t.label.x)}" y="${mwY(t.label.y)}" fill="rgba(130,160,200,0.35)" font-size="${t.label.fontSize || 7}" text-anchor="middle">${t.label.text}</text>`;
+        } else if (t.type === 'route') {
+          html += `<path d="${mwPath(t.path)}" fill="none" stroke="${t.color || 'rgba(180,140,60,0.2)'}" stroke-width="${t.width || 1}" stroke-dasharray="${t.dasharray || '4,3'}" stroke-linecap="round"/>`;
+        } else if (t.type === 'mountain' || t.type === 'hills') {
+          const s = t.scale || 0.7;
+          html += `<g transform="translate(${mwX(t.x)},${mwY(t.y)}) scale(${s})">`;
+          html += `<polygon points="-8,0 0,-12 8,0" fill="rgba(180,160,120,0.12)" stroke="rgba(180,160,120,0.18)" stroke-width="0.5"/>`;
+          html += `<polygon points="-4,0 0,-7 4,0" fill="rgba(200,190,160,0.1)"/>`;
+          html += `<text x="0" y="10" fill="rgba(180,160,120,0.3)" font-size="5.5" text-anchor="middle">${t.name}</text>`;
+          html += `</g>`;
+        } else if (t.type === 'lake') {
+          html += `<circle cx="${mwX(t.x)}" cy="${mwY(t.y)}" r="${t.radius || 5}" fill="${t.color || '#4a7aaa'}" opacity="0.2"/>`;
+          html += `<text x="${mwX(t.x)}" y="${mwY(t.y) + (t.radius||5) + 8}" fill="rgba(100,140,180,0.3)" font-size="5" text-anchor="middle">${t.name}</text>`;
+        } else if (t.type === 'desert' || t.type === 'steppe' || t.type === 'jungle') {
+          const tw = (t.width||50)*sX, th = (t.height||25)*sY;
+          html += `<rect x="${mwX(t.x)}" y="${mwY(t.y)}" width="${tw.toFixed(1)}" height="${th.toFixed(1)}" rx="4" fill="${t.color || 'rgba(200,180,130,0.08)'}" opacity="0.6"/>`;
+          html += `<text x="${mwX(t.x) + tw/2}" y="${mwY(t.y) + th/2 + 3}" fill="rgba(180,160,120,0.25)" font-size="5" text-anchor="middle">${t.name}</text>`;
+        } else if (t.type === 'island') {
+          const irx = ((t.width||10)/2)*sX, iry = ((t.height||10)/2)*sY;
+          html += `<ellipse cx="${mwX(t.x)}" cy="${mwY(t.y)}" rx="${irx.toFixed(1)}" ry="${iry.toFixed(1)}" fill="${t.color || 'rgba(100,160,80,0.12)'}"/>`;
+          html += `<text x="${mwX(t.x)}" y="${mwY(t.y) + iry + 7}" fill="rgba(100,160,80,0.3)" font-size="5" text-anchor="middle">${t.name}</text>`;
+        }
+      });
+    }
+  }
+
+  // --- Era landmarks (cities, temples, fortresses) --- coords: 700×520 → scaled
+  if (era.landmarks) {
+    era.landmarks.forEach(lm => {
+      const icon = lm.icon || '📍';
+      html += `<g class="world-landmark" transform="translate(${mwX(lm.x)},${mwY(lm.y)})">`;
+      html += `<text x="0" y="0" font-size="10" text-anchor="middle" dominant-baseline="central" opacity="0.65" style="filter:drop-shadow(0 0 2px rgba(0,0,0,0.5));">${icon}</text>`;
+      html += `<text x="0" y="11" fill="rgba(201,169,110,0.4)" font-size="5.5" text-anchor="middle">${lm.name}</text>`;
+      html += `</g>`;
+    });
+  }
+
+  // --- Population indicators ---
+  const pops = era.populations;
+  if (pops) {
+    const popData = (typeof pops === 'object' && !Array.isArray(pops)) ? Object.entries(pops).map(([k,v]) => ({region:k,...v})) : pops;
+    popData.forEach(p => {
+      const regionKey = p.region;
+      const m = REGION_META[regionKey];
+      if (!m) return;
+      const r = G.regions[regionKey];
+      if (!r) return;
+      const count = Math.max(1, Math.min(Math.floor((p.count || r.prosperity) / 4), 3));
+      for (let i = 0; i < count; i++) {
+        const dx = (Math.random() - 0.5) * 35;
+        const dy = (Math.random() - 0.5) * 25;
+        html += `<text x="${m.x + dx}" y="${m.y + dy + 25}" font-size="7" opacity="0.25" text-anchor="middle">${p.icon}</text>`;
+      }
+    });
+  }
+
+  // --- Stat-based visual effects ---
+  if (mw.statVisuals) {
+    for (const k in G.regions) {
+      const r = G.regions[k];
+      const m = REGION_META[k];
+      if (!m) continue;
+      const sv = mw.statVisuals;
+      if (sv.prosperity && r.prosperity >= sv.prosperity.high.above)
+        html += `<text x="${m.x+22}" y="${m.y-10}" font-size="8" opacity="0.5" class="world-sparkle">${sv.prosperity.high.icon}</text>`;
+      if (sv.prosperity && r.prosperity <= sv.prosperity.low.below)
+        html += `<text x="${m.x+22}" y="${m.y-10}" font-size="8" opacity="0.4">${sv.prosperity.low.icon}</text>`;
+      if (sv.military && r.military >= sv.military.high.above)
+        html += `<text x="${m.x-22}" y="${m.y-10}" font-size="8" opacity="0.5">${sv.military.high.icon}</text>`;
+      if (sv.military && r.military <= sv.military.low.below)
+        html += `<text x="${m.x-22}" y="${m.y-10}" font-size="8" opacity="0.4">${sv.military.low.icon}</text>`;
+      if (sv.culture && r.culture >= sv.culture.high.above)
+        html += `<text x="${m.x}" y="${m.y-20}" font-size="8" opacity="0.5">${sv.culture.high.icon}</text>`;
+      if (sv.trade && r.trade >= sv.trade.high.above)
+        html += `<text x="${m.x}" y="${m.y+35}" font-size="8" opacity="0.5">${sv.trade.high.icon}</text>`;
+    }
+  }
+
+  // --- Ambient moving elements using ambientPaths --- coords: 700×520 → scaled
+  if (era.ambientElements && mw.ambientPaths) {
+    era.ambientElements.forEach((ae, i) => {
+      const pathKey = ae.path;
+      const pathData = mw.ambientPaths[pathKey];
+      if (!pathData || !pathData.waypoints || pathData.waypoints.length < 2) return;
+      const wp = pathData.waypoints;
+      let svgPath = `M${mwX(wp[0][0])},${mwY(wp[0][1])}`;
+      for (let j = 1; j < wp.length; j++) {
+        svgPath += ` L${mwX(wp[j][0])},${mwY(wp[j][1])}`;
+      }
+      // Return path
+      for (let j = wp.length - 2; j >= 0; j--) {
+        svgPath += ` L${mwX(wp[j][0])},${mwY(wp[j][1])}`;
+      }
+      const dur = ((pathData.duration || 10000) / 1000) + i * 2;
+      html += `<text font-size="10" opacity="0.4" text-anchor="middle">`;
+      html += `<animateMotion dur="${dur}s" repeatCount="indefinite" path="${svgPath}"/>`;
+      html += `${ae.icon}</text>`;
+    });
+  }
+
+  // --- Weather particles ---
+  const weatherDiv = document.getElementById('game-particles');
+  if (weatherDiv && era.weatherEffects && era.weatherEffects.length > 0) {
+    let wHtml = '';
+    const typeMap = { cloud:'☁', dust:'💨', rain:'🌧', snow:'❄', mist:'🌫', fog:'🌫', sandstorm:'💨', monsoon:'🌧', smog:'🌫' };
+    era.weatherEffects.forEach(we => {
+      const pChar = typeMap[we.type] || '·';
+      const count = we.count || 3;
+      for (let i = 0; i < count; i++) {
+        const x = 5 + Math.random() * 90;
+        const y = 5 + Math.random() * 40;
+        const delay = Math.random() * 10;
+        const dur = 12 + Math.random() * 18;
+        wHtml += `<span class="weather-particle" style="left:${x}%;top:${y}%;animation-delay:${delay}s;animation-duration:${dur}s;opacity:${we.opacity || 0.1};font-size:${8+Math.random()*8}px;">${pChar}</span>`;
+      }
+    });
+    weatherDiv.innerHTML = wHtml;
+  }
+
+  // --- Era label ---
+  html += `<text x="10" y="18" fill="rgba(201,169,110,0.25)" font-size="10" font-weight="bold">${era.name}</text>`;
+  if (era.period) html += `<text x="10" y="28" fill="rgba(201,169,110,0.18)" font-size="6">${era.period}</text>`;
+
+  // --- Banners --- coords: 700×520 → scaled
+  if (era.banners) {
+    era.banners.forEach(b => {
+      html += `<g transform="translate(${mwX(b.x)},${mwY(b.y)})">`;
+      html += `<line x1="0" y1="0" x2="0" y2="-14" stroke="rgba(201,169,110,0.3)" stroke-width="0.8"/>`;
+      html += `<text x="2" y="-8" font-size="8" opacity="0.5">${b.icon || '🏴'}</text>`;
+      if (b.label) html += `<text x="0" y="6" fill="rgba(201,169,110,0.3)" font-size="5" text-anchor="middle">${b.label}</text>`;
+      html += `</g>`;
+    });
+  }
+
+  layer.innerHTML = html;
+
+  // Update era class on map-area
+  const mapArea = document.getElementById('map-area');
+  mapArea.classList.remove('era-1','era-2','era-3','era-4');
+  mapArea.classList.add('era-' + G.era);
+}
+
 // ==================== Map Scene System ====================
 
 const ICON_SYMBOLS = {
@@ -3065,17 +3188,19 @@ function renderMapScene(eventId) {
   mapArea.classList.remove('atmo-war','atmo-peace','atmo-trade','atmo-culture','atmo-crisis','atmo-transformation');
   if (scene.atmosphere) mapArea.classList.add('atmo-' + scene.atmosphere);
 
-  // Play map sound based on atmosphere type
-  const _mapSounds = {war:'mapWar',trade:'mapTrade',culture:'mapCulture',peace:'mapPeace',crisis:'mapCrisis',transformation:'mapCrisis'};
-  const _sfxMethod = _mapSounds[scene.atmosphere];
-  if (_sfxMethod && SFX[_sfxMethod]) setTimeout(() => SFX[_sfxMethod](), 400);
-
-  // --- Region highlights ---
-  document.querySelectorAll('.region-path').forEach(p => p.classList.remove('scene-highlight'));
-  if (scene.highlights) {
-    scene.highlights.forEach(rk => {
-      const p = document.querySelector(`[data-region="${rk}"]`);
-      if (p) p.classList.add('scene-highlight');
+  // --- Region highlights + dim non-highlighted ---
+  document.querySelectorAll('.region-path').forEach(p => {
+    p.classList.remove('scene-highlight', 'scene-dimmed');
+  });
+  if (scene.highlights && scene.highlights.length > 0) {
+    const hlSet = new Set(scene.highlights);
+    document.querySelectorAll('.region-path').forEach(p => {
+      const rk = p.getAttribute('data-region');
+      if (hlSet.has(rk)) {
+        p.classList.add('scene-highlight');
+      } else {
+        p.classList.add('scene-dimmed');
+      }
     });
   }
 
@@ -3095,7 +3220,13 @@ function renderMapScene(eventId) {
       const mx = (fx+tx)/2 + (Math.random()-0.5)*20;
       const my = (fy+ty)/2 + (Math.random()-0.5)*20;
       const delay = i * 0.3;
-      html += `<path class="scene-arrow type-${a.type||'military'}" d="M${fx},${fy} Q${mx},${my} ${tx},${ty}" fill="none" marker-end="url(#ah-${a.type||'military'})" style="animation-delay:${delay}s"/>`;
+      const pathId = `sarrow-${i}`;
+      const pathD = `M${fx},${fy} Q${mx},${my} ${tx},${ty}`;
+      html += `<path id="${pathId}" class="scene-arrow type-${a.type||'military'}" d="${pathD}" fill="none" marker-end="url(#ah-${a.type||'military'})" style="animation-delay:${delay}s"/>`;
+      // Flowing light dot along arrow path
+      const dotColors = {military:'#e85c5c',trade:'#f0c860',culture:'#b48ae8',alliance:'#7cd47c',migration:'#6bb8e8',expansion:'#e8a050'};
+      const dc = dotColors[a.type] || '#c9a96e';
+      html += `<circle r="2.5" fill="${dc}" class="arrow-flow-dot"><animateMotion dur="${1.5+i*0.3}s" repeatCount="indefinite" begin="${delay+1}s"><mpath href="#${pathId}"/></animateMotion></circle>`;
       if (a.label) {
         const lx = (fx+tx)/2, ly = (fy+ty)/2 - 6;
         html += `<text class="scene-arrow-label" x="${lx}" y="${ly}" text-anchor="middle" style="animation-delay:${delay+0.5}s">${a.label}</text>`;
@@ -3122,16 +3253,32 @@ function renderMapScene(eventId) {
     });
   }
 
-  layer.innerHTML = html;
+  // --- Spotlight on main action area ---
+  if (scene.highlights && scene.highlights.length > 0) {
+    let cx = 0, cy = 0, n = 0;
+    scene.highlights.forEach(rk => {
+      const m = REGION_META[rk];
+      if (m) { cx += m.x; cy += m.y; n++; }
+    });
+    if (n > 0) {
+      cx = Math.round(cx / n); cy = Math.round(cy / n);
+      const spotId = 'scene-spotlight-' + Date.now();
+      html += `<defs><radialGradient id="${spotId}" cx="50%" cy="50%" r="50%">`;
+      html += `<stop offset="0%" stop-color="rgba(201,169,110,0.12)"/>`;
+      html += `<stop offset="60%" stop-color="rgba(201,169,110,0.04)"/>`;
+      html += `<stop offset="100%" stop-color="transparent"/>`;
+      html += `</radialGradient></defs>`;
+      html += `<ellipse cx="${cx}" cy="${cy}" rx="100" ry="80" fill="url(#${spotId})" opacity="0.8" style="animation:atmoFade 0.8s ease;"/>`;
+    }
+  }
 
-  // Also render event-specific world layer extras
-  renderEventWorldExtras(eventId);
+  layer.innerHTML = html;
 }
 
 function clearMapScene() {
   const layer = document.getElementById('map-scene-layer');
   if (layer) layer.innerHTML = '';
-  document.querySelectorAll('.region-path').forEach(p => p.classList.remove('scene-highlight'));
+  document.querySelectorAll('.region-path').forEach(p => p.classList.remove('scene-highlight', 'scene-dimmed', 'outcome-positive', 'outcome-negative'));
   const mapArea = document.getElementById('map-area');
   if (mapArea) mapArea.classList.remove('atmo-war','atmo-peace','atmo-trade','atmo-culture','atmo-crisis','atmo-transformation');
 }
@@ -3170,6 +3317,66 @@ function showMapDeltas(effectTags) {
 
     setTimeout(() => el.remove(), 2200);
   });
+}
+
+// ==================== Outcome Visualization on Map ====================
+
+function showOutcomeOnMap(ev, choice, effectTags, chains) {
+  const svg = document.getElementById('map-svg');
+  if (!svg) return;
+
+  // Determine which regions are positive/negative
+  const regionEffects = {};
+  effectTags.forEach(t => {
+    if (!regionEffects[t.regionKey]) regionEffects[t.regionKey] = 0;
+    regionEffects[t.regionKey] += t.val;
+  });
+
+  // 1. Region pulse: positive=green, negative=red
+  for (const rk in regionEffects) {
+    const p = document.querySelector(`[data-region="${rk}"]`);
+    if (p) {
+      p.classList.remove('scene-dimmed', 'scene-highlight');
+      p.classList.add(regionEffects[rk] >= 0 ? 'outcome-positive' : 'outcome-negative');
+    }
+  }
+
+  // 2. Shockwave rings from affected regions
+  const sceneLayer = document.getElementById('map-scene-layer');
+  if (sceneLayer) {
+    let outcomeHtml = '';
+    for (const rk in regionEffects) {
+      const m = REGION_META[rk];
+      if (!m) continue;
+      const color = regionEffects[rk] >= 0 ? 'rgba(107,186,107,0.6)' : 'rgba(197,107,107,0.6)';
+      outcomeHtml += `<circle cx="${m.x}" cy="${m.y}" r="5" fill="none" stroke="${color}" class="outcome-shockwave"><animate attributeName="r" from="5" to="40" dur="1.2s" fill="freeze"/><animate attributeName="opacity" from="0.7" to="0" dur="1.2s" fill="freeze"/><animate attributeName="stroke-width" from="3" to="0.5" dur="1.2s" fill="freeze"/></circle>`;
+    }
+
+    // 3. Theme icon at map center (use getCrisisType for detection)
+    const themeIcons = {war:'⚔️', trade:'💰', culture:'📜', gov:'🏛️', transform:'⚡', finale:'👑'};
+    const crisis = (typeof getCrisisType === 'function') ? getCrisisType(ev) : {type:'gov'};
+    const icon = themeIcons[crisis.type] || '☯';
+    outcomeHtml += `<text class="outcome-theme-icon" x="300" y="225" text-anchor="middle" dominant-baseline="central" font-size="36">${icon}</text>`;
+
+    // 4. Chain reaction flow lines
+    if (chains && chains.length > 0) {
+      chains.forEach((ch, i) => {
+        const fromM = REGION_META[ch.from];
+        const toM = REGION_META[ch.to];
+        if (fromM && toM && ch.from !== ch.to) {
+          outcomeHtml += `<line x1="${fromM.x}" y1="${fromM.y}" x2="${toM.x}" y2="${toM.y}" stroke="#dbb978" stroke-width="1.5" class="outcome-chain-line" style="animation-delay:${0.5+i*0.2}s"/>`;
+        }
+      });
+    }
+
+    sceneLayer.innerHTML = outcomeHtml;
+  }
+
+  // Auto-clear after 3s
+  setTimeout(() => {
+    document.querySelectorAll('.region-path').forEach(p => p.classList.remove('outcome-positive', 'outcome-negative'));
+    if (sceneLayer) sceneLayer.innerHTML = '';
+  }, 3000);
 }
 
 // ==================== Choice Preview on Map ====================
@@ -3434,10 +3641,9 @@ function showEvent() {
     const ch = allChoices[origIdx];
     const risk = assessRisk(ch);
     const riskLabels = {low:'稳健',medium:'有险',high:'⚡高险'};
-    // Build visual effect arrows per region (trap choices hide true effects)
+    // Build visual effect arrows per region (hidden by default)
     let effectsHtml = '';
     if (ch._isTrap) {
-      // Trap: show misleading "positive" preview
       effectsHtml = '<span class="ce-region" style="color:#c9a96e;">✨ 看似完美的选择</span>';
     } else {
       for (let region in ch.effects) {
@@ -3454,10 +3660,13 @@ function showEvent() {
     }
     html += `<button class="choice-btn risk-${ch._isTrap ? 'low' : risk}" onclick="makeChoice(${origIdx},event)" data-choice="${origIdx}">`;
     html += `<span class="choice-label">${ch.text}</span>`;
-    html += `<div class="choice-effects">${effectsHtml}</div>`;
-    html += `<span class="choice-risk">${ch._isTrap ? '稳健' : riskLabels[risk]}</span>`;
+    // Effects and risk hidden by default — revealed by hint button
+    html += `<div class="choice-effects choice-hint-hidden">${effectsHtml}</div>`;
+    html += `<span class="choice-risk choice-hint-hidden">${ch._isTrap ? '稳健' : riskLabels[risk]}</span>`;
     html += `</button>`;
   });
+  // Hint reveal button
+  html += '<div style="text-align:center;margin-top:8px;"><button class="hint-reveal-btn" onclick="revealChoiceHints()" id="hint-btn">🔍 显示提示</button></div>';
   html += '</div>';
 
   content.innerHTML = html;
@@ -3597,10 +3806,11 @@ function _executeChoice(idx, ev, choice) {
     setTimeout(() => SFX.trapReveal(), 200);
   }
 
-  // Clear scene overlay and show stat deltas on map
+  // Clear scene overlay, show outcome visualization, then stat deltas
   clearChoicePreview();
   clearMapScene();
-  setTimeout(() => showMapDeltas(effectTags), 300);
+  showOutcomeOnMap(ev, choice, effectTags, chains);
+  setTimeout(() => showMapDeltas(effectTags), 400);
 
   // Record
   G.choices.push({era:G.era, event:ev.id, choice:idx});
@@ -3662,6 +3872,15 @@ function _executeChoice(idx, ev, choice) {
     html += '<div style="color:#999;font-size:0.88em;line-height:1.7;margin:12px 0;padding:8px 14px;background:rgba(201,169,110,0.04);border-radius:6px;border-left:2px solid rgba(201,169,110,0.15);">' + conseq + '</div>';
   }
 
+  // Shi Zhan's insight from DEEP_KNOWLEDGE
+  const dk = (typeof DEEP_KNOWLEDGE !== 'undefined') && DEEP_KNOWLEDGE[ev.id];
+  if (dk && dk.shiZhanInsight) {
+    html += '<div style="margin:12px 0;padding:10px 14px;background:rgba(201,169,110,0.06);border-radius:6px;border-left:3px solid rgba(201,169,110,0.4);">';
+    html += '<div style="color:#c9a96e;font-size:0.9em;font-weight:bold;margin-bottom:6px;">📜 施展解读</div>';
+    html += '<div style="color:#b0a080;font-size:0.85em;line-height:1.7;">' + dk.shiZhanInsight + '</div>';
+    html += '</div>';
+  }
+
   // Historical outcome — what actually happened in history
   const histOutcome = (typeof HISTORICAL_OUTCOMES !== 'undefined') && HISTORICAL_OUTCOMES[ev.id];
   if (histOutcome) {
@@ -3675,6 +3894,9 @@ function _executeChoice(idx, ev, choice) {
     html += '<div style="color:#c9a96e;font-size:0.82em;margin-top:6px;font-style:italic;">💡 ' + histOutcome.lesson + '</div>';
     html += '</div>';
   }
+
+  // Choice analysis — full breakdown of all options
+  html += buildChoiceAnalysis(ev, idx);
 
   // Continue button
   html += '<button class="continue-btn hidden" id="res-continue">继 续</button>';
@@ -3993,7 +4215,6 @@ function nextEra() {
 
   G.era++;
   G.eventIdx = 0;
-  _worldEra = 0; // Force world re-render for new era
 
   // Snapshot for next era
   G.eraStartSnapshot = {};
@@ -4007,6 +4228,7 @@ function nextEra() {
   const title = document.getElementById('era-trans-title');
   const line = document.getElementById('era-trans-line');
   const desc = document.getElementById('era-trans-desc');
+  const intro = document.getElementById('era-trans-intro');
   const preview = document.getElementById('era-trans-preview');
 
   // Reset
@@ -4014,7 +4236,11 @@ function nextEra() {
   title.textContent = ERA_NAMES[G.era]; title.style.opacity = '0'; title.style.letterSpacing = '20px';
   line.style.width = '0';
   desc.textContent = ERA_DESCS[G.era]; desc.style.opacity = '0';
-  preview.textContent = G.era < 4 ? `下一纪：${ERA_NAMES[G.era+1]||''}` : ''; preview.style.opacity = '0';
+  const introRaw = (ERA_INTROS && ERA_INTROS[G.era]) || '';
+  intro.innerHTML = introRaw.replace(/\n/g, '<br>'); intro.style.opacity = '0';
+  intro.style.display = introRaw ? 'block' : 'none';
+  preview.innerHTML = '<span style="cursor:pointer;border:1px solid rgba(201,169,110,0.3);padding:8px 32px;border-radius:4px;letter-spacing:4px;">进入时代 ▶</span>';
+  preview.style.opacity = '0';
 
   // Apply era-specific background color
   trans.classList.remove('era-to-2','era-to-3','era-to-4');
@@ -4031,17 +4257,22 @@ function nextEra() {
   setTimeout(() => { line.style.width = '200px'; }, 2800);
   // Phase 4: Description (3.5s)
   setTimeout(() => { desc.style.transition = 'opacity 0.8s'; desc.style.opacity = '1'; }, 3500);
-  // Phase 5: Preview (4.2s)
-  setTimeout(() => { preview.style.transition = 'opacity 0.6s'; preview.style.opacity = '1'; }, 4200);
-  // Phase 6: Close (5.5s)
-  setTimeout(() => {
+  // Phase 5: Intro background text (4.2s)
+  setTimeout(() => { intro.style.transition = 'opacity 1s'; intro.style.opacity = '1'; }, 4200);
+  // Phase 6: Continue button (5.5s)
+  setTimeout(() => { preview.style.transition = 'opacity 0.6s'; preview.style.opacity = '1'; }, 5500);
+
+  // Click to continue (replaces auto-close)
+  const closeTrans = () => {
     trans.classList.remove('active');
+    preview.removeEventListener('click', closeTrans);
     renderTopBar();
     renderPowerRanking();
     updateMapEraTint();
     updateMapNodeCritical();
     showEvent();
-  }, 5500);
+  };
+  preview.addEventListener('click', closeTrans);
 }
 
 function showEnding(endingKey) {
@@ -4543,6 +4774,53 @@ function toggleEventDetail() {
   }
 }
 
+// ==================== Hint Reveal + Choice Analysis ====================
+
+function revealChoiceHints() {
+  document.querySelectorAll('.choice-hint-hidden').forEach(el => {
+    el.classList.remove('choice-hint-hidden');
+    el.style.animation = 'fadeIn 0.3s ease';
+  });
+  const btn = document.getElementById('hint-btn');
+  if (btn) btn.remove();
+}
+
+function buildChoiceAnalysis(ev, selectedIdx) {
+  const analysis = (typeof CHOICE_ANALYSIS !== 'undefined') && CHOICE_ANALYSIS[ev.id];
+  if (!analysis) return '';
+
+  const allChoices = ev._allChoices || ev.choices;
+  let html = '<div class="choice-analysis-section">';
+  html += '<div style="color:#c9a96e;font-size:0.95em;font-weight:bold;margin-bottom:8px;text-align:center;">📋 全面解析</div>';
+
+  // Show analysis for each choice
+  const choiceLabels = ['甲', '乙', '丙', '丁'];
+  analysis.choices.forEach((ca, i) => {
+    if (i >= allChoices.length) return;
+    const ch = allChoices[i];
+    const isSelected = (i === selectedIdx);
+    const isTrap = ch && ch._isTrap;
+    const stars = '★'.repeat(ca.rating) + '☆'.repeat(5 - ca.rating);
+
+    html += `<div class="analysis-choice${isSelected ? ' was-selected' : ''}${isTrap ? ' was-trap' : ''}">`;
+    html += `<div class="ac-title" style="color:${isSelected ? '#c9a96e' : isTrap ? '#c04040' : '#aaa'};">`;
+    html += `${isSelected ? '✓ ' : ''}${ch ? ch.text : ca.summary}`;
+    html += `<span class="ac-rating">${stars}</span></div>`;
+    html += `<div class="ac-good">✅ ${ca.whyGood}</div>`;
+    html += `<div class="ac-bad">❌ ${ca.whyBad}</div>`;
+    if (ca.historicalParallel) html += `<div class="ac-parallel">📖 ${ca.historicalParallel}</div>`;
+    html += '</div>';
+  });
+
+  // Key insight
+  if (analysis.keyInsight) {
+    html += `<div class="analysis-key-insight">💡 核心考点：${analysis.keyInsight}</div>`;
+  }
+
+  html += '</div>';
+  return html;
+}
+
 // ==================== Stat Explanation Popup ====================
 
 function showStatExplain(eventId, choiceIdx, regionKey, statLabel, val, statKey) {
@@ -4574,21 +4852,6 @@ function showStatExplain(eventId, choiceIdx, regionKey, statLabel, val, statKey)
 
   if (reason) {
     html += `<div class="se-reason">${reason}</div>`;
-  }
-
-  // Get consequence from event choice
-  const ev = EVENTS[G.era] && EVENTS[G.era].find(e => e.id === eventId);
-  if (ev && ev.choices[choiceIdx] && ev.choices[choiceIdx].consequence) {
-    html += `<div class="se-consequence">${ev.choices[choiceIdx].consequence}</div>`;
-  }
-
-  // Deep knowledge snippet
-  const dk = (typeof DEEP_KNOWLEDGE !== 'undefined') ? DEEP_KNOWLEDGE[eventId] : null;
-  if (dk) {
-    html += '<div class="se-knowledge">';
-    if (dk.shiZhanInsight) html += `<div class="se-insight">💡 ${dk.shiZhanInsight.substring(0, 150)}…</div>`;
-    if (dk.dilemma) html += `<div class="se-dilemma">⚖️ ${dk.dilemma.substring(0, 120)}…</div>`;
-    html += '</div>';
   }
 
   html += '<button class="se-close" onclick="closeStatExplain(event)">关 闭</button>';
@@ -4743,211 +5006,6 @@ function updateMapEraTint() {
   if (!mapArea) return;
   mapArea.classList.remove('era-1','era-2','era-3','era-4');
   mapArea.classList.add('era-' + G.era);
-  // Render living world for this era
-  renderMapWorld(G.era);
-}
-
-// ==================== Map World Rendering (Living World) ====================
-
-const BUILDING_ICONS = {
-  palace:'🏛',city:'🏘',fort:'🏰',temple:'⛩',market:'🏪',port:'⚓',wall:'🧱',camp:'⛺',academy:'📚',farm:'🌾',mine:'⛏',lighthouse:'🗼'
-};
-
-let _worldEra = 0; // track which era world is rendered for
-
-function renderMapWorld(era) {
-  const layer = document.getElementById('map-world-layer');
-  if (!layer) return;
-  if (typeof MAP_WORLD_DATA === 'undefined') return;
-
-  // Skip if already rendered for this era
-  if (_worldEra === era) return;
-  _worldEra = era;
-
-  const data = MAP_WORLD_DATA.eras ? MAP_WORLD_DATA.eras[era] : null;
-  if (!data) { layer.innerHTML = ''; return; }
-
-  let html = '';
-
-  // --- Weather / atmosphere particles ---
-  const weather = data.weather || 'clear';
-  if (weather === 'snow') {
-    for (let i = 0; i < 20; i++) {
-      const x = 50 + Math.random() * 500;
-      const y = Math.random() * 400;
-      const d = (2 + Math.random() * 4);
-      html += `<circle class="world-snow" cx="${x}" cy="${y}" r="${1+Math.random()}" style="animation-delay:${Math.random()*6}s;animation-duration:${d}s;"/>`;
-    }
-  } else if (weather === 'rain') {
-    for (let i = 0; i < 25; i++) {
-      const x = 50 + Math.random() * 500;
-      const y = Math.random() * 400;
-      html += `<line class="world-rain" x1="${x}" y1="${y}" x2="${x-1}" y2="${y+6}" stroke="rgba(100,150,220,0.3)" stroke-width="0.5" style="animation-delay:${Math.random()*1.5}s;"/>`;
-    }
-  } else if (weather === 'sandstorm') {
-    for (let i = 0; i < 15; i++) {
-      const x = 60 + Math.random() * 200;
-      const y = 100 + Math.random() * 180;
-      html += `<circle class="world-sand" cx="${x}" cy="${y}" r="${1+Math.random()*2}" style="animation-delay:${Math.random()*5}s;"/>`;
-    }
-  }
-
-  // --- Clouds ---
-  if (weather !== 'sandstorm') {
-    for (let i = 0; i < 5; i++) {
-      const cx = 50 + Math.random() * 500;
-      const cy = 20 + Math.random() * 60;
-      const rx = 15 + Math.random() * 25;
-      const ry = 4 + Math.random() * 4;
-      html += `<ellipse class="world-cloud" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" style="animation-delay:${Math.random()*35}s;animation-duration:${25+Math.random()*20}s;"/>`;
-    }
-  }
-
-  // --- Ocean waves ---
-  for (let i = 0; i < 8; i++) {
-    const x = 430 + Math.random() * 120;
-    const y = 150 + Math.random() * 230;
-    const w = 10 + Math.random() * 20;
-    html += `<path class="world-wave" d="M${x},${y} Q${x+w/2},${y-2} ${x+w},${y}" style="animation-delay:${Math.random()*4}s;"/>`;
-  }
-
-  // --- Landmarks ---
-  if (data.landmarks) {
-    data.landmarks.forEach(lm => {
-      if (lm.type === 'river' && lm.path) {
-        html += `<path class="world-river" d="${lm.path}"/>`;
-        if (lm.label) {
-          // Place label near midpoint of path
-          const mx = lm.x || 200;
-          const my = lm.y || 200;
-          html += `<text class="world-landmark-label" x="${mx}" y="${my}" text-anchor="middle">${lm.label}</text>`;
-        }
-      } else if (lm.type === 'mountain') {
-        // Small triangle mountain symbol
-        const x = lm.x, y = lm.y;
-        html += `<path class="world-mountain" d="M${x-8},${y+4} L${x},${y-6} L${x+8},${y+4} Z"/>`;
-        html += `<path class="world-mountain" d="M${x+5},${y+4} L${x+12},${y-3} L${x+19},${y+4} Z" style="opacity:0.06;"/>`;
-        if (lm.label) html += `<text class="world-landmark-label" x="${x}" y="${y+12}" text-anchor="middle">${lm.label}</text>`;
-      } else if (lm.type === 'desert') {
-        const x = lm.x, y = lm.y;
-        html += `<text class="world-landmark-label" x="${x}" y="${y}" text-anchor="middle" style="font-size:5px;letter-spacing:3px;">${lm.label || '沙漠'}</text>`;
-      } else if (lm.type === 'forest') {
-        const x = lm.x, y = lm.y;
-        html += `<text class="world-building" x="${x}" y="${y}" text-anchor="middle" style="font-size:6px;opacity:0.3;">🌲🌳🌲</text>`;
-        if (lm.label) html += `<text class="world-landmark-label" x="${x}" y="${y+10}" text-anchor="middle">${lm.label}</text>`;
-      } else if (lm.type === 'lake' || lm.type === 'sea') {
-        const x = lm.x, y = lm.y;
-        html += `<ellipse class="world-river" cx="${x}" cy="${y}" rx="8" ry="5" style="fill:rgba(80,140,200,0.06);"/>`;
-        if (lm.label) html += `<text class="world-landmark-label" x="${x}" y="${y+10}" text-anchor="middle">${lm.label}</text>`;
-      } else if (lm.type === 'pass' || lm.type === 'grassland') {
-        if (lm.label) html += `<text class="world-landmark-label" x="${lm.x}" y="${lm.y}" text-anchor="middle">${lm.label}</text>`;
-      }
-    });
-  }
-
-  // --- Buildings ---
-  if (data.buildings) {
-    data.buildings.forEach((b, i) => {
-      const icon = BUILDING_ICONS[b.type] || '●';
-      const delay = 0.1 + i * 0.08;
-      html += `<text class="world-building type-${b.type}" x="${b.x}" y="${b.y}" text-anchor="middle" style="animation-delay:${delay}s;">${icon}</text>`;
-      if (b.label) {
-        html += `<text class="world-building-label" x="${b.x}" y="${b.y+8}" text-anchor="middle" style="animation-delay:${delay+0.1}s;opacity:0;animation:worldFadeIn 0.5s ease ${delay+0.1}s forwards;">${b.label}</text>`;
-      }
-    });
-  }
-
-  // --- Population indicators ---
-  if (data.populations) {
-    data.populations.forEach(pop => {
-      const meta = REGION_META[pop.region];
-      if (!meta) return;
-      const cx = meta.x, cy = meta.y;
-      const count = pop.density === 'high' ? 6 : pop.density === 'medium' ? 4 : 2;
-      for (let i = 0; i < count; i++) {
-        const px = cx - 15 + Math.random() * 30;
-        const py = cy - 10 + Math.random() * 20;
-        const r = pop.density === 'high' ? 1.5 + Math.random() : 1 + Math.random() * 0.5;
-        html += `<circle class="world-pop-dot" cx="${px}" cy="${py}" r="${r}" style="animation-delay:${Math.random()*3}s;"/>`;
-      }
-    });
-  }
-
-  // --- Culture tags ---
-  if (data.cultures) {
-    data.cultures.forEach(cult => {
-      const meta = REGION_META[cult.region];
-      if (!meta || !cult.items) return;
-      cult.items.forEach((item, i) => {
-        const ox = meta.x + (i - cult.items.length/2) * 18;
-        const oy = meta.y + 22;
-        html += `<text class="world-culture-tag" x="${ox}" y="${oy}" text-anchor="middle">${item}</text>`;
-      });
-    });
-  }
-
-  // --- Banners ---
-  if (data.banners) {
-    data.banners.forEach(bn => {
-      html += `<text class="world-banner" x="${bn.x}" y="${bn.y}" text-anchor="middle" fill="${bn.color || '#c9a96e'}" style="font-size:10px;">🚩${bn.text}</text>`;
-    });
-  }
-
-  // --- Ambient elements (caravans, birds, boats, etc.) ---
-  if (data.ambientElements) {
-    data.ambientElements.forEach(ae => {
-      if (ae.type === 'caravan' && ae.fromX !== undefined) {
-        const dx = (ae.toX || ae.fromX + 60) - ae.fromX;
-        const dy = (ae.toY || ae.fromY) - ae.fromY;
-        html += `<text class="world-caravan" x="${ae.fromX}" y="${ae.fromY}" text-anchor="middle" style="--cx:0px;--cy:0px;--tx:${dx}px;--ty:${dy}px;font-size:6px;animation-delay:${Math.random()*5}s;">🐫${ae.label||''}</text>`;
-      } else if (ae.type === 'bird_flock') {
-        const dir = ae.direction === 'east' ? 60 : ae.direction === 'west' ? -60 : 40;
-        html += `<text class="world-bird" x="${ae.x}" y="${ae.y}" text-anchor="middle" style="--bx:${dir}px;--by:-15px;font-size:5px;animation-delay:${Math.random()*8}s;">🕊🕊🕊</text>`;
-      } else if (ae.type === 'fishing_boats' || ae.type === 'ships') {
-        html += `<text class="world-boat" x="${ae.x}" y="${ae.y}" text-anchor="middle" style="--sx:${15+Math.random()*15}px;--sy:${Math.random()*8-4}px;font-size:7px;animation-delay:${Math.random()*6}s;">${ae.type==='ships'?'⛵':'🚣'}</text>`;
-      } else if (ae.type === 'army') {
-        html += `<text class="world-building" x="${ae.x}" y="${ae.y}" text-anchor="middle" style="font-size:${ae.size==='large'?'9px':'6px'};opacity:0.4;">⚔${ae.label||''}</text>`;
-      } else if (ae.type === 'nomads') {
-        html += `<text class="world-building" x="${ae.x}" y="${ae.y}" text-anchor="middle" style="font-size:6px;opacity:0.4;">🏇${ae.label||''}</text>`;
-      } else if (ae.type === 'monks' || ae.type === 'scholars') {
-        const icon = ae.type === 'monks' ? '🧘' : '📖';
-        html += `<text class="world-building" x="${ae.x}" y="${ae.y}" text-anchor="middle" style="font-size:6px;opacity:0.4;">${icon}</text>`;
-      }
-    });
-  }
-
-  layer.innerHTML = html;
-}
-
-// Also render event-specific world enhancements
-function renderEventWorldExtras(eventId) {
-  if (typeof MAP_WORLD_DATA === 'undefined' || !MAP_WORLD_DATA.eventScenes) return;
-  const scene = MAP_WORLD_DATA.eventScenes[eventId];
-  if (!scene) return;
-
-  const layer = document.getElementById('map-world-layer');
-  if (!layer) return;
-
-  let html = layer.innerHTML;
-
-  if (scene.extraBuildings) {
-    scene.extraBuildings.forEach(b => {
-      const icon = BUILDING_ICONS[b.type] || '●';
-      html += `<text class="world-building type-${b.type}" x="${b.x}" y="${b.y}" text-anchor="middle" style="animation-delay:0.3s;filter:brightness(1.3);">${icon}</text>`;
-      if (b.label) html += `<text class="world-building-label" x="${b.x}" y="${b.y+8}" text-anchor="middle" style="animation-delay:0.4s;opacity:0;animation:worldFadeIn 0.5s ease 0.4s forwards;fill:#e8c060;">${b.label}</text>`;
-    });
-  }
-
-  if (scene.extraAmbient) {
-    scene.extraAmbient.forEach(ae => {
-      if (ae.type === 'scholars') html += `<text class="world-building" x="${ae.x}" y="${ae.y}" text-anchor="middle" style="font-size:7px;opacity:0.5;">📖</text>`;
-      else if (ae.type === 'army') html += `<text class="world-building" x="${ae.x}" y="${ae.y}" text-anchor="middle" style="font-size:7px;opacity:0.5;">⚔</text>`;
-      else if (ae.type === 'merchants') html += `<text class="world-building" x="${ae.x}" y="${ae.y}" text-anchor="middle" style="font-size:7px;opacity:0.5;">💰</text>`;
-      else if (ae.type === 'monks') html += `<text class="world-building" x="${ae.x}" y="${ae.y}" text-anchor="middle" style="font-size:7px;opacity:0.5;">🧘</text>`;
-    });
-  }
-
-  layer.innerHTML = html;
 }
 
 // ==================== Map Node Critical Check ====================
@@ -5308,72 +5366,58 @@ function initStartScreen() {
 
   // Continue button is now dynamically created in makeChoice()
 
-  // Sound state: ON by default each session
-  localStorage.removeItem('pivot_muted');
-  SFX.muted = false;
-  SFX._openingPlayed = false;
-
-  const startScreen = document.getElementById('start-screen');
-
-  // Start ambient + gong on first interaction with start screen
-  function _tryStartAmbient() {
-    if (!SFX._initialized) SFX.init();
-    if (SFX.muted) return; // muted, skip
-    if (!SFX._openingPlayed) {
-      SFX.openingGong();
-      SFX._openingPlayed = true;
-    }
-    SFX.ambient();
-  }
-
-  // First click/touch on start screen triggers ambient
-  let _ambientStarted = false;
-  const _startAmbient = (e) => {
-    // Skip if the click was on the mute button (mute handler handles it)
-    if (e.target.closest && e.target.closest('.mute-btn')) return;
-    if (_ambientStarted) return;
-    _ambientStarted = true;
-    _tryStartAmbient();
-    startScreen.removeEventListener('click', _startAmbient);
-    startScreen.removeEventListener('touchstart', _startAmbient);
-  };
-  startScreen.addEventListener('click', _startAmbient);
-  startScreen.addEventListener('touchstart', _startAmbient, {passive:true});
-
-  // Bind mute buttons
+  // Bind mute buttons — default state is MUTED (🔇), click to enable
   document.querySelectorAll('.mute-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.stopPropagation(); // Don't bubble to start screen
-      // Init audio context on first user gesture
+      e.preventDefault();
+      e.stopPropagation();
+      // Init audio context on first interaction
       if (!SFX._initialized) SFX.init();
       SFX.toggleMute();
+      // Play sounds when unmuting
       if (!SFX.muted) {
-        // Unmuting: play confirmation sound + start ambient if not yet playing
         SFX.click();
-        if (!_ambientStarted) {
-          _ambientStarted = true;
-          if (!SFX._openingPlayed) {
-            SFX.openingGong();
-            SFX._openingPlayed = true;
-          }
+        // On start screen: also play opening gong + ambient
+        if (!SFX._openingPlayed && document.getElementById('start-screen').style.display !== 'none') {
+          SFX.openingGong();
+          SFX._openingPlayed = true;
           SFX.ambient();
-          startScreen.removeEventListener('click', _startAmbient);
-          startScreen.removeEventListener('touchstart', _startAmbient);
+        }
+        // In game: start ambient
+        if (document.getElementById('game').classList.contains('active')) {
+          SFX.ambient();
         }
       }
     });
   });
+
+  // Restore mute state from localStorage (default: muted)
+  if (localStorage.getItem('pivot_muted') === '0') {
+    SFX.muted = false;
+    document.querySelectorAll('.mute-btn').forEach(btn => { btn.textContent = '\u{1F50A}'; });
+  }
+
+  // Start screen ambient — only fires if user has unmuted
+  const startScreen = document.getElementById('start-screen');
+  SFX._openingPlayed = false;
 }
 
 function startGame() {
-  // Init audio on first user interaction and play effects
+  // Init audio on first user interaction
   if (!SFX._initialized) SFX.init();
-  // If opening gong hasn't played yet (user clicked start directly), play it now
-  if (!SFX._openingPlayed) {
+  // If user hasn't explicitly muted, auto-enable sound on game start
+  if (SFX.muted && localStorage.getItem('pivot_muted') !== '1') {
+    SFX.muted = false;
+    SFX._updateMuteButtons();
+  }
+  // Play opening sounds if not muted
+  if (!SFX._openingPlayed && !SFX.muted) {
     SFX.openingGong();
     SFX._openingPlayed = true;
   }
-  SFX.gameStartChord();
+  if (!SFX.muted) {
+    SFX.gameStartChord();
+  }
   SFX.fadeOutAmbient(1.5);
 
   document.getElementById('start-screen').style.display = 'none';
