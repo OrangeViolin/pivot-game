@@ -303,24 +303,113 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   grid-column:1/-1;
   background:linear-gradient(90deg,rgba(13,13,26,0.95),rgba(26,26,48,0.95),rgba(13,13,26,0.95));
   backdrop-filter:blur(12px);
-  display:flex;align-items:center;justify-content:center;gap:12px;
-  padding:0 16px;height:52px;
+  display:flex;align-items:stretch;
+  height:86px;
   border-top:none;position:relative;
 }
 #bottom-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(201,169,110,0.1) 15%,rgba(201,169,110,0.4) 50%,rgba(201,169,110,0.1) 85%,transparent 100%);}
-#power-ranking{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;margin-right:auto;}
-.bottom-btn{
-  padding:8px 20px;font-family:inherit;font-size:0.85em;cursor:pointer;
-  background:rgba(201,169,110,0.04);color:#888;border:1px solid rgba(255,255,255,0.1);
-  border-radius:6px;transition:all 0.25s;letter-spacing:2px;
+#power-ranking{display:none;}
+
+/* 底部时间轴容器 */
+#btl-container{
+  flex:1;overflow-x:auto;overflow-y:hidden;position:relative;
+  scrollbar-width:thin;scrollbar-color:rgba(201,169,110,0.2) transparent;
 }
-.bottom-btn:hover{color:var(--gold);border-color:rgba(201,169,110,0.3);background:rgba(201,169,110,0.08);transform:scale(1.04);box-shadow:0 0 12px rgba(201,169,110,0.1);}
+#btl-container::-webkit-scrollbar{height:3px;}
+#btl-container::-webkit-scrollbar-thumb{background:rgba(201,169,110,0.2);border-radius:2px;}
+#btl-track{
+  display:flex;align-items:center;height:100%;min-width:max-content;
+  padding:6px 16px;position:relative;
+}
+
+/* 纪元分段 */
+.btl-era-seg{
+  display:flex;align-items:center;position:relative;padding:0 4px;
+}
+.btl-era-sep{
+  width:1px;height:50px;background:rgba(201,169,110,0.3);margin:0 2px;flex-shrink:0;
+}
+
+/* 节点 */
+.btl-node{
+  display:flex;flex-direction:column;align-items:center;position:relative;
+  cursor:pointer;padding:0 6px;flex-shrink:0;min-width:28px;
+}
+.btl-node-dot{
+  width:12px;height:12px;border-radius:50%;border:2px solid;
+  transition:all 0.3s;position:relative;z-index:2;
+}
+.btl-node.completed .btl-node-dot{
+  background:var(--btl-color);border-color:var(--btl-color);
+}
+.btl-node.current .btl-node-dot{
+  width:16px;height:16px;background:var(--btl-color);border-color:var(--btl-color);
+  box-shadow:0 0 8px var(--btl-color),0 0 16px var(--btl-color);
+  animation:btlPulse 1.8s ease-in-out infinite;
+}
+.btl-node.future .btl-node-dot{
+  background:transparent;border-color:rgba(255,255,255,0.15);
+}
+.btl-node.transition .btl-node-dot{
+  width:14px;height:14px;border-radius:3px;transform:rotate(45deg);
+}
+.btl-node.transition.current .btl-node-dot{
+  width:18px;height:18px;
+}
+@keyframes btlPulse{
+  0%,100%{box-shadow:0 0 6px var(--btl-color),0 0 12px transparent;}
+  50%{box-shadow:0 0 10px var(--btl-color),0 0 22px var(--btl-color);}
+}
+
+/* 节点间连线 */
+.btl-connector{
+  width:14px;height:2px;flex-shrink:0;
+  background:rgba(255,255,255,0.1);
+}
+.btl-connector.done{opacity:0.5;}
+
+/* 选择标签（甲/乙/丙）*/
+.btl-label{
+  position:absolute;top:-2px;font-size:10px;
+  color:var(--btl-color);opacity:0.9;white-space:nowrap;letter-spacing:0;
+}
+
+/* 纪年文字 */
+.btl-era-range{
+  position:absolute;bottom:2px;left:8px;font-size:9px;
+  color:rgba(255,255,255,0.25);white-space:nowrap;
+}
+
+/* Tooltip */
+.btl-tooltip{
+  position:fixed;z-index:500;padding:8px 12px;
+  background:rgba(13,13,26,0.95);border:1px solid rgba(201,169,110,0.4);
+  border-radius:6px;font-size:0.82em;max-width:220px;
+  pointer-events:none;opacity:0;transition:opacity 0.15s;
+  box-shadow:0 4px 16px rgba(0,0,0,0.5);
+}
+.btl-tooltip.visible{opacity:1;}
+.btl-tooltip .btt-title{color:var(--gold);margin-bottom:4px;letter-spacing:1px;}
+.btl-tooltip .btt-choice{color:#aaa;font-size:0.9em;line-height:1.5;}
+
+/* 操作按钮 */
+#btl-actions{
+  display:flex;flex-direction:column;justify-content:center;gap:4px;
+  padding:6px 8px;border-left:1px solid rgba(201,169,110,0.15);flex-shrink:0;
+}
+.btl-action-btn{
+  width:32px;height:14px;display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;background:transparent;color:#888;
+  border:none;border-radius:3px;transition:all 0.2s;padding:0;line-height:1;
+  font-family:inherit;
+}
+.btl-action-btn:hover{color:var(--gold);background:rgba(201,169,110,0.1);}
 
 /* ========== 按钮触感 ========== */
 .choice-btn:active{transform:scale(0.97) translateY(1px);filter:brightness(0.85);transition:transform 0.05s;}
 .start-btn:active{transform:scale(0.95);}
 .continue-btn:active{transform:scale(0.96);}
-.bottom-btn:active{transform:scale(0.95);}
+.btl-action-btn:active{transform:scale(0.95);}
 
 /* Hidden utility */
 .hidden{opacity:0;pointer-events:none;}
@@ -577,9 +666,12 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   .result-stat-card .rsc-val { font-size: 1.3em; }
   .event-bg-toggle { padding: 6px 0; }
 
-  #bottom-bar { height: 44px; gap: 6px; padding: 0 8px; overflow-x: auto; justify-content: flex-start; }
-  #power-ranking { display: none; }
-  .bottom-btn { padding: 8px 14px; font-size: 0.82em; min-height: 36px; flex-shrink: 0; }
+  #bottom-bar { height: 64px; }
+  #btl-track { padding: 4px 10px; }
+  .btl-node { padding: 0 4px; min-width: 22px; }
+  .btl-connector { width: 8px; }
+  #btl-actions { padding: 4px 6px; gap: 2px; }
+  .btl-action-btn { width: 28px; height: 12px; font-size: 11px; }
 
   #era-transition { padding: 20px; }
   .era-trans-content { max-width: 90vw; max-height: 85vh; }
@@ -599,8 +691,8 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   .choice-preview { font-size: 0.7em; }
   .choice-btn:active .choice-preview { display:block; opacity:1; }
 
-  button, .choice-btn, .bottom-btn { cursor: pointer; -webkit-tap-highlight-color: transparent; }
-  .choice-btn, .bottom-btn, #top-bar, #bottom-bar { user-select: none; -webkit-user-select: none; }
+  button, .choice-btn, .btl-action-btn { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .choice-btn, .btl-action-btn, #top-bar, #bottom-bar { user-select: none; -webkit-user-select: none; }
 }
 
 @media (max-width: 380px) {
@@ -2052,11 +2144,16 @@ body{font-family:'GF','STKaiti','KaiTi',serif;background:#121218;color:#ddd;over
   <!-- Bottom Bar -->
   <div id="bottom-bar">
     <div id="power-ranking"></div>
-    <button class="bottom-btn" onclick="showHistory()">史卷</button>
-    <button class="bottom-btn" onclick="saveGame()">存档</button>
-    <button class="bottom-btn" onclick="loadGame()">读档</button>
-    <button class="bottom-btn" onclick="showHelp()">指南</button>
-    <button class="mute-btn" id="game-mute-btn" title="音效开关">&#x1f507;</button>
+    <div id="btl-container">
+      <div id="btl-track"></div>
+    </div>
+    <div id="btl-actions">
+      <button class="btl-action-btn" onclick="showHistory()" title="史卷">📜</button>
+      <button class="btl-action-btn" onclick="saveGame()" title="存档">💾</button>
+      <button class="btl-action-btn" onclick="loadGame()" title="读档">📂</button>
+      <button class="btl-action-btn" onclick="showHelp()" title="指南">❓</button>
+      <button class="btl-action-btn mute-btn" id="game-mute-btn" title="音效开关">&#x1f507;</button>
+    </div>
   </div>
 </div>
 
@@ -2634,6 +2731,13 @@ const REGION_META = {
 
 const ERA_NAMES = ['','第一纪 · 封建社会','第二纪 · 豪族社会','第三纪 · 古代平民社会','第四纪 · 现代转型'];
 const ERA_DESCS = ['','周天子分封天下，礼乐教化，诸侯并立','大一统帝国崛起，豪族门阀把持朝政','科举取士，商业繁荣，却也暗藏内卷危机','三千年未有之大变局，何去何从？'];
+
+const ERA_TIMELINE_META = [
+  { era:1, color:'#c9a96e', startYear:'前1046', endYear:'前221' },
+  { era:2, color:'#b8432f', startYear:'前221', endYear:'960' },
+  { era:3, color:'#2980b9', startYear:'960', endYear:'1840' },
+  { era:4, color:'#4a7c59', startYear:'1840', endYear:'未来' },
+];
 
 const ERA_INTROS = [
   '',
@@ -3956,6 +4060,7 @@ function _executeChoice(idx, ev, choice) {
   renderMap();
   renderTopBar();
   renderTimeline();
+  renderBottomTimeline();
   updateMapNodeCritical();
 
   // Update mandate score
@@ -4268,6 +4373,7 @@ function nextEra() {
     preview.removeEventListener('click', closeTrans);
     renderTopBar();
     renderPowerRanking();
+    renderBottomTimeline();
     updateMapEraTint();
     updateMapNodeCritical();
     showEvent();
@@ -5257,11 +5363,111 @@ function closeHistory() {
   document.getElementById('history-modal').classList.remove('active');
 }
 
+// ==================== 底部可视化时间轴 ====================
+
+function renderBottomTimeline() {
+  const track = document.getElementById('btl-track');
+  if (!track) return;
+  const choiceLabels = ['甲','乙','丙'];
+  let html = '';
+
+  ERA_TIMELINE_META.forEach((eraMeta, eraIdx) => {
+    const eraNum = eraIdx + 1;
+    const events = EVENTS[eraNum];
+    if (!events) return;
+
+    // 纪元分隔线
+    if (eraIdx > 0) html += '<div class="btl-era-sep"></div>';
+    html += '<div class="btl-era-seg" style="--btl-color:' + eraMeta.color + '">';
+    html += '<span class="btl-era-range">' + eraMeta.startYear + '</span>';
+
+    events.forEach((ev, mIdx) => {
+      const isTransition = !!ev.isTransformation || !!ev.isFinale;
+      let stateClass = 'future';
+      if (eraNum < G.era || (eraNum === G.era && mIdx < G.eventIdx)) stateClass = 'completed';
+      else if (eraNum === G.era && mIdx === G.eventIdx) stateClass = 'current';
+
+      // 连线
+      if (mIdx > 0) {
+        const connDone = (stateClass === 'completed' || stateClass === 'current') ? 'done' : '';
+        html += '<div class="btl-connector ' + connDone + '" style="' + (connDone ? 'background:' + eraMeta.color + ';opacity:0.4;' : '') + '"></div>';
+      }
+
+      // 选择标签
+      let label = '';
+      if (stateClass === 'completed') {
+        const ch = G.choices.find(c => c.event === ev.id);
+        if (ch !== undefined && ch.choice !== undefined) label = choiceLabels[ch.choice] || '';
+      }
+
+      // onclick
+      let onclick = '';
+      if (stateClass === 'completed') onclick = ' onclick="showEventReview(\'' + ev.id + '\')"';
+
+      html += '<div class="btl-node ' + stateClass + (isTransition ? ' transition' : '') + '" style="--btl-color:' + eraMeta.color + '" data-btl-name="' + ev.title.replace(/[【】]/g,'') + '" data-btl-era="' + eraIdx + '" data-btl-midx="' + mIdx + '"' + onclick + '>';
+      if (label) html += '<span class="btl-label" style="--btl-color:' + eraMeta.color + '">' + label + '</span>';
+      html += '<div class="btl-node-dot"></div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+
+  track.innerHTML = html;
+
+  // 自动滚动到当前节点
+  requestAnimationFrame(() => {
+    const currentNode = track.querySelector('.btl-node.current');
+    if (currentNode) {
+      const container = document.getElementById('btl-container');
+      const nodeLeft = currentNode.offsetLeft;
+      const containerW = container.clientWidth;
+      container.scrollLeft = nodeLeft - containerW / 2 + currentNode.offsetWidth / 2;
+    }
+  });
+
+  // Tooltip 事件
+  track.querySelectorAll('.btl-node.completed').forEach(node => {
+    node.addEventListener('mouseenter', _showBtlTooltip);
+    node.addEventListener('mouseleave', _hideBtlTooltip);
+  });
+}
+
+let _btlTooltip = null;
+function _showBtlTooltip(e) {
+  const node = e.currentTarget;
+  const name = node.dataset.btlName;
+  const eraIdx = parseInt(node.dataset.btlEra);
+  const mIdx = parseInt(node.dataset.btlMidx);
+  const choiceLabels = ['甲','乙','丙'];
+
+  const ev = EVENTS[eraIdx + 1]?.[mIdx];
+  const ch = ev ? G.choices.find(c => c.event === ev.id) : null;
+  let choiceText = '';
+  if (ch && ev.choices[ch.choice]) {
+    choiceText = choiceLabels[ch.choice] + '·' + ev.choices[ch.choice].text.replace(/<[^>]*>/g,'').slice(0, 20);
+  }
+
+  if (!_btlTooltip) {
+    _btlTooltip = document.createElement('div');
+    _btlTooltip.className = 'btl-tooltip';
+    document.body.appendChild(_btlTooltip);
+  }
+  _btlTooltip.innerHTML = '<div class="btt-title">' + name + '</div>' + (choiceText ? '<div class="btt-choice">' + choiceText + '</div>' : '');
+  const rect = node.getBoundingClientRect();
+  _btlTooltip.style.left = (rect.left + rect.width / 2 - 60) + 'px';
+  _btlTooltip.style.top = (rect.top - 56) + 'px';
+  _btlTooltip.classList.add('visible');
+}
+function _hideBtlTooltip() {
+  if (_btlTooltip) _btlTooltip.classList.remove('visible');
+}
+
 function renderAll() {
   renderMap();
   renderTopBar();
   renderPowerRanking();
   renderTimeline();
+  renderBottomTimeline();
   checkCriticalResources();
   updateMapEraTint();
   updateMapNodeCritical();
