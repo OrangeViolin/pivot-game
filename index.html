@@ -636,6 +636,15 @@ body::after {
 }
 .help-dismiss:hover{background:rgba(201,169,110,0.2);}
 
+/* ========== 反馈弹窗 ========== */
+#feedback-modal{
+  position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
+}
+#feedback-modal.active{display:flex;}
+#feedback-modal input:focus,#feedback-modal textarea:focus{outline:none;border-color:rgba(201,169,110,0.5);}
+#feedback-modal textarea{line-height:1.7;}
+
 /* ========== 地图节点脉冲 ========== */
 .node-circle.pulse{animation:nodePulse 0.6s;}
 @keyframes nodePulse{0%,100%{filter:brightness(1);}50%{filter:brightness(1.6);}}
@@ -2262,6 +2271,7 @@ body::after {
     <button class="bottom-btn" onclick="saveGame()">存档</button>
     <button class="bottom-btn" onclick="loadGame()">读档</button>
     <button class="bottom-btn" onclick="showHelp()">指南</button>
+    <button class="bottom-btn" onclick="showFeedback()">反馈</button>
     <button class="mute-btn" id="game-mute-btn" title="音效开关"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="currentColor"/><path d="M19 12c0 2.93-1.66 5.47-4.08 6.72l.84 1.44C19.07 18.5 21 15.5 21 12s-1.93-6.5-5.24-8.16l-.84 1.44C17.34 6.53 19 9.07 19 12z" fill="currentColor"/></svg></button>
   </div>
 </div>
@@ -2334,6 +2344,26 @@ body::after {
       <p style="color:#6a5a3a;font-size:0.8em;">基于施展《枢纽：3000年的中国》</p>
     </div>
     <button class="help-dismiss" onclick="closeHelp()">知 道 了</button>
+  </div>
+</div>
+
+<!-- 反馈弹窗 -->
+<div id="feedback-modal">
+  <div class="help-card" style="max-width:420px;">
+    <h2>意 见 反 馈</h2>
+    <form id="feedback-form">
+      <div style="margin-bottom:14px;">
+        <input type="text" id="fb-name" placeholder="称呼（选填）" style="width:100%;padding:10px 12px;background:rgba(201,169,110,0.06);border:1px solid rgba(201,169,110,0.2);border-radius:4px;color:#ccc;font-family:inherit;font-size:0.9em;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <textarea id="fb-message" rows="5" placeholder="你的建议、发现的 bug、想看的功能……" required style="width:100%;padding:10px 12px;background:rgba(201,169,110,0.06);border:1px solid rgba(201,169,110,0.2);border-radius:4px;color:#ccc;font-family:inherit;font-size:0.9em;resize:vertical;box-sizing:border-box;"></textarea>
+      </div>
+      <div style="display:flex;gap:12px;justify-content:center;">
+        <button type="submit" class="help-dismiss" style="margin:0;">提 交</button>
+        <button type="button" class="help-dismiss" style="margin:0;background:transparent;" onclick="closeFeedback()">取 消</button>
+      </div>
+      <p id="fb-status" style="text-align:center;font-size:0.8em;margin-top:12px;color:#8a7a5a;display:none;"></p>
+    </form>
   </div>
 </div>
 
@@ -5678,6 +5708,51 @@ function closeHelp() {
   SFX.click();
   document.getElementById('help-modal').classList.remove('active');
 }
+
+function showFeedback() {
+  SFX.click();
+  document.getElementById('feedback-modal').classList.add('active');
+}
+function closeFeedback() {
+  SFX.click();
+  document.getElementById('feedback-modal').classList.remove('active');
+  document.getElementById('fb-status').style.display = 'none';
+}
+document.getElementById('feedback-form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const status = document.getElementById('fb-status');
+  const msg = document.getElementById('fb-message').value.trim();
+  if (!msg) return;
+  status.style.display = 'block';
+  status.style.color = '#8a7a5a';
+  status.textContent = '正在提交…';
+  const gameInfo = typeof G !== 'undefined' ? 'Era ' + (G.eraIndex+1) + ' Event ' + (G.eventIndex+1) + ' Score ' + G.score : 'N/A';
+  fetch('https://formsubmit.co/ajax/yushan@memect.co', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json','Accept':'application/json'},
+    body: JSON.stringify({
+      _subject: '枢纽天下之道 - 玩家反馈',
+      name: document.getElementById('fb-name').value.trim() || '匿名玩家',
+      message: msg,
+      gameState: gameInfo,
+      time: new Date().toLocaleString('zh-CN')
+    })
+  }).then(r => r.json()).then(data => {
+    if (data.success) {
+      status.style.color = '#6bba6b';
+      status.textContent = '感谢反馈！已收到。';
+      document.getElementById('fb-message').value = '';
+      document.getElementById('fb-name').value = '';
+      setTimeout(closeFeedback, 1500);
+    } else {
+      status.style.color = '#c56b6b';
+      status.textContent = '提交失败，请稍后再试。';
+    }
+  }).catch(() => {
+    status.style.color = '#c56b6b';
+    status.textContent = '网络错误，请稍后再试。';
+  });
+});
 
 function renderPowerRanking() {
   const ranked = Object.keys(REGION_META).map(k => {
