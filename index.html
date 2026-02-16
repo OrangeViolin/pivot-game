@@ -2073,6 +2073,84 @@ body::after {
   .return-btn-continue,.return-btn-restart{width:100%;text-align:center;}
   #nickname-input{width:70vw;max-width:240px;}
 }
+
+/* ========== 决策复盘时间线 ========== */
+#timeline-modal{
+  position:fixed;inset:0;z-index:300;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.75);backdrop-filter:blur(6px);
+}
+#timeline-modal.active{display:flex;}
+.timeline-card{
+  background:rgba(18,18,30,0.96);backdrop-filter:blur(16px);border:1px solid rgba(201,169,110,0.3);
+  border-radius:10px;padding:24px 28px;max-width:520px;width:92%;max-height:80vh;overflow-y:auto;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+}
+.timeline-card h2{color:var(--gold);font-size:1.3em;letter-spacing:4px;margin-bottom:16px;text-align:center;}
+.tl-era-divider{
+  display:flex;align-items:center;gap:12px;margin:18px 0 10px;
+}
+.tl-era-divider::before,.tl-era-divider::after{
+  content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);
+}
+.tl-era-divider span{
+  color:var(--gold);font-size:0.92em;letter-spacing:3px;white-space:nowrap;
+}
+.tl-node{
+  position:relative;padding:8px 8px 8px 24px;margin:6px 0;border-radius:6px;
+  cursor:pointer;transition:background 0.2s;
+}
+.tl-node::before{
+  content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;
+  background:rgba(201,169,110,0.2);
+}
+.tl-node::after{
+  content:'';position:absolute;left:4px;top:14px;width:10px;height:10px;
+  border-radius:50%;border:2px solid rgba(201,169,110,0.4);background:var(--ink);
+  transition:border-color 0.2s,background 0.2s;
+}
+.tl-node:hover{background:rgba(201,169,110,0.06);}
+.tl-node:hover::after{border-color:var(--gold);}
+.tl-node-header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px;}
+.tl-node-turn{color:var(--gold);font-size:0.78em;opacity:0.7;}
+.tl-node-title{color:#ccc;font-size:0.88em;}
+.tl-node-choice{color:var(--bright-gold);font-size:0.82em;margin-left:4px;}
+.tl-node-effects{
+  display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;
+}
+.tl-tag{
+  font-size:0.72em;padding:1px 6px;border-radius:3px;letter-spacing:1px;
+}
+.tl-tag.pos{color:#6ec87a;background:rgba(110,200,122,0.1);}
+.tl-tag.neg{color:#e06060;background:rgba(224,96,96,0.1);}
+.tl-node-detail{
+  max-height:0;overflow:hidden;opacity:0;
+  transition:max-height 0.35s ease,opacity 0.25s ease,margin 0.3s ease;
+  margin-top:0;
+}
+.tl-node.expanded .tl-node-detail{
+  max-height:400px;opacity:1;margin-top:8px;
+}
+.tl-node.expanded::after{background:var(--gold);border-color:var(--bright-gold);}
+.tl-detail-verdict{font-size:0.82em;color:var(--bright-gold);margin-bottom:4px;letter-spacing:2px;}
+.tl-detail-conseq{font-size:0.78em;color:#999;line-height:1.6;margin-bottom:8px;}
+.tl-unchosen-label{font-size:0.72em;color:#666;margin-bottom:4px;letter-spacing:1px;}
+.tl-unchosen{
+  font-size:0.76em;color:#555;padding:3px 8px;margin:2px 0;
+  border-left:2px solid rgba(255,255,255,0.08);
+}
+.tl-total{
+  text-align:center;color:#666;font-size:0.82em;margin-top:16px;padding-top:12px;
+  border-top:1px solid rgba(201,169,110,0.15);letter-spacing:2px;
+}
+.tl-trap-badge{
+  font-size:0.68em;color:#e06060;border:1px solid rgba(224,96,96,0.3);
+  padding:0 5px;border-radius:3px;margin-left:4px;
+}
+@media(max-width:800px){
+  .timeline-card{padding:16px 14px;max-height:85vh;width:96%;}
+  .tl-node-header{gap:4px;}
+  .tl-node-choice{margin-left:0;display:block;width:100%;}
+}
 </style>
 </head>
 <body>
@@ -2336,6 +2414,7 @@ body::after {
   <div id="bottom-bar">
     <div id="power-ranking"></div>
     <button class="bottom-btn" onclick="showHistory()">史卷</button>
+    <button class="bottom-btn" onclick="showTimeline()">复盘</button>
     <button class="bottom-btn" onclick="saveGame()">存档</button>
     <button class="bottom-btn" onclick="loadGame()">读档</button>
     <button class="bottom-btn" onclick="showHelp()">指南</button>
@@ -2351,6 +2430,15 @@ body::after {
     <h2>历 史 长 卷</h2>
     <div class="history-log" id="history-log"></div>
     <button class="history-dismiss" onclick="closeHistory()">关 闭</button>
+  </div>
+</div>
+
+<!-- 决策复盘时间线 Modal -->
+<div id="timeline-modal">
+  <div class="timeline-card">
+    <h2>决 策 复 盘</h2>
+    <div id="timeline-content"></div>
+    <button class="history-dismiss" onclick="closeTimeline()">关 闭</button>
   </div>
 </div>
 
@@ -7586,6 +7674,224 @@ triggerGameOver = function() {
   clearAutosave();
   _nickOrigTriggerGameOver();
 };
+</script>
+
+<!-- ==================== 决策复盘时间线 ==================== -->
+<script>
+// ========== Hook _executeChoice: enrich G.choices data ==========
+const _tlOrigExecuteChoice = _executeChoice;
+_executeChoice = function(idx, ev, choice) {
+  // Capture the enriched record BEFORE calling original (which does G.choices.push)
+  const enriched = {
+    era: G.era,
+    turn: G.turn,
+    eventId: ev.id,
+    choiceIdx: idx,
+    title: ev.title,
+    choiceText: choice.text,
+    effectTags: [],
+    consequence: choice.consequence || '',
+    verdict: '',
+    isTrap: !!choice._isTrap
+  };
+
+  // Pre-compute effect tags from choice.effects
+  for (let region in choice.effects) {
+    const eff = choice.effects[region];
+    const meta = typeof REGION_META !== 'undefined' ? REGION_META[region] : null;
+    const rName = meta ? meta.name : region;
+    const r = G.regions[region];
+    if (!r) continue;
+    const statMap = {p:'兴', m:'武', c:'文', t:'商'};
+    for (let k in statMap) {
+      if (eff[k]) {
+        const before = r[{p:'prosperity',m:'military',c:'culture',t:'trade'}[k]];
+        const clamped = Math.max(0, Math.min(10, before + eff[k]));
+        const actual = clamped - before;
+        if (actual !== 0) enriched.effectTags.push({region: rName, stat: statMap[k], val: actual});
+      }
+    }
+  }
+
+  // Call original chain (this does G.choices.push with the slim record)
+  _tlOrigExecuteChoice(idx, ev, choice);
+
+  // Now compute verdict from what was pushed
+  const posCount = enriched.effectTags.filter(t => t.val > 0).length;
+  const negCount = enriched.effectTags.filter(t => t.val < 0).length;
+  if (posCount > 0 && negCount === 0) enriched.verdict = '天命眷顾';
+  else if (negCount > 0 && posCount === 0) enriched.verdict = '天命示警';
+  else if (posCount > negCount) enriched.verdict = '利弊相权，略有所得';
+  else if (negCount > posCount) enriched.verdict = '祸福相依，代价不轻';
+  else enriched.verdict = '天道无常';
+
+  // Replace the last pushed slim record with enriched one
+  if (G.choices.length > 0) {
+    G.choices[G.choices.length - 1] = enriched;
+  }
+};
+
+// ========== showTimeline / closeTimeline ==========
+function showTimeline() {
+  renderTimelineContent();
+  document.getElementById('timeline-modal').classList.add('active');
+}
+function closeTimeline() {
+  document.getElementById('timeline-modal').classList.remove('active');
+}
+
+// ========== renderTimelineContent ==========
+function renderTimelineContent() {
+  const container = document.getElementById('timeline-content');
+  if (!G.choices || G.choices.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:#666;padding:20px;letter-spacing:2px;">尚无决策记录</div>';
+    return;
+  }
+
+  let html = '';
+  let currentEra = 0;
+  const eraNames = typeof ERA_NAMES !== 'undefined' ? ERA_NAMES : ['','第一纪','第二纪','第三纪','第四纪'];
+
+  G.choices.forEach((ch, i) => {
+    const era = ch.era || 1;
+    // Era divider
+    if (era !== currentEra) {
+      currentEra = era;
+      html += '<div class="tl-era-divider"><span>' + (eraNames[era] || ('第' + era + '纪')) + '</span></div>';
+    }
+
+    // Backfill old-format records that lack enriched fields
+    const enriched = _backfillChoice(ch);
+
+    // Node
+    html += '<div class="tl-node" onclick="this.classList.toggle(\'expanded\')">';
+
+    // Header
+    html += '<div class="tl-node-header">';
+    html += '<span class="tl-node-turn">回合' + (enriched.turn || '?') + '</span>';
+    html += '<span class="tl-node-title">' + (enriched.title || '未知事件') + '</span>';
+    html += '<span class="tl-node-choice">→ ' + (enriched.choiceText || '选项' + ((enriched.choiceIdx||0)+1)) + '</span>';
+    if (enriched.isTrap) html += '<span class="tl-trap-badge">陷阱</span>';
+    html += '</div>';
+
+    // Effect tags
+    if (enriched.effectTags && enriched.effectTags.length > 0) {
+      html += '<div class="tl-node-effects">';
+      enriched.effectTags.forEach(t => {
+        const cls = t.val > 0 ? 'pos' : 'neg';
+        const sign = t.val > 0 ? '+' : '';
+        html += '<span class="tl-tag ' + cls + '">' + t.region + ' ' + sign + t.val + t.stat + '</span>';
+      });
+      html += '</div>';
+    }
+
+    // Detail (collapsed by default)
+    html += '<div class="tl-node-detail">';
+    if (enriched.verdict) html += '<div class="tl-detail-verdict">' + enriched.verdict + '</div>';
+    if (enriched.consequence) html += '<div class="tl-detail-conseq">' + enriched.consequence + '</div>';
+
+    // Unchosen options
+    const unchosen = _getUnchosenOptions(enriched);
+    if (unchosen.length > 0) {
+      html += '<div class="tl-unchosen-label">未选的选项：</div>';
+      unchosen.forEach(u => {
+        html += '<div class="tl-unchosen">· ' + u + '</div>';
+      });
+    }
+    html += '</div>'; // .tl-node-detail
+    html += '</div>'; // .tl-node
+  });
+
+  html += '<div class="tl-total">共 ' + G.choices.length + ' 个决策</div>';
+  container.innerHTML = html;
+}
+
+// ========== Backfill old-format choice records ==========
+function _backfillChoice(ch) {
+  // Already enriched
+  if (ch.title && ch.effectTags) return ch;
+
+  // Try to reconstruct from EVENTS
+  const eventId = ch.eventId || ch.event;
+  const choiceIdx = ch.choiceIdx !== undefined ? ch.choiceIdx : ch.choice;
+  const era = ch.era || 1;
+
+  const result = {
+    era: era,
+    turn: ch.turn || '?',
+    eventId: eventId,
+    choiceIdx: choiceIdx,
+    title: ch.title || '',
+    choiceText: ch.choiceText || '',
+    effectTags: ch.effectTags || [],
+    consequence: ch.consequence || '',
+    verdict: ch.verdict || '',
+    isTrap: ch.isTrap || false
+  };
+
+  if (!eventId || typeof EVENTS === 'undefined') return result;
+
+  // Find the event across eras
+  const eraEvents = EVENTS[era];
+  if (!eraEvents) return result;
+  const ev = eraEvents.find(e => e.id === eventId);
+  if (!ev) return result;
+
+  if (!result.title) result.title = ev.title;
+  const allChoices = ev._allChoices || ev.choices;
+  const choice = allChoices[choiceIdx] || ev.choices[choiceIdx];
+  if (choice) {
+    if (!result.choiceText) result.choiceText = choice.text;
+    if (!result.consequence) result.consequence = choice.consequence || '';
+    if (result.effectTags.length === 0) {
+      // Reconstruct effect tags from choice definition
+      const statMap = {p:'兴', m:'武', c:'文', t:'商'};
+      for (let region in choice.effects) {
+        const eff = choice.effects[region];
+        const meta = typeof REGION_META !== 'undefined' ? REGION_META[region] : null;
+        const rName = meta ? meta.name : region;
+        for (let k in statMap) {
+          if (eff[k] && eff[k] !== 0) {
+            result.effectTags.push({region: rName, stat: statMap[k], val: eff[k]});
+          }
+        }
+      }
+    }
+    result.isTrap = result.isTrap || !!choice._isTrap;
+  }
+
+  if (!result.verdict && result.effectTags.length > 0) {
+    const posCount = result.effectTags.filter(t => t.val > 0).length;
+    const negCount = result.effectTags.filter(t => t.val < 0).length;
+    if (posCount > 0 && negCount === 0) result.verdict = '天命眷顾';
+    else if (negCount > 0 && posCount === 0) result.verdict = '天命示警';
+    else if (posCount > negCount) result.verdict = '利弊相权，略有所得';
+    else if (negCount > posCount) result.verdict = '祸福相依，代价不轻';
+    else result.verdict = '天道无常';
+  }
+
+  return result;
+}
+
+// ========== Get unchosen options from EVENTS ==========
+function _getUnchosenOptions(ch) {
+  const eventId = ch.eventId || ch.event;
+  const choiceIdx = ch.choiceIdx !== undefined ? ch.choiceIdx : ch.choice;
+  const era = ch.era || 1;
+  if (!eventId || typeof EVENTS === 'undefined') return [];
+
+  const eraEvents = EVENTS[era];
+  if (!eraEvents) return [];
+  const ev = eraEvents.find(e => e.id === eventId);
+  if (!ev) return [];
+
+  const allChoices = ev._allChoices || ev.choices;
+  const unchosen = [];
+  allChoices.forEach((c, i) => {
+    if (i !== choiceIdx) unchosen.push(c.text);
+  });
+  return unchosen;
+}
 </script>
 </body>
 </html>
