@@ -2017,6 +2017,62 @@ body::after {
   .rewind-btn-container{flex-direction:column;gap:8px;}
   .rewind-btn,.rewind-btn-container .continue-btn{width:100%;padding:14px;}
 }
+
+/* ========== 昵称 & 自动存档 ========== */
+#nickname-panel{
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+  opacity:0;transition:opacity 0.8s ease;pointer-events:none;position:relative;
+}
+#nickname-panel.visible{opacity:1;pointer-events:auto;}
+#nickname-input{
+  width:220px;padding:10px 16px;font-family:inherit;font-size:1em;
+  text-align:center;letter-spacing:4px;color:var(--gold);
+  background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.35);
+  border-radius:4px;outline:none;transition:border-color 0.3s;
+}
+#nickname-input::placeholder{color:rgba(201,169,110,0.35);letter-spacing:2px;}
+#nickname-input:focus{border-color:var(--gold);}
+
+#return-overlay{
+  position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:20px;
+  background:linear-gradient(180deg,#1a0e05 0%,#2a1508 20%,#3d2010 40%,#1a1520 70%,#0d0d1a 100%);
+  opacity:0;transition:opacity 0.6s ease;pointer-events:none;
+}
+#return-overlay.active{opacity:1;pointer-events:auto;}
+.return-welcome{font-size:1.6em;color:var(--gold);letter-spacing:6px;text-align:center;}
+.return-progress{color:#8a7a5a;font-size:0.95em;letter-spacing:2px;text-align:center;}
+.return-btns{display:flex;gap:16px;margin-top:12px;}
+.return-btn-continue{
+  padding:14px 40px;font-size:1.1em;font-family:inherit;cursor:pointer;
+  background:linear-gradient(135deg,rgba(201,169,110,0.25),rgba(201,169,110,0.12));
+  color:var(--gold);border:1px solid var(--gold);border-radius:4px;
+  letter-spacing:4px;transition:all 0.3s;
+}
+.return-btn-continue:hover{background:linear-gradient(135deg,rgba(201,169,110,0.4),rgba(201,169,110,0.2));box-shadow:0 0 20px rgba(201,169,110,0.2);}
+.return-btn-restart{
+  padding:14px 40px;font-size:1.1em;font-family:inherit;cursor:pointer;
+  background:rgba(255,255,255,0.04);color:#8a7a5a;border:1px solid rgba(138,122,90,0.3);
+  border-radius:4px;letter-spacing:4px;transition:all 0.3s;
+}
+.return-btn-restart:hover{color:#bba870;border-color:rgba(138,122,90,0.5);}
+.return-btn-restart.confirm-delete{color:#c93f35;border-color:#c93f35;animation:pulse-warn 0.6s ease;}
+@keyframes pulse-warn{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+
+#autosave-indicator{
+  position:fixed;top:12px;right:16px;z-index:100;
+  padding:6px 16px;font-size:0.82em;letter-spacing:2px;
+  color:var(--gold);background:rgba(30,28,20,0.85);
+  border:1px solid rgba(201,169,110,0.25);border-radius:4px;
+  opacity:0;transition:opacity 0.4s ease;pointer-events:none;
+}
+#autosave-indicator.flash{opacity:1;}
+
+@media(max-width:800px){
+  .return-btns{flex-direction:column;gap:10px;width:80%;}
+  .return-btn-continue,.return-btn-restart{width:100%;text-align:center;}
+  #nickname-input{width:70vw;max-width:240px;}
+}
 </style>
 </head>
 <body>
@@ -2087,6 +2143,15 @@ body::after {
   <div id="start-entry-overlay">
     <div class="entry-prompt">点 击 进 入</div>
   </div>
+  <!-- 返回玩家覆盖层 -->
+  <div id="return-overlay">
+    <div class="return-welcome" id="return-welcome"></div>
+    <div class="return-progress" id="return-progress"></div>
+    <div class="return-btns">
+      <button class="return-btn-continue" id="return-btn-continue">继 续 天 命</button>
+      <button class="return-btn-restart" id="return-btn-restart">重 启 天 命</button>
+    </div>
+  </div>
   <!-- 冲击波 -->
   <div class="title-shockwave" id="title-shockwave"></div>
   <div class="title-area">
@@ -2101,7 +2166,10 @@ body::after {
     <div class="poem-line">铁骑踏破山河，丝路连通四海</div>
     <div class="poem-line gold-line">天命在手——你，将如何经略天下？</div>
   </div>
-  <button class="start-btn pulse-glow" id="start-btn">执 掌 天 命</button>
+  <div id="nickname-panel">
+    <input type="text" id="nickname-input" maxlength="8" placeholder="输入你的名号">
+    <button class="start-btn pulse-glow" id="start-btn">执 掌 天 命</button>
+  </div>
 </div>
 
 <!-- ========== 时代过渡 ========== -->
@@ -2274,6 +2342,7 @@ body::after {
     <button class="bottom-btn" onclick="showFeedback()">反馈</button>
     <button class="mute-btn" id="game-mute-btn" title="音效开关"><svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" fill="currentColor"/><path d="M19 12c0 2.93-1.66 5.47-4.08 6.72l.84 1.44C19.07 18.5 21 15.5 21 12s-1.93-6.5-5.24-8.16l-.84 1.44C17.34 6.53 19 9.07 19 12z" fill="currentColor"/></svg></button>
   </div>
+  <div id="autosave-indicator">已自动存档</div>
 </div>
 
 <!-- History Log Modal -->
@@ -7295,6 +7364,227 @@ nextTurn = function() {
   _rewindSnapshot = null;
   _rewindChoiceOrder = null;
   _rewindOrigNextTurn();
+};
+</script>
+
+<!-- ==================== 昵称注册 + 自动存档/续玩 ==================== -->
+<script>
+// ========== 3a. 工具函数 ==========
+function getNickname() {
+  return localStorage.getItem('pivot_nickname') || '无名氏';
+}
+function setNickname(name) {
+  localStorage.setItem('pivot_nickname', name || '无名氏');
+}
+function getAutosave() {
+  try { return JSON.parse(localStorage.getItem('pivot_autosave')); } catch(e) { return null; }
+}
+function clearAutosave() {
+  localStorage.removeItem('pivot_autosave');
+}
+
+// ========== 3b. Hook initStartScreen ==========
+const _nickOrigInitStartScreen = initStartScreen;
+initStartScreen = function() {
+  const save = getAutosave();
+  if (save) {
+    // Returning player — skip animation, show return overlay
+    _nickOrigInitStartScreen();
+    showReturnOverlay(save);
+    return;
+  }
+  // First-time player — run normal animation, then show nickname panel
+  _nickOrigInitStartScreen();
+
+  // After poems finish animating, show nickname-panel (it contains the start button)
+  const nicknamePanel = document.getElementById('nickname-panel');
+  if (nicknamePanel) {
+    // Watch for start-btn becoming visible (opacity set to 1 by opening animation)
+    const startBtn = document.getElementById('start-btn');
+    if (startBtn) {
+      const obs = new MutationObserver(() => {
+        if (startBtn.style.opacity === '1') {
+          nicknamePanel.classList.add('visible');
+          obs.disconnect();
+        }
+      });
+      obs.observe(startBtn, { attributes: true, attributeFilter: ['style'] });
+    }
+    // Bind Enter key on nickname input
+    const nickInput = document.getElementById('nickname-input');
+    if (nickInput) {
+      nickInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          document.getElementById('start-btn').click();
+        }
+      });
+    }
+  }
+};
+
+// ========== 3c. showReturnOverlay ==========
+function showReturnOverlay(save) {
+  const eraNames = ['','第一纪','第二纪','第三纪','第四纪'];
+  const overlay = document.getElementById('return-overlay');
+  const screen = document.getElementById('start-screen');
+  if (!overlay || !screen) return;
+
+  // Hide normal start screen elements
+  const titleArea = screen.querySelector('.title-area');
+  const poem = document.getElementById('start-poem');
+  const nickPanel = document.getElementById('nickname-panel');
+  const entryOverlay = document.getElementById('start-entry-overlay');
+  if (titleArea) titleArea.style.display = 'none';
+  if (poem) poem.style.display = 'none';
+  if (nickPanel) nickPanel.style.display = 'none';
+  if (entryOverlay) entryOverlay.style.display = 'none';
+
+  // Show content layer directly (skip animation)
+  screen.classList.add('content-visible');
+
+  const nickname = getNickname();
+  document.getElementById('return-welcome').textContent = '欢迎归来，' + nickname;
+  const eraLabel = eraNames[save.era] || ('第' + save.era + '纪');
+  document.getElementById('return-progress').textContent = eraLabel + ' · 第' + (save.turn || 1) + '回合';
+
+  // Init audio
+  if (!SFX._initialized) SFX.init();
+  SFX._ensureResumed();
+  SFX._updateMuteButtons();
+
+  // Animate in
+  requestAnimationFrame(() => overlay.classList.add('active'));
+
+  // Continue button
+  document.getElementById('return-btn-continue').addEventListener('click', () => {
+    overlay.classList.remove('active');
+    setTimeout(() => {
+      screen.style.display = 'none';
+      resumeFromAutosave(save);
+    }, 600);
+  });
+
+  // Restart button with double-confirm
+  const restartBtn = document.getElementById('return-btn-restart');
+  let confirmPending = false;
+  let confirmTimer = null;
+  restartBtn.addEventListener('click', () => {
+    if (confirmPending) {
+      clearTimeout(confirmTimer);
+      clearAutosave();
+      localStorage.removeItem('pivot_nickname');
+      location.reload();
+      return;
+    }
+    confirmPending = true;
+    restartBtn.textContent = '确定放弃？';
+    restartBtn.classList.add('confirm-delete');
+    confirmTimer = setTimeout(() => {
+      confirmPending = false;
+      restartBtn.textContent = '重 启 天 命';
+      restartBtn.classList.remove('confirm-delete');
+    }, 3000);
+  });
+}
+
+// ========== 3d. resumeFromAutosave ==========
+function resumeFromAutosave(save) {
+  // Restore G with default value protection
+  G = save;
+  G.mandateScore = G.mandateScore || 0;
+  G.score = G.score || 0;
+  G._streak = G._streak || 0;
+  G._totalEventsCompleted = G._totalEventsCompleted || 0;
+  G.unlockedAchievements = G.unlockedAchievements || [];
+  G.snapshots = G.snapshots || [];
+  G.log = G.log || [];
+  G.choices = G.choices || [];
+  G._choosing = false;
+  G.playerName = G.playerName || getNickname();
+
+  // Restore module-level variables
+  _lastMilestone = Math.floor(G.score / 500) * 500;
+  _mandateWarnShown = {};
+
+  // Show game UI
+  document.getElementById('game').classList.add('active');
+
+  // Init subsystems
+  initMapTooltip();
+  initGameParticles();
+
+  // Render everything
+  renderAll();
+  updateScoreDisplay(false);
+  updateRankDisplay();
+  updateJourneyProgress();
+  updateMandateHealthVisual(G.mandateScore);
+
+  // Start ambient
+  if (!SFX.muted) {
+    SFX.ambient();
+  }
+
+  // Show current event
+  setTimeout(() => showEvent(), 300);
+}
+
+// ========== 3f. Hook startGame — capture nickname ==========
+const _nickOrigStartGame = startGame;
+startGame = function() {
+  const nickInput = document.getElementById('nickname-input');
+  const nickname = (nickInput && nickInput.value.trim()) || '无名氏';
+  setNickname(nickname);
+  _nickOrigStartGame();
+  G.playerName = nickname;
+};
+
+// ========== 3g. autoSave + Hook _executeChoice ==========
+function autoSave() {
+  localStorage.setItem('pivot_autosave', JSON.stringify(G));
+  // Flash indicator
+  const ind = document.getElementById('autosave-indicator');
+  if (ind) {
+    ind.classList.add('flash');
+    setTimeout(() => ind.classList.remove('flash'), 1500);
+  }
+}
+
+const _nickOrigExecuteChoice = _executeChoice;
+_executeChoice = function(idx, ev, choice) {
+  _nickOrigExecuteChoice(idx, ev, choice);
+  // Auto-save after choice is processed
+  setTimeout(() => autoSave(), 100);
+};
+
+// ========== 3h. Hook saveGame/loadGame — sync autosave ==========
+const _nickOrigSaveGame = saveGame;
+saveGame = function() {
+  _nickOrigSaveGame();
+  // Sync autosave with manual save
+  localStorage.setItem('pivot_autosave', JSON.stringify(G));
+};
+
+const _nickOrigLoadGame = loadGame;
+loadGame = function() {
+  _nickOrigLoadGame();
+  // Sync nickname and autosave after manual load
+  G.playerName = G.playerName || getNickname();
+  localStorage.setItem('pivot_autosave', JSON.stringify(G));
+};
+
+// ========== 3i. Hook showEnding + triggerGameOver — clear autosave ==========
+const _nickOrigShowEnding = showEnding;
+showEnding = function(endingKey) {
+  clearAutosave();
+  _nickOrigShowEnding(endingKey);
+};
+
+const _nickOrigTriggerGameOver = triggerGameOver;
+triggerGameOver = function() {
+  clearAutosave();
+  _nickOrigTriggerGameOver();
 };
 </script>
 </body>
